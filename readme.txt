@@ -12,3 +12,21 @@ Setup:
 See DEPLOY.txt for hosting / Elementor Theme Builder notes.
 
 Brand icons sync from assets/images/ to uploads/htoeau-brand-assets/ on first load; bump HTOEAU_BRAND_ASSETS_SYNC_VER in functions.php to force re-copy.
+
+Git (this folder is its own repo)
+---------------------------------
+- Work here, commit often:  git add -A && git commit -m "Describe change"
+- Undo uncommitted edits to one file:  git checkout -- path/to/file.php
+- See history:  git log --oneline
+- Restore last good commit (discard ALL local changes):  git reset --hard HEAD
+- Restore a specific old commit (detached — then branch or cherry-pick):  git checkout <commit-hash>
+
+GitHub (backup + history off your machine)
+------------------------------------------
+1. Create a new empty repo on GitHub (no README if you already have commits).
+2. In this folder:
+   git remote add origin https://github.com/YOU/REPO.git
+   git push -u origin main
+3. Later:  git push  after each commit.
+
+FTP deploy stays separate: push to GitHub does not update the server — upload files or use a deploy action when you are ready.
