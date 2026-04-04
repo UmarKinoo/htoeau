@@ -51,6 +51,23 @@ if ( post_password_required() ) {
 
 	<?php get_template_part( 'template-parts/transformation', 'section' ); ?>
 
+	<?php
+	/**
+	 * Optional: PHP plugins / mu-plugins can hook here.
+	 */
+	do_action( 'htoeau_after_product_transformation' );
+
+	$htoeau_el_after = false;
+	if ( function_exists( 'elementor_theme_do_location' ) ) {
+		$htoeau_el_after = elementor_theme_do_location( 'htoeau-pdp-after' );
+	}
+	if ( ! $htoeau_el_after && is_active_sidebar( 'htoeau-pdp-after' ) ) {
+		echo '<div class="htoeau-pdp__after-widgets">';
+		dynamic_sidebar( 'htoeau-pdp-after' );
+		echo '</div>';
+	}
+	?>
+
 </div>
 
 <?php do_action( 'woocommerce_after_single_product' ); ?>

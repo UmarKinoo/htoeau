@@ -19,7 +19,14 @@ After deploy
 - Edit products: "HtoEAU Product" and per-variation "HtoEAU Variation" meta boxes
 - PDP: custom gallery, packs, subscribe vs one-time, accordions, sample kit + transformation sections
 
-Optional
---------
-- If Elementor Theme Builder has a Single Product template, it can conflict with PHP overrides.
+Optional — extra content below the PDP (sample kit + transformation)
+--------------------------------------------------------------------
+- WP Admin → Appearance → Widgets → find “Product page — below content”
+  Add any block/widget; it renders after the transformation section on single product pages.
+- Elementor Pro: Theme Builder can target location “HtoEAU — Below product content” (same slot;
+  if an Elementor template is assigned there, it is used instead of the widget area).
+
+Optional — conflicts
+--------------------
+- If Elementor Theme Builder has a full Single Product template, it can conflict with PHP overrides.
   Prefer one approach: either this child theme templates OR Elementor single-product template.

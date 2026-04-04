@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.2.4' );
+define( 'HTOEAU_CHILD_VERSION', '1.2.5' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -198,6 +198,48 @@ function htoeau_child_woocommerce_setup() {
 	add_theme_support( 'woocommerce' );
 }
 add_action( 'after_setup_theme', 'htoeau_child_woocommerce_setup' );
+
+/**
+ * Widget area: editors can add blocks/widgets below sample kit + transformation on single product.
+ *
+ * WP Admin: Appearance → Widgets — look for “Product page — below content”.
+ */
+function htoeau_child_register_sidebars() {
+	register_sidebar(
+		array(
+			'name'          => __( 'Product page — below content', 'hello-elementor-child' ),
+			'id'            => 'htoeau-pdp-after',
+			'description'   => __( 'Shown below the PDP sections (after Sample kit + Transformation). Add blocks or legacy widgets here.', 'hello-elementor-child' ),
+			'before_widget' => '<section id="%1$s" class="widget htoeau-pdp-after-widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h2 class="widget-title htoeau-pdp-after-widget__title">',
+			'after_title'   => '</h2>',
+		)
+	);
+}
+add_action( 'widgets_init', 'htoeau_child_register_sidebars' );
+
+/**
+ * Elementor Pro: optional Theme Builder location (same visual slot as the widget area).
+ * Theme Builder → Add New → Section → choose “HtoEAU — Below product content” if available.
+ */
+function htoeau_child_register_elementor_pdp_after_location( $elementor_theme_manager ) {
+	if ( ! defined( 'ELEMENTOR_PRO_VERSION' ) ) {
+		return;
+	}
+	if ( ! is_object( $elementor_theme_manager ) || ! method_exists( $elementor_theme_manager, 'register_location' ) ) {
+		return;
+	}
+	$elementor_theme_manager->register_location(
+		'htoeau-pdp-after',
+		array(
+			'label'           => __( 'HtoEAU — Below product content', 'hello-elementor-child' ),
+			'multiple'        => true,
+			'edit_in_content' => false,
+		)
+	);
+}
+add_action( 'elementor/theme/register_locations', 'htoeau_child_register_elementor_pdp_after_location' );
 
 /**
  * Remove default single product layout hooks (custom templates replace them).

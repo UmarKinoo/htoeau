@@ -50,6 +50,15 @@ body.single-product .woocommerce-breadcrumb {
 	gap: 32px;
 }
 
+/* Optional: Appearance → Widgets — “Product page — below content” */
+.htoeau-pdp__after-widgets {
+	max-width: 1232px;
+	margin: 0 auto;
+	padding: 0 104px 96px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
 /* Gallery */
 .htoeau-gallery__main-wrap {
 	position: relative;
