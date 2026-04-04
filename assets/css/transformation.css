@@ -1,0 +1,225 @@
+/**
+ * Transformation B section — three expanding panels.
+ */
+
+.htoeau-transform {
+	background: var(--color-off-white);
+	padding: 96px 104px;
+	font-family: var(--font-primary);
+	color: var(--color-primary-dark);
+}
+
+.htoeau-transform__inner {
+	max-width: 1232px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 56px;
+}
+
+.htoeau-transform__header {
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	gap: 34px;
+	max-width: 100%;
+}
+
+.htoeau-transform__title {
+	margin: 0;
+	font-size: 46px;
+	font-weight: 300;
+	line-height: 1;
+	letter-spacing: -0.92px;
+}
+
+.htoeau-transform__subtitle {
+	margin: 0;
+	font-size: 16px;
+	line-height: 1.3;
+	letter-spacing: -0.16px;
+}
+
+.htoeau-transform__panels {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	justify-content: space-between;
+	gap: 16px;
+	width: 100%;
+	min-height: 560px;
+}
+
+.htoeau-transform__panel {
+	position: relative;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	flex: 0 0 88px;
+	min-height: 560px;
+	transition: flex-grow 0.45s ease, flex-basis 0.45s ease;
+	text-align: center;
+	color: var(--color-white);
+}
+
+.htoeau-transform__panel.is-active {
+	flex: 1 1 1024px;
+	max-width: 1024px;
+}
+
+.htoeau-transform__panel-bg {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.htoeau-transform__overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(1, 114, 160, 0.5);
+	pointer-events: none;
+}
+
+.htoeau-transform__panel.is-active .htoeau-transform__overlay {
+	background: rgba(1, 114, 160, 0.65);
+}
+
+.htoeau-transform__panel-content {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 560px;
+	padding: 24px;
+	gap: 16px;
+}
+
+/* Expanded step — Figma spacing between step badge, title, and Roboto body. */
+.htoeau-transform__panel.is-active .htoeau-transform__panel-content {
+	gap: 24px;
+}
+
+.htoeau-transform__panel:not(.is-active) .htoeau-transform__panel-content {
+	justify-content: flex-end;
+	padding-bottom: 48px;
+}
+
+.htoeau-transform__num-wrap {
+	position: relative;
+	width: 72px;
+	height: 72px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.htoeau-transform__panel:not(.is-active) .htoeau-transform__num-wrap {
+	width: 56px;
+	height: 56px;
+}
+
+.htoeau-transform__num-ring {
+	position: absolute;
+	inset: 0;
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain;
+}
+
+.htoeau-transform__num {
+	position: relative;
+	z-index: 1;
+	font-size: 48px;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: -0.96px;
+	color: var(--color-off-white);
+}
+
+.htoeau-transform__panel:not(.is-active) .htoeau-transform__num {
+	font-size: 32px;
+	font-weight: 600;
+	letter-spacing: -0.64px;
+}
+
+.htoeau-transform__panel-title {
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: -0.64px;
+}
+
+.htoeau-transform__panel.is-active .htoeau-transform__panel-title {
+	font-size: 32px;
+	white-space: normal;
+}
+
+.htoeau-transform__panel:not(.is-active) .htoeau-transform__panel-title {
+	font-size: 24px;
+	writing-mode: vertical-rl;
+	transform: rotate(180deg);
+	max-height: 280px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.htoeau-transform__panel-desc {
+	font-family: var(--font-secondary);
+	font-size: 16px;
+	line-height: 1.2;
+	letter-spacing: -0.32px;
+	max-width: 580px;
+	text-align: center;
+}
+
+.htoeau-transform__panel:not(.is-active) .htoeau-transform__panel-desc {
+	display: none;
+}
+
+@media screen and (max-width: 900px) {
+	.htoeau-transform {
+		padding: 64px 24px;
+	}
+
+	.htoeau-transform__title {
+		font-size: 32px;
+		letter-spacing: -0.64px;
+	}
+
+	.htoeau-transform__panels {
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.htoeau-transform__panel,
+	.htoeau-transform__panel.is-active {
+		flex: none;
+		width: 100%;
+		min-height: 320px;
+		max-width: 100%;
+	}
+
+	.htoeau-transform__panel-content {
+		min-height: 320px;
+	}
+
+	.htoeau-transform__panel:not(.is-active) .htoeau-transform__panel-title {
+		writing-mode: horizontal-tb;
+		transform: none;
+		max-height: none;
+		font-size: 20px;
+	}
+
+	.htoeau-transform__panel:not(.is-active) .htoeau-transform__panel-content {
+		justify-content: center;
+		padding: 24px;
+		gap: 12px;
+	}
+}

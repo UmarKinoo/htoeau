@@ -1,0 +1,71 @@
+/*
+Theme Name: Hello Elementor Child
+Description: HtoEAU custom WooCommerce product page (PDP), ACF fields, subscribe flow — child of Hello Elementor.
+Author: HtoEAU
+Template: hello-elementor
+Version: 1.2.0
+Text Domain: hello-elementor-child
+*/
+
+/* Base tokens; PDP and transformation styles load via assets/css. */
+:root {
+	--color-primary-dark: #002c41;
+	--color-brand-teal: #008fa3;
+	--color-brand-blue: #016b9f;
+	--color-brand-dark-cyan: #055b65;
+	--color-brand-cyan: #7cc9d3;
+	--color-star-yellow: #ffbf5b;
+	--color-sale-red: #e66363;
+	--color-white: #ffffff;
+	--color-off-white: #f8f8f8;
+	--color-light-gray: #f5f5f5;
+	--color-brand-tint: rgba(0, 143, 163, 0.05);
+	--brand-gradient: linear-gradient(90deg, #008fa3 0%, #016b9f 100%);
+	--radius-lg: 16px;
+	--radius-md: 8px;
+	--radius-pill: 1000px;
+	--font-primary: "Figtree", system-ui, -apple-system, sans-serif;
+	--font-secondary: "Roboto", system-ui, -apple-system, sans-serif;
+}
+
+/* Hello Elementor: let product template use full content width */
+body.woocommerce #content,
+body.single-product #content,
+body.woocommerce .site-main,
+body.single-product .site-main {
+	max-width: 100%;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/*
+ * Pages that use the HtoEAU Site Header widget: hide default theme header above content.
+ * Hello Elementor: #site-header; legacy Storefront: #masthead.
+ */
+body:has(.htoeau-header) #masthead.site-header,
+body:has(.htoeau-header) #site-header.site-header {
+	display: none !important;
+}
+
+body:has(.htoeau-header) .header-widget-region {
+	display: none !important;
+}
+
+body:has(.htoeau-header) .storefront-breadcrumb {
+	display: none !important;
+}
+
+/* Cart / checkout: show chosen variation under product title */
+.htoeau-cart-item-variation-wrap {
+	display: block;
+	margin-top: 0.35em;
+	font-size: 0.92em;
+	line-height: 1.35;
+	color: var(--color-primary-dark, #002c41);
+	opacity: 0.88;
+}
+
+.woocommerce-mini-cart .htoeau-cart-item-variation-wrap {
+	margin-top: 0.25em;
+	font-size: 0.875em;
+}

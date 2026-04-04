@@ -1,0 +1,999 @@
+/**
+ * HtoEAU single product PDP — pixel-aligned to Figma desktop tokens.
+ */
+
+.htoeau-pdp {
+	padding: 72px 104px 96px;
+	background: var(--color-white);
+	font-family: var(--font-primary);
+	color: var(--color-primary-dark);
+	box-sizing: border-box;
+}
+
+.htoeau-pdp *,
+.htoeau-pdp *::before,
+.htoeau-pdp *::after {
+	box-sizing: border-box;
+}
+
+.htoeau-pdp__inner {
+	max-width: 1232px;
+	margin: 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 120px;
+}
+
+.htoeau-pdp__gallery-col {
+	width: 608px;
+	max-width: 100%;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 48px;
+	position: relative;
+}
+
+.htoeau-pdp__info-col {
+	width: 504px;
+	max-width: 100%;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+/* Gallery */
+.htoeau-gallery__main-wrap {
+	position: relative;
+	width: 100%;
+	max-width: 608px;
+}
+
+.htoeau-gallery__main {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	max-width: 608px;
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	background: var(--color-light-gray);
+}
+
+.htoeau-gallery__slide {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s ease;
+}
+
+.htoeau-gallery__slide.is-active {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.htoeau-gallery__slide img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	display: block;
+	border-radius: var(--radius-lg);
+}
+
+.htoeau-gallery__thumbs {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 8px;
+	width: 100%;
+	max-width: 608px;
+	flex-wrap: nowrap;
+}
+
+.htoeau-gallery__thumb {
+	width: 115px;
+	height: 115px;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	cursor: pointer;
+	background: var(--color-light-gray);
+	flex-shrink: 0;
+}
+
+.htoeau-gallery__thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.htoeau-gallery__thumb.is-active {
+	outline: 2px solid var(--color-brand-teal);
+	outline-offset: 0;
+}
+
+.htoeau-gallery__arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 68px;
+	height: 68px;
+	border-radius: 34px;
+	border: none;
+	background: var(--color-light-gray);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	padding: 0;
+}
+
+.htoeau-gallery__arrow--prev {
+	left: -34px;
+	transform: translateY(-50%) scaleX(-1);
+}
+
+.htoeau-gallery__arrow--next {
+	right: -34px;
+}
+
+.htoeau-gallery__arrow img {
+	display: block;
+}
+
+/* Testimonial */
+.htoeau-testimonial {
+	background: var(--color-brand-tint);
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 100%;
+}
+
+.htoeau-testimonial__quote {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.3;
+	letter-spacing: -0.14px;
+}
+
+.htoeau-testimonial__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 8px 12px;
+}
+
+.htoeau-testimonial__stars {
+	display: block;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+.htoeau-testimonial__byline {
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.4;
+	color: var(--color-primary-dark);
+}
+
+.htoeau-testimonial__name {
+	font-weight: 400;
+}
+
+.htoeau-testimonial__role {
+	font-weight: 600;
+	font-size: 10px;
+}
+
+/* Info panel */
+.htoeau-info-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.htoeau-currency-switcher {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 10px;
+	margin-bottom: 4px;
+}
+
+.htoeau-currency-switcher__label {
+	font-size: 13px;
+	color: var(--color-primary-dark);
+	opacity: 0.85;
+}
+
+.htoeau-currency-switcher__opt {
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: var(--color-brand-teal);
+	text-decoration: none;
+	padding: 4px 10px;
+	border-radius: var(--radius-md);
+	border: 1px solid transparent;
+}
+
+.htoeau-currency-switcher__opt:hover {
+	border-color: rgba(0, 143, 163, 0.35);
+}
+
+.htoeau-currency-switcher__opt.is-active {
+	background: var(--color-brand-tint);
+	border-color: var(--color-brand-cyan);
+	color: var(--color-primary-dark);
+	cursor: default;
+	pointer-events: none;
+}
+
+.htoeau-currency-switcher__note {
+	width: 100%;
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.35;
+	color: var(--color-primary-dark);
+	opacity: 0.7;
+}
+
+.htoeau-rating-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.htoeau-rating-row__stars {
+	display: block;
+	width: 73px;
+	height: 12px;
+	flex-shrink: 0;
+}
+
+.htoeau-rating-row__text {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.2;
+	letter-spacing: -0.28px;
+}
+
+.htoeau-rating-row__score {
+	font-weight: 700;
+}
+
+.htoeau-rating-row__paren {
+	opacity: 0.6;
+}
+
+.htoeau-rating-row__link {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.htoeau-product-title {
+	margin: 0;
+	font-size: 42px;
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.84px;
+	color: var(--color-primary-dark);
+}
+
+.htoeau-from-per-can {
+	margin: 0;
+	font-size: 18px;
+	line-height: 1.3;
+	letter-spacing: -0.18px;
+}
+
+.htoeau-from-per-can strong {
+	font-weight: 700;
+}
+
+.htoeau-short-desc {
+	font-size: 16px;
+	line-height: 1.4;
+}
+
+.htoeau-short-desc p {
+	margin: 0;
+}
+
+/* Quantity cards */
+.htoeau-qty-cards {
+	display: flex;
+	gap: 9px;
+	width: 100%;
+	position: relative;
+	padding-top: 40px;
+	padding-bottom: 32px;
+}
+
+.htoeau-qty-card {
+	position: relative;
+	flex: 1 1 0%;
+	min-width: 0;
+	height: 132px;
+	padding: 0;
+	border: 3px solid transparent;
+	border-radius: 0;
+	background: linear-gradient(var(--color-white), var(--color-white)) padding-box,
+		linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05)) border-box;
+	background-color: transparent;
+	cursor: pointer;
+	text-align: center;
+	font-family: inherit;
+	color: var(--color-primary-dark);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow: visible;
+}
+
+.htoeau-qty-card.is-selected {
+	background: var(--brand-gradient);
+	border-color: var(--color-brand-cyan);
+	color: var(--color-white);
+}
+
+.htoeau-qty-card.is-selected .htoeau-qty-card__was,
+.htoeau-qty-card.is-selected .htoeau-qty-card__now,
+.htoeau-qty-card.is-selected .htoeau-qty-card__per,
+.htoeau-qty-card.is-selected .htoeau-qty-card__label {
+	color: var(--color-white);
+}
+
+/* Storefront: global button:hover { color: #fff } makes pack-option text vanish on tinted cards. */
+.htoeau-pdp .htoeau-qty-card:not(.is-selected):hover,
+.htoeau-pdp .htoeau-qty-card:not(.is-selected):focus-visible {
+	color: var(--color-primary-dark);
+}
+
+.htoeau-pdp .htoeau-qty-card.is-selected:hover,
+.htoeau-pdp .htoeau-qty-card.is-selected:focus-visible {
+	color: var(--color-white);
+}
+
+.htoeau-qty-card__badge {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.24px;
+	color: var(--color-white);
+	white-space: nowrap;
+	z-index: 2;
+}
+
+.htoeau-qty-card__badge--label {
+	top: 9px;
+	background: var(--color-brand-cyan);
+}
+
+.htoeau-qty-card__badge--save {
+	top: calc(100% - 10px);
+	bottom: auto;
+	background: var(--color-sale-red);
+}
+
+/* Cans protrude 40px above the card — negative margin pulls them out. */
+.htoeau-qty-card__cans-visual {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+	height: 80px;
+	margin-top: -46px;
+	margin-bottom: 10px;
+	position: relative;
+	z-index: 1;
+}
+
+.htoeau-qty-card__can {
+	flex: 0 0 30px;
+	width: 30px;
+	height: 80px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+}
+
+.htoeau-qty-card__can + .htoeau-qty-card__can {
+	margin-left: -16px;
+}
+
+.htoeau-qty-card__can img {
+	display: block;
+	width: 30px;
+	height: 80px;
+	object-fit: contain;
+}
+
+.htoeau-qty-card__label {
+	font-size: 20px;
+	font-weight: 400;
+	line-height: 1.3;
+	letter-spacing: -0.4px;
+	margin-bottom: 2px;
+}
+
+.htoeau-qty-card__prices {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	gap: 6px;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.3;
+	letter-spacing: -0.14px;
+	margin-bottom: 2px;
+}
+
+.htoeau-qty-card__was {
+	text-decoration: line-through;
+	opacity: 0.5;
+}
+
+.htoeau-qty-card__now {
+	font-weight: 400;
+}
+
+.htoeau-qty-card__per {
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.3;
+	letter-spacing: -0.12px;
+	opacity: 0.75;
+}
+
+.htoeau-qty-card.is-selected .htoeau-qty-card__per {
+	opacity: 1;
+}
+
+/* Subscribe */
+.htoeau-subscribe {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 100%;
+}
+
+.htoeau-subscribe__option {
+	position: relative;
+	border: 3px solid transparent;
+	text-align: left;
+}
+
+/* Subscribe panel — always gradient bg + cyan border + white text (per Figma). */
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'] {
+	background: var(--brand-gradient);
+	border-color: var(--color-brand-cyan);
+	color: var(--color-white);
+}
+
+/* Collapse dropdown + bullets only when subscribe is NOT the active choice. */
+.htoeau-subscribe__option[data-subscribe-panel='subscribe']:not(.is-active) .htoeau-subscribe__dropdown-wrap,
+.htoeau-subscribe__option[data-subscribe-panel='subscribe']:not(.is-active) .htoeau-subscribe__bullets {
+	display: none;
+}
+
+/* One-time panel — always light teal tint bg + dark text (per Figma). */
+.htoeau-subscribe__option[data-subscribe-panel='once'] {
+	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05));
+	color: var(--color-primary-dark);
+}
+
+.htoeau-subscribe__option--simple {
+	min-height: 64px;
+	display: flex;
+	align-items: center;
+}
+
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'].is-active {
+	padding-bottom: 20px;
+	min-height: 205px;
+}
+
+.htoeau-subscribe__option[data-subscribe-panel='subscribe']:not(.is-active) {
+	padding-bottom: 0;
+}
+
+.htoeau-subscribe__label {
+	display: block;
+	padding: 20px 24px 12px 48px;
+	cursor: pointer;
+	margin: 0;
+}
+
+.htoeau-subscribe__label--simple {
+	padding: 20px 24px 20px 48px;
+	width: 100%;
+}
+
+.htoeau-subscribe__radio {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.htoeau-subscribe__row {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+/* Custom radio ring (replaces tiny 16px SVGs — reads clearly as “pick one option”). */
+.htoeau-subscribe__radio-visual {
+	position: absolute;
+	left: 24px;
+	top: 25px;
+	width: 16px;
+	height: 16px;
+	pointer-events: none;
+}
+
+.htoeau-subscribe__radio-visual::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	border: 1.5px solid var(--color-brand-dark-cyan);
+	box-sizing: border-box;
+	background: transparent;
+}
+
+.htoeau-subscribe__option input:checked + .htoeau-subscribe__radio-visual::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
+/* Subscribe panel: white ring always, white dot when checked. */
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__radio-visual::before {
+	border-color: var(--color-white);
+}
+
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'] input:checked + .htoeau-subscribe__radio-visual::after {
+	background: var(--color-white);
+}
+
+/* One-time panel: teal ring always, teal dot when checked. */
+.htoeau-subscribe__option[data-subscribe-panel='once'] input:checked + .htoeau-subscribe__radio-visual::after {
+	background: var(--color-brand-dark-cyan);
+}
+
+.htoeau-subscribe__label:focus-within .htoeau-subscribe__radio-visual::before {
+	box-shadow: 0 0 0 2px var(--color-brand-cyan);
+}
+
+.htoeau-subscribe__title {
+	font-size: 20px;
+	line-height: 1.3;
+	letter-spacing: -0.4px;
+}
+
+.htoeau-subscribe__price-wrap {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+.htoeau-subscribe__badge-save {
+	background: var(--color-sale-red);
+	color: var(--color-white);
+	padding: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: -0.24px;
+	line-height: 1.2;
+}
+
+.htoeau-subscribe__prices {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	font-size: 14px;
+	line-height: 1.3;
+	letter-spacing: -0.14px;
+}
+
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__prices {
+	color: var(--color-white);
+}
+
+.htoeau-subscribe__was {
+	text-decoration: line-through;
+	opacity: 0.5;
+}
+
+.htoeau-subscribe__dropdown-wrap {
+	padding: 0 24px;
+}
+
+.htoeau-subscribe__dropdown {
+	position: relative;
+	background: var(--color-white);
+	border-radius: var(--radius-md);
+	padding: 16px 40px 16px 16px;
+	margin-top: 8px;
+}
+
+.htoeau-subscribe__dropdown select {
+	width: 100%;
+	border: none;
+	background: transparent;
+	font-family: var(--font-primary);
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: -0.32px;
+	color: var(--color-primary-dark);
+	appearance: none;
+	cursor: pointer;
+}
+
+.htoeau-subscribe__chev {
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	transform: translateY(-50%) rotate(180deg);
+	pointer-events: none;
+}
+
+.htoeau-subscribe__bullets {
+	list-style: none;
+	margin: 12px 0 0;
+	padding: 0 24px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.htoeau-subscribe__bullets li {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__bullets li {
+	color: var(--color-white);
+}
+
+.htoeau-subscribe__once-price {
+	font-size: 14px;
+	letter-spacing: -0.14px;
+	margin-left: auto;
+}
+
+/*
+ * Variable product: one flex item in .htoeau-pdp__info-col — variations <form> + CTA (same wrapper).
+ * Avoids double 32px column gap when the form shell and CTA were separate siblings.
+ */
+.htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--simple) {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	align-items: stretch;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--simple) form.variations_form {
+	margin: 0;
+	flex: 0 0 auto;
+	min-height: 0;
+}
+
+/* Storefront: .single-product div.product form.cart { margin-bottom: 1.618em; padding: 1em 0 } */
+.single-product div.product .htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--simple) form.variations_form.cart {
+	margin-bottom: 0;
+	padding: 0;
+}
+
+.htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--simple) .single_variation_wrap {
+	margin: 0;
+	padding: 0;
+	min-height: 0;
+}
+
+.single-product div.product .htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--simple) .variations_button {
+	padding-top: 0;
+	margin: 0;
+}
+
+/* CTA is last in the wrapper — no extra top margin from theme forms */
+.htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--simple) > .htoeau-pdp__cta-wrap {
+	margin-top: 0;
+}
+
+/* WC form hidden — native selects are screen-reader-only; native variation price is hidden. */
+.htoeau-pdp__wc-form .htoeau-variations-form__native {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.htoeau-variations-button-placeholder {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}
+
+/* Hide native WC variation price display (custom panels show prices instead). */
+.htoeau-pdp__wc-form .woocommerce-variation-price,
+.htoeau-pdp__wc-form .woocommerce-variation-description,
+.htoeau-pdp__wc-form .woocommerce-variation-availability {
+	display: none !important;
+}
+
+/* CTA */
+.htoeau-pdp__cta-wrap {
+	width: 100%;
+}
+
+.htoeau-pdp__add-btn {
+	width: 100%;
+	height: 47px;
+	border: none;
+	border-radius: var(--radius-pill);
+	background: var(--brand-gradient);
+	color: var(--color-white) !important;
+	font-family: var(--font-primary);
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: -0.32px;
+	cursor: pointer;
+	padding: 13px 96px;
+	text-align: center;
+}
+
+.htoeau-pdp__add-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Features */
+.htoeau-features {
+	display: flex;
+	gap: 16px;
+	width: 100%;
+	align-items: flex-start;
+}
+
+.htoeau-features__col {
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.htoeau-features__icon {
+	width: 30px;
+	height: 30px;
+	object-fit: contain;
+}
+
+.htoeau-features__text {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.htoeau-features__title {
+	font-weight: 600;
+}
+
+/* Accordion */
+.htoeau-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 100%;
+}
+
+.htoeau-accordion__item {
+	background: var(--color-light-gray);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+}
+
+.htoeau-accordion__trigger {
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+	padding: 24px 20px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	text-align: left;
+	font-family: inherit;
+	color: var(--color-primary-dark);
+}
+
+.htoeau-pdp .htoeau-accordion__trigger:hover,
+.htoeau-pdp .htoeau-accordion__trigger:focus-visible {
+	color: var(--color-primary-dark);
+}
+
+/* Open first row: Figma Product Description uses 32px between copy block and chevron (closed rows stay 24px). */
+.htoeau-accordion__item.is-open .htoeau-accordion__trigger {
+	gap: 32px;
+}
+
+.htoeau-accordion__title {
+	font-size: 20px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: -0.4px;
+	color: var(--color-primary-dark);
+	flex: 1;
+}
+
+.htoeau-accordion__icon {
+	flex-shrink: 0;
+	position: relative;
+	width: 14px;
+	height: 24px;
+}
+
+.htoeau-accordion__icon img {
+	position: absolute;
+	inset: 0;
+	width: 14px;
+	height: 24px;
+	object-fit: contain;
+}
+
+.htoeau-accordion__item.is-open .htoeau-accordion__icon-open {
+	opacity: 1;
+}
+
+.htoeau-accordion__item.is-open .htoeau-accordion__icon-closed {
+	opacity: 0;
+}
+
+.htoeau-accordion__item:not(.is-open) .htoeau-accordion__icon-open {
+	opacity: 0;
+}
+
+.htoeau-accordion__item:not(.is-open) .htoeau-accordion__icon-closed {
+	opacity: 1;
+}
+
+.htoeau-accordion__panel {
+	padding: 0 20px 24px;
+}
+
+.htoeau-accordion__panel[hidden] {
+	display: none;
+}
+
+.htoeau-accordion__panel-inner {
+	font-size: 16px;
+	line-height: 1.2;
+	letter-spacing: -0.32px;
+	max-width: 464px;
+}
+
+.htoeau-accordion__panel-inner p {
+	margin: 0 0 0.75em;
+}
+
+/* Simple product add to cart */
+.htoeau-pdp__wc-form--simple .cart {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.htoeau-pdp__wc-form--simple .single_add_to_cart_button {
+	width: 100%;
+	height: 47px;
+	border-radius: var(--radius-pill);
+	background: var(--brand-gradient);
+	color: var(--color-white) !important;
+	border: none;
+	font-weight: 700;
+}
+
+/* Tablet / mobile */
+@media screen and (max-width: 1200px) {
+	.htoeau-pdp {
+		padding: 48px 24px 64px;
+	}
+
+	.htoeau-pdp__inner {
+		gap: 48px;
+	}
+
+	.htoeau-gallery__arrow--prev {
+		left: 8px;
+		transform: translateY(-50%) scaleX(-1);
+	}
+
+	.htoeau-gallery__arrow--next {
+		right: 8px;
+	}
+
+	.htoeau-pdp__gallery-col,
+	.htoeau-pdp__info-col {
+		width: 100%;
+		max-width: 608px;
+		margin: 0 auto;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.htoeau-product-title {
+		font-size: 32px;
+		letter-spacing: -0.64px;
+	}
+
+	.htoeau-qty-cards {
+		flex-direction: column;
+		align-items: stretch;
+		padding-top: 48px;
+		padding-bottom: 16px;
+	}
+
+	.htoeau-qty-card {
+		flex: none;
+		width: 100%;
+		height: auto;
+	}
+
+	.htoeau-qty-card__cans-visual {
+		margin-top: -36px;
+	}
+
+	.htoeau-features {
+		flex-direction: column;
+	}
+
+	.htoeau-gallery__thumbs {
+		overflow-x: auto;
+		justify-content: flex-start;
+		padding-bottom: 8px;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.htoeau-gallery__thumb {
+		flex-shrink: 0;
+	}
+}

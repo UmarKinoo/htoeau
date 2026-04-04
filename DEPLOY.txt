@@ -1,0 +1,25 @@
+Hello Elementor Child — deploy checklist
+========================================
+
+Requirements on the server
+---------------------------
+- WordPress + WooCommerce active
+- Parent theme: Hello Elementor (folder name must be hello-elementor)
+- ACF (Free or Pro) active — product / variation fields register from functions.php
+- Variable products need a can-count attribute (default slug filter: pa_can-count)
+
+Install
+-------
+1. Upload this entire folder to: wp-content/themes/hello-elementor-child/
+2. WP Admin → Appearance → Themes → Activate "Hello Elementor Child"
+3. Clear any host / plugin caches
+
+After deploy
+------------
+- Edit products: "HtoEAU Product" and per-variation "HtoEAU Variation" meta boxes
+- PDP: custom gallery, packs, subscribe vs one-time, accordions, sample kit + transformation sections
+
+Optional
+--------
+- If Elementor Theme Builder has a Single Product template, it can conflict with PHP overrides.
+  Prefer one approach: either this child theme templates OR Elementor single-product template.
