@@ -1066,3 +1066,24 @@ body.single-product [class*="elementor-kit"] .htoeau-gallery .htoeau-gallery__th
 	font-weight: 400 !important;
 	color: inherit !important;
 }
+
+/* Accordion row triggers are <button> — kit global buttons add e.g. #e9e6ed + 10px radius. */
+body.single-product .elementor-kit-6 .htoeau-accordion__trigger,
+body.single-product [class*="elementor-kit"] .htoeau-accordion__trigger,
+body.single-product .htoeau-pdp .htoeau-accordion__trigger {
+	background-color: transparent !important;
+	background-image: none !important;
+	color: var(--color-primary-dark) !important;
+	border-radius: 0 !important;
+	font-family: inherit !important;
+	font-weight: inherit !important;
+	box-shadow: none !important;
+	border: none !important;
+	min-width: 0 !important;
+}
+
+body.single-product .htoeau-pdp .htoeau-accordion__trigger:hover,
+body.single-product .htoeau-pdp .htoeau-accordion__trigger:focus-visible {
+	color: var(--color-primary-dark) !important;
+	background-color: transparent !important;
+}
