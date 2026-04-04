@@ -2,6 +2,11 @@
  * HtoEAU single product PDP — pixel-aligned to Figma desktop tokens.
  */
 
+/* Hide WooCommerce breadcrumb trail on PDP (often duplicated with Elementor/header). */
+body.single-product .woocommerce-breadcrumb {
+	display: none !important;
+}
+
 .htoeau-pdp {
 	padding: 72px 104px 96px;
 	background: var(--color-white);
@@ -59,7 +64,7 @@
 	max-width: 608px;
 	border-radius: var(--radius-lg);
 	overflow: hidden;
-	background: var(--color-light-gray);
+	background: transparent;
 }
 
 .htoeau-gallery__slide {
@@ -132,6 +137,29 @@
 	justify-content: center;
 	z-index: 2;
 	padding: 0;
+}
+
+/*
+ * Elementor Site Settings / kit global button styles (e.g. .elementor-kit-* button)
+ * override gallery controls — re-assert PDP design.
+ */
+body.single-product .htoeau-pdp .htoeau-gallery__arrow {
+	background-color: var(--color-light-gray) !important;
+	border-radius: 34px !important;
+	color: inherit !important;
+	font-family: var(--font-primary), system-ui, sans-serif !important;
+	font-weight: 400 !important;
+	min-width: 0;
+	box-shadow: none;
+}
+
+body.single-product .htoeau-pdp .htoeau-gallery__thumb {
+	background-color: var(--color-light-gray) !important;
+	border-radius: var(--radius-md) !important;
+	font-family: inherit !important;
+	font-weight: 400 !important;
+	color: inherit !important;
+	box-shadow: none;
 }
 
 .htoeau-gallery__arrow--prev {
