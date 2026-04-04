@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.2.1' );
+define( 'HTOEAU_CHILD_VERSION', '1.2.3' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -106,13 +106,6 @@ function htoeau_child_enqueue_assets() {
 	);
 
 	wp_enqueue_style(
-		'htoeau-pdp',
-		HTOEAU_CHILD_URI . '/assets/css/pdp.css',
-		array( 'htoeau-child-style' ),
-		HTOEAU_CHILD_VERSION
-	);
-
-	wp_enqueue_style(
 		'htoeau-transformation',
 		HTOEAU_CHILD_URI . '/assets/css/transformation.css',
 		array( 'htoeau-child-style' ),
@@ -159,7 +152,44 @@ function htoeau_child_enqueue_assets() {
 		);
 	}
 }
-add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_assets', 25 );
+add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_assets', 200 );
+
+/**
+ * PDP CSS after Elementor (kit / post / frontend) so gallery buttons beat global button styles.
+ */
+function htoeau_child_enqueue_pdp_css_after_elementor() {
+	$deps = array( 'htoeau-child-style' );
+	foreach ( array( 'elementor-frontend', 'elementor-gf-local-roboto', 'elementor-gf-local-robotoslab' ) as $h ) {
+		if ( wp_style_is( $h, 'registered' ) ) {
+			$deps[] = $h;
+		}
+	}
+	if ( is_product() ) {
+		$pid = get_queried_object_id();
+		if ( $pid && wp_style_is( 'elementor-post-' . $pid, 'registered' ) ) {
+			$deps[] = 'elementor-post-' . $pid;
+		}
+	}
+	wp_enqueue_style(
+		'htoeau-pdp',
+		HTOEAU_CHILD_URI . '/assets/css/pdp.css',
+		$deps,
+		HTOEAU_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_pdp_css_after_elementor', 999 );
+
+/**
+ * Remove WooCommerce core breadcrumb on single product (Elementor breadcrumb = CSS below).
+ */
+function htoeau_child_remove_wc_breadcrumb_on_product() {
+	if ( ! is_product() ) {
+		return;
+	}
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 10 );
+}
+add_action( 'wp', 'htoeau_child_remove_wc_breadcrumb_on_product', 5 );
 
 /**
  * WooCommerce support + nav menu.
