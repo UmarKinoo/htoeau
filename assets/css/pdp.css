@@ -1067,23 +1067,39 @@ body.single-product [class*="elementor-kit"] .htoeau-gallery .htoeau-gallery__th
 	color: inherit !important;
 }
 
-/* Accordion row triggers are <button> — kit global buttons add e.g. #e9e6ed + 10px radius. */
-body.single-product .elementor-kit-6 .htoeau-accordion__trigger,
-body.single-product [class*="elementor-kit"] .htoeau-accordion__trigger,
-body.single-product .htoeau-pdp .htoeau-accordion__trigger {
-	background-color: transparent !important;
-	background-image: none !important;
+/* Pack cards, CTA, accordions — Elementor global button styles override <button> defaults. */
+body.single-product .htoeau-pdp .htoeau-qty-card {
 	color: var(--color-primary-dark) !important;
+	background: linear-gradient(var(--color-white), var(--color-white)) padding-box,
+		linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05)) border-box !important;
+	background-color: transparent !important;
+	border: 3px solid transparent !important;
 	border-radius: 0 !important;
 	font-family: inherit !important;
-	font-weight: inherit !important;
+	font-weight: 400 !important;
 	box-shadow: none !important;
-	border: none !important;
-	min-width: 0 !important;
 }
 
-body.single-product .htoeau-pdp .htoeau-accordion__trigger:hover,
-body.single-product .htoeau-pdp .htoeau-accordion__trigger:focus-visible {
+body.single-product .htoeau-pdp .htoeau-qty-card.is-selected {
+	background: var(--brand-gradient) !important;
+	border-color: var(--color-brand-cyan) !important;
+	color: var(--color-white) !important;
+}
+
+body.single-product .htoeau-pdp .htoeau-pdp__add-btn {
+	border-radius: var(--radius-pill) !important;
+	background: var(--brand-gradient) !important;
+	color: var(--color-white) !important;
+	font-family: var(--font-primary), system-ui, sans-serif !important;
+	font-weight: 700 !important;
+	box-shadow: none !important;
+	border: none !important;
+}
+
+body.single-product .htoeau-pdp .htoeau-accordion__trigger {
+	background: transparent !important;
 	color: var(--color-primary-dark) !important;
-	background-color: transparent !important;
+	font-family: inherit !important;
+	box-shadow: none !important;
+	border: none !important;
 }
