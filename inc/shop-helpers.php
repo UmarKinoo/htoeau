@@ -111,3 +111,41 @@ function htoeau_child_shop_get_per_can_line_html( WC_Product $product ): string 
 
 	return '';
 }
+
+/**
+ * Product image HTML for shop/archive cards only (see `woocommerce/content-product.php`).
+ *
+ * Optional ACF on the product:
+ * - Field name: `shop_catalog_image`
+ * - Field type: Image
+ * - Return format: **Image ID** (or Image Array — `ID` key is used)
+ *
+ * When set and valid, that image is shown on archive/shop cards. Otherwise the usual
+ * product thumbnail (featured image) is used. Single product / gallery are unchanged.
+ *
+ * @param WC_Product $product Product.
+ * @return string HTML `<img>` from core helpers.
+ */
+function htoeau_child_shop_get_loop_product_thumbnail_html( WC_Product $product ): string {
+	$catalog_id = 0;
+	if ( function_exists( 'get_field' ) ) {
+		$field = get_field( 'shop_catalog_image', $product->get_id() );
+		if ( is_numeric( $field ) ) {
+			$catalog_id = (int) $field;
+		} elseif ( is_array( $field ) && ! empty( $field['ID'] ) ) {
+			$catalog_id = (int) $field['ID'];
+		}
+	}
+
+	$attrs = array(
+		'class' => 'htoeau-shop-card__img',
+		'alt'   => esc_attr( trim( wp_strip_all_tags( $product->get_name() ) ) ),
+	);
+	$size  = 'woocommerce_thumbnail';
+
+	if ( $catalog_id > 0 && wp_attachment_is_image( $catalog_id ) ) {
+		return wp_get_attachment_image( $catalog_id, $size, false, $attrs );
+	}
+
+	return woocommerce_get_product_thumbnail( $size, $attrs );
+}
