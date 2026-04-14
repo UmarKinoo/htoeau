@@ -9,12 +9,14 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-if ( ! $product->is_type( 'variable' ) ) {
+if ( ! function_exists( 'htoeau_child_product_is_variable_pdp' ) || ! htoeau_child_product_is_variable_pdp( $product ) ) {
 	return;
 }
 ?>
 <div class="htoeau-pdp__cta-wrap">
+	<?php if ( ! function_exists( 'htoeau_child_product_is_wcs_subscription' ) || ! htoeau_child_product_is_wcs_subscription( $product ) ) : ?>
 	<input type="hidden" name="htoeau_purchase_intent" value="subscribe" form="htoeau-variations-form" data-htoeau-purchase-intent />
+	<?php endif; ?>
 	<button
 		type="submit"
 		form="htoeau-variations-form"
@@ -22,6 +24,6 @@ if ( ! $product->is_type( 'variable' ) ) {
 		data-htoeau-add-btn
 		disabled
 	>
-		<span data-htoeau-add-btn-label><?php esc_html_e( 'Add to Cart', 'hello-elementor-child' ); ?></span>
+		<span data-htoeau-add-btn-label><?php esc_html_e( 'Add to Cart', 'htoeau-child' ); ?></span>
 	</button>
 </div>

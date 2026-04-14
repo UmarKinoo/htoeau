@@ -12,7 +12,7 @@ global $product;
 $img_base = htoeau_child_get_brand_images_base_url();
 
 $lowest_per_can = null;
-if ( $product->is_type( 'variable' ) ) {
+if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) ) {
 	foreach ( $product->get_available_variations() as $v ) {
 		$cans = htoeau_child_get_can_count_from_variation_attrs( $v['attributes'] );
 		if ( $cans < 1 || empty( $v['display_price'] ) ) {
@@ -35,7 +35,6 @@ if ( $review_count <= 0 ) {
 }
 ?>
 <div class="htoeau-info-panel">
-	<?php get_template_part( 'template-parts/currency', 'switcher' ); ?>
 	<div class="htoeau-rating-row">
 		<img class="htoeau-rating-row__stars" src="<?php echo esc_url( $img_base . 'stars-rating.svg' ); ?>" alt="" width="73" height="12" loading="lazy" />
 		<p class="htoeau-rating-row__text">
@@ -53,6 +52,8 @@ if ( $review_count <= 0 ) {
 			<?php esc_html_e( 'From', 'hello-elementor-child' ); ?>
 			<strong><?php echo wp_kses_post( htoeau_child_fx_wc_price( $lowest_per_can ) ); ?> <?php esc_html_e( 'per can', 'hello-elementor-child' ); ?></strong>
 		</p>
+	<?php elseif ( $product->is_type( 'simple' ) && '' !== (string) $product->get_price() ) : ?>
+		<p class="htoeau-simple-product-price woocommerce"><?php echo wp_kses_post( $product->get_price_html() ); ?></p>
 	<?php endif; ?>
 
 	<?php if ( $product->get_short_description() ) : ?>

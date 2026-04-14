@@ -20,8 +20,8 @@ if ( ! $base_url ) {
 	return;
 }
 ?>
-<div class="htoeau-currency-switcher" role="group" aria-label="<?php esc_attr_e( 'Display currency', 'hello-elementor-child' ); ?>">
-	<span class="htoeau-currency-switcher__label"><?php esc_html_e( 'Prices in', 'hello-elementor-child' ); ?></span>
+<div class="htoeau-currency-switcher" role="group" aria-label="<?php esc_attr_e( 'Display currency', 'htoeau-child' ); ?>">
+	<span class="htoeau-currency-switcher__label"><?php esc_html_e( 'Prices in', 'htoeau-child' ); ?></span>
 	<?php foreach ( $codes as $code ) : ?>
 		<?php
 		$url   = esc_url( add_query_arg( 'htoeau_ccy', $code, $base_url ) );
@@ -39,7 +39,7 @@ if ( ! $base_url ) {
 			echo esc_html(
 				sprintf(
 					/* translators: %s: WooCommerce store currency code */
-					__( 'Checkout is charged in %s.', 'hello-elementor-child' ),
+					__( 'Checkout is charged in %s.', 'htoeau-child' ),
 					$store
 				)
 			);

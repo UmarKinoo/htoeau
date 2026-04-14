@@ -17,11 +17,19 @@ if ( empty( $all_ids ) ) {
 	$all_ids = array( 0 );
 }
 
+/*
+ * Figma node 1:1840 uses a 5-thumb strip under the main 608×608 media frame.
+ * Keep parity by capping gallery items to 5 in this custom PDP gallery.
+ */
+if ( count( $all_ids ) > 5 ) {
+	$all_ids = array_slice( $all_ids, 0, 5 );
+}
+
 $img_base = htoeau_child_get_brand_images_base_url();
 ?>
 <div class="htoeau-gallery" data-htoeau-gallery>
 	<div class="htoeau-gallery__main-wrap">
-		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--prev" data-gallery-prev aria-label="<?php esc_attr_e( 'Previous image', 'hello-elementor-child' ); ?>">
+		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--prev" data-gallery-prev aria-label="<?php esc_attr_e( 'Previous image', 'htoeau-child' ); ?>">
 			<img src="<?php echo esc_url( $img_base . 'chevron-right.svg' ); ?>" alt="" width="24" height="24" loading="lazy" />
 		</button>
 		<div class="htoeau-gallery__main">
@@ -40,19 +48,19 @@ $img_base = htoeau_child_get_brand_images_base_url();
 				</div>
 			<?php endforeach; ?>
 		</div>
-		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--next" data-gallery-next aria-label="<?php esc_attr_e( 'Next image', 'hello-elementor-child' ); ?>">
+		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--next" data-gallery-next aria-label="<?php esc_attr_e( 'Next image', 'htoeau-child' ); ?>">
 			<img src="<?php echo esc_url( $img_base . 'chevron-right.svg' ); ?>" alt="" width="24" height="24" loading="lazy" />
 		</button>
 	</div>
 	<?php if ( count( $all_ids ) > 1 ) : ?>
-		<div class="htoeau-gallery__thumbs" role="tablist" aria-label="<?php esc_attr_e( 'Product images', 'hello-elementor-child' ); ?>">
+		<div class="htoeau-gallery__thumbs" role="tablist" aria-label="<?php esc_attr_e( 'Product images', 'htoeau-child' ); ?>">
 			<?php foreach ( $all_ids as $index => $aid ) : ?>
 				<?php
 				if ( $aid ) {
-					$thumb = wp_get_attachment_image_url( $aid, 'woocommerce_gallery_thumbnail' );
+					$thumb = wp_get_attachment_image_url( $aid, 'woocommerce_single' );
 					$talt  = get_post_meta( $aid, '_wp_attachment_image_alt', true );
 				} else {
-					$thumb = wc_placeholder_img_src( 'woocommerce_gallery_thumbnail' );
+					$thumb = wc_placeholder_img_src( 'woocommerce_single' );
 					$talt  = '';
 				}
 				?>

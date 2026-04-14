@@ -14,31 +14,31 @@ $footer_nav = apply_filters(
 	'htoeau_footer_nav_links',
 	array(
 		array(
-			'label' => __( 'Shop', 'hello-elementor-child' ),
+			'label' => __( 'Shop', 'htoeau-child' ),
 			'url'   => $shop_url,
 		),
 		array(
-			'label' => __( 'My Account', 'hello-elementor-child' ),
+			'label' => __( 'My Account', 'htoeau-child' ),
 			'url'   => $account_url,
 		),
 		array(
-			'label' => __( 'About', 'hello-elementor-child' ),
+			'label' => __( 'About', 'htoeau-child' ),
 			'url'   => home_url( '/about/' ),
 		),
 		array(
-			'label' => __( 'Science', 'hello-elementor-child' ),
+			'label' => __( 'Science', 'htoeau-child' ),
 			'url'   => home_url( '/science/' ),
 		),
 		array(
-			'label' => __( 'Interview', 'hello-elementor-child' ),
+			'label' => __( 'Interview', 'htoeau-child' ),
 			'url'   => home_url( '/interview/' ),
 		),
 		array(
-			'label' => __( 'Contact', 'hello-elementor-child' ),
+			'label' => __( 'Contact', 'htoeau-child' ),
 			'url'   => home_url( '/contact/' ),
 		),
 		array(
-			'label' => __( 'Become an Affiliate', 'hello-elementor-child' ),
+			'label' => __( 'Become an Affiliate', 'htoeau-child' ),
 			'url'   => home_url( '/become-an-affiliate/' ),
 		),
 	)
@@ -59,19 +59,19 @@ $legal_links = apply_filters(
 	'htoeau_footer_legal_links',
 	array(
 		array(
-			'label' => __( 'Refund Policy', 'hello-elementor-child' ),
+			'label' => __( 'Refund Policy', 'htoeau-child' ),
 			'url'   => $refund_url,
 		),
 		array(
-			'label' => __( 'Privacy Policy', 'hello-elementor-child' ),
+			'label' => __( 'Privacy Policy', 'htoeau-child' ),
 			'url'   => $privacy_url,
 		),
 		array(
-			'label' => __( 'Terms of Service', 'hello-elementor-child' ),
+			'label' => __( 'Terms of Service', 'htoeau-child' ),
 			'url'   => $terms_url,
 		),
 		array(
-			'label' => __( 'Accessibility', 'hello-elementor-child' ),
+			'label' => __( 'Accessibility', 'htoeau-child' ),
 			'url'   => home_url( '/accessibility/' ),
 		),
 	)
@@ -83,7 +83,7 @@ $form_action       = $newsletter_stub ? '#' : $newsletter_action;
 $copyright_text    = apply_filters(
 	'htoeau_footer_copyright_text',
 	/* translators: 1: year, 2: site name */
-	sprintf( __( '© %1$s %2$s. All rights reserved', 'hello-elementor-child' ), gmdate( 'Y' ), 'HtoEAU' )
+	sprintf( __( '© %1$s %2$s. All rights reserved', 'htoeau-child' ), gmdate( 'Y' ), 'HtoEAU' )
 );
 ?>
 <div class="htoeau-site-footer">
@@ -91,10 +91,10 @@ $copyright_text    = apply_filters(
 		<section class="htoeau-site-footer__newsletter" aria-labelledby="htoeau-footer-newsletter-heading">
 			<div class="htoeau-site-footer__newsletter-copy">
 				<h2 id="htoeau-footer-newsletter-heading" class="htoeau-site-footer__newsletter-title">
-					<?php esc_html_e( 'Stay Informed', 'hello-elementor-child' ); ?>
+					<?php esc_html_e( 'Stay Informed', 'htoeau-child' ); ?>
 				</h2>
 				<p class="htoeau-site-footer__newsletter-desc">
-					<?php esc_html_e( 'Performance insights, hydration research, and product updates from HtoEAU.', 'hello-elementor-child' ); ?>
+					<?php esc_html_e( 'Performance insights, hydration research, and product updates from HtoEAU.', 'htoeau-child' ); ?>
 				</p>
 			</div>
 			<form
@@ -107,17 +107,17 @@ $copyright_text    = apply_filters(
 					<?php wp_nonce_field( 'htoeau_footer_newsletter', 'htoeau_footer_newsletter_nonce' ); ?>
 				<?php endif; ?>
 				<div class="htoeau-site-footer__newsletter-cta">
-					<label class="screen-reader-text" for="htoeau-footer-email"><?php esc_html_e( 'Email address', 'hello-elementor-child' ); ?></label>
+					<label class="screen-reader-text" for="htoeau-footer-email"><?php esc_html_e( 'Email address', 'htoeau-child' ); ?></label>
 					<input
 						id="htoeau-footer-email"
 						class="htoeau-site-footer__email-input"
 						type="email"
 						name="htoeau_footer_email"
 						autocomplete="email"
-						placeholder="<?php echo esc_attr__( 'Enter email address', 'hello-elementor-child' ); ?>"
+						placeholder="<?php echo esc_attr__( 'Enter email address', 'htoeau-child' ); ?>"
 					/>
 					<button type="submit" class="htoeau-site-footer__signup-btn">
-						<?php esc_html_e( 'Sign up now', 'hello-elementor-child' ); ?>
+						<?php esc_html_e( 'Sign up now', 'htoeau-child' ); ?>
 					</button>
 				</div>
 			</form>
@@ -139,15 +139,15 @@ $copyright_text    = apply_filters(
 					</svg>
 				</a>
 				<address class="htoeau-site-footer__address">
-					<?php echo wp_kses_post( __( 'The Hydrogen Innovation Company B.V.,<br />Keizersgracht 62, 1015 CS Amsterdam,<br />The Netherlands', 'hello-elementor-child' ) ); ?>
+					<?php echo wp_kses_post( __( 'The Hydrogen Innovation Company B.V.,<br />Keizersgracht 62, 1015 CS Amsterdam,<br />The Netherlands', 'htoeau-child' ) ); ?>
 				</address>
 				<p class="htoeau-site-footer__contact-line">
 					<a href="mailto:hello@HtoEAU.com">hello@HtoEAU.com</a>
 				</p>
-				<p class="htoeau-site-footer__contact-line"><?php esc_html_e( 'KvK: 92794076', 'hello-elementor-child' ); ?></p>
-				<p class="htoeau-site-footer__contact-line"><?php esc_html_e( 'VAT: NL862936330B01', 'hello-elementor-child' ); ?></p>
+				<p class="htoeau-site-footer__contact-line"><?php esc_html_e( 'KvK: 92794076', 'htoeau-child' ); ?></p>
+				<p class="htoeau-site-footer__contact-line"><?php esc_html_e( 'VAT: NL862936330B01', 'htoeau-child' ); ?></p>
 			</div>
-			<nav class="htoeau-site-footer__nav" aria-label="<?php esc_attr_e( 'Footer', 'hello-elementor-child' ); ?>">
+			<nav class="htoeau-site-footer__nav" aria-label="<?php esc_attr_e( 'Footer', 'htoeau-child' ); ?>">
 				<ul class="htoeau-site-footer__nav-list">
 					<?php foreach ( $footer_nav as $item ) : ?>
 						<?php

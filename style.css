@@ -3,11 +3,11 @@ Theme Name: Hello Elementor Child
 Description: HtoEAU custom WooCommerce product page (PDP), ACF fields, subscribe flow — child of Hello Elementor.
 Author: HtoEAU
 Template: hello-elementor
-Version: 1.2.5
+Version: 1.3.7
 Text Domain: hello-elementor-child
 */
 
-/* Base tokens; PDP and transformation styles load via assets/css. */
+/* Base tokens; PDP styles load via assets/css. */
 :root {
 	--color-primary-dark: #002c41;
 	--color-brand-teal: #008fa3;
@@ -26,6 +26,14 @@ Text Domain: hello-elementor-child
 	--radius-pill: 1000px;
 	--font-primary: "Figtree", system-ui, -apple-system, sans-serif;
 	--font-secondary: "Roboto", system-ui, -apple-system, sans-serif;
+}
+
+/* Remove default purple focus ring from base theme controls. */
+a:focus,
+input:focus,
+textarea:focus,
+button:focus {
+	outline: none !important;
 }
 
 /* Hello Elementor: let product template use full content width */

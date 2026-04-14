@@ -14,9 +14,9 @@ $cta_url = apply_filters( 'htoeau_sample_kit_hero_cta_url', '#htoeau-pdp-purchas
 $features = apply_filters(
 	'htoeau_sample_kit_hero_features',
 	array(
-		__( 'Three cans in every Try-Out Box', 'hello-elementor-child' ),
-		__( 'Four sample kits to explore', 'hello-elementor-child' ),
-		__( 'Find the right fit for your routine', 'hello-elementor-child' ),
+		__( 'Three cans in every Try-Out Box', 'htoeau-child' ),
+		__( 'Four sample kits to explore', 'htoeau-child' ),
+		__( 'Find the right fit for your routine', 'htoeau-child' ),
 	)
 );
 ?>
@@ -24,18 +24,18 @@ $features = apply_filters(
 	<div class="htoeau-sample-hero__inner">
 		<div class="htoeau-sample-hero__content">
 			<h2 id="htoeau-sample-hero-heading" class="htoeau-sample-hero__title">
-				<?php esc_html_e( 'Hydrate Smarter', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Hydrate Smarter', 'htoeau-child' ); ?>
 			</h2>
 			<div class="htoeau-sample-hero__body">
 				<p>
-					<?php esc_html_e( 'Discover the HtoEAU® Try-Out Box and explore our advanced hydration systems. Choose from four sample kit options, including Hydrogen Water, Deuterium-Depleted Water, and Hydrogen-Infused Deuterium-Depleted Water.', 'hello-elementor-child' ); ?>
+					<?php esc_html_e( 'Discover the HtoEAU® Try-Out Box and explore our advanced hydration systems. Choose from four sample kit options, including Hydrogen Water, Deuterium-Depleted Water, and Hydrogen-Infused Deuterium-Depleted Water.', 'htoeau-child' ); ?>
 				</p>
 				<p>
-					<?php esc_html_e( 'Each box includes three cans — a simple way to experience HtoEAU® and find the right fit for your routine.', 'hello-elementor-child' ); ?>
+					<?php esc_html_e( 'Each box includes three cans — a simple way to experience HtoEAU® and find the right fit for your routine.', 'htoeau-child' ); ?>
 				</p>
 			</div>
 			<a class="htoeau-sample-hero__cta" href="<?php echo esc_url( $cta_url ); ?>">
-				<?php esc_html_e( 'Get your sample kit now', 'hello-elementor-child' ); ?>
+				<?php esc_html_e( 'Get your sample kit now', 'htoeau-child' ); ?>
 			</a>
 			<?php if ( ! empty( $features ) && is_array( $features ) ) : ?>
 				<ul class="htoeau-sample-hero__features">
@@ -62,7 +62,7 @@ $features = apply_filters(
 			<img
 				class="htoeau-sample-hero__product"
 				src="<?php echo esc_url( $img_base . 'sample-kit-hero-product.png' ); ?>"
-				alt="<?php echo esc_attr__( 'Open Try-Out Box with three HtoEAU cans and water splash', 'hello-elementor-child' ); ?>"
+				alt="<?php echo esc_attr__( 'Open Try-Out Box with three HtoEAU cans and water splash', 'htoeau-child' ); ?>"
 				width="485"
 				height="493"
 				loading="lazy"

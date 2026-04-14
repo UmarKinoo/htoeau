@@ -30,6 +30,58 @@ function htoeau_child_fx_is_enabled() {
 }
 
 /**
+ * Two-letter country code for the visitor (Cloudflare header or WooCommerce geolocation).
+ *
+ * @return string Empty string if unknown.
+ */
+function htoeau_child_fx_detect_country_code() {
+	if ( ! empty( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$c = strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( preg_match( '/^[A-Z]{2}$/', $c ) && 'XX' !== $c && 'T1' !== $c ) {
+			return $c;
+		}
+	}
+	if ( class_exists( 'WC_Geolocation' ) ) {
+		$geo = WC_Geolocation::geolocate_ip( '', true );
+		if ( ! empty( $geo['country'] ) ) {
+			return strtoupper( (string) $geo['country'] );
+		}
+	}
+	return '';
+}
+
+/**
+ * Pick GBP or USD for display from visitor country when the store supports FX.
+ *
+ * @return string
+ */
+function htoeau_child_fx_geo_guess_display_currency() {
+	$store   = get_woocommerce_currency();
+	$country = htoeau_child_fx_detect_country_code();
+	$usd     = apply_filters(
+		'htoeau_fx_usd_display_countries',
+		array( 'US', 'PR', 'GU', 'VI', 'AS', 'MP' )
+	);
+	$gbp     = apply_filters(
+		'htoeau_fx_gbp_display_countries',
+		array( 'GB', 'GG', 'JE', 'IM' )
+	);
+	if ( 'GBP' === $store ) {
+		if ( $country && in_array( $country, $usd, true ) ) {
+			return 'USD';
+		}
+		return 'GBP';
+	}
+	if ( 'USD' === $store ) {
+		if ( $country && in_array( $country, $gbp, true ) ) {
+			return 'GBP';
+		}
+		return 'USD';
+	}
+	return $store;
+}
+
+/**
  * USD per 1 GBP (Customizer / filter). Used both directions.
  */
 function htoeau_child_fx_usd_per_gbp() {
@@ -69,7 +121,7 @@ function htoeau_child_fx_get_pair_multiplier( $from, $to ) {
 }
 
 /**
- * Cookie / default: which currency to show prices in.
+ * Cookie override (e.g. ?htoeau_ccy=) or geo: which currency to show prices in.
  */
 function htoeau_child_fx_get_display_currency() {
 	if ( ! htoeau_child_fx_is_enabled() ) {
@@ -80,6 +132,10 @@ function htoeau_child_fx_get_display_currency() {
 	$cookie  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( $cookie && in_array( $cookie, $allowed, true ) ) {
 		return $cookie;
+	}
+	$guessed = htoeau_child_fx_geo_guess_display_currency();
+	if ( $guessed && in_array( $guessed, $allowed, true ) ) {
+		return $guessed;
 	}
 	return $store;
 }
@@ -219,7 +275,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ USD)', 'hello-elementor-child' ),
-			'description' => __( 'Shown prices convert for browsing only. WooCommerce checkout still uses your store currency.', 'hello-elementor-child' ),
+			'description' => __( 'Browsing prices follow visitor location (e.g. US → USD, UK → GBP when the store is GBP). Optional override: add ?htoeau_ccy=GBP or USD to set a cookie. Checkout still uses your store currency.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);

@@ -9,7 +9,11 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-if ( ! $product->is_type( 'variable' ) ) {
+if ( ! $product || ! function_exists( 'htoeau_child_product_is_variable_pdp' ) || ! htoeau_child_product_is_variable_pdp( $product ) ) {
+	return;
+}
+
+if ( function_exists( 'htoeau_child_product_is_wcs_subscription' ) && htoeau_child_product_is_wcs_subscription( $product ) ) {
 	return;
 }
 
@@ -27,9 +31,9 @@ if ( $raw_bullets ) {
 }
 if ( empty( $bullets ) ) {
 	$bullets = array(
-		__( 'Save 10% on every order', 'hello-elementor-child' ),
-		__( 'Pause or cancel anytime', 'hello-elementor-child' ),
-		__( 'Never run out of your routine', 'hello-elementor-child' ),
+		__( 'Save 10% on every order', 'htoeau-child' ),
+		__( 'Pause or cancel anytime', 'htoeau-child' ),
+		__( 'Never run out of your routine', 'htoeau-child' ),
 	);
 }
 
@@ -41,9 +45,9 @@ $discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 )
 			<input type="radio" name="htoeau_purchase_type" value="subscribe" class="htoeau-subscribe__radio" checked="checked" />
 			<span class="htoeau-subscribe__radio-visual" aria-hidden="true"></span>
 			<span class="htoeau-subscribe__row">
-				<span class="htoeau-subscribe__title"><?php esc_html_e( 'Subscribe & Save', 'hello-elementor-child' ); ?></span>
+				<span class="htoeau-subscribe__title"><?php esc_html_e( 'Subscribe & Save', 'htoeau-child' ); ?></span>
 				<span class="htoeau-subscribe__price-wrap" data-subscribe-price-wrap>
-					<span class="htoeau-subscribe__badge-save"><?php echo esc_html( sprintf( /* translators: %d: percent */ __( 'Save %d%%', 'hello-elementor-child' ), (int) $discount_pct ) ); ?></span>
+					<span class="htoeau-subscribe__badge-save"><?php echo esc_html( sprintf( /* translators: %d: percent */ __( 'Save %d%%', 'htoeau-child' ), (int) $discount_pct ) ); ?></span>
 					<span class="htoeau-subscribe__prices">
 						<span class="htoeau-subscribe__was" data-subscribe-strike></span>
 						<span class="htoeau-subscribe__now" data-subscribe-amount></span>
@@ -52,7 +56,7 @@ $discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 )
 			</span>
 		</label>
 		<div class="htoeau-subscribe__dropdown-wrap">
-			<label class="screen-reader-text" for="htoeau-delivery-interval"><?php esc_html_e( 'Delivery frequency', 'hello-elementor-child' ); ?></label>
+			<label class="screen-reader-text" for="htoeau-delivery-interval"><?php esc_html_e( 'Delivery frequency', 'htoeau-child' ); ?></label>
 			<div class="htoeau-subscribe__dropdown">
 				<select id="htoeau-delivery-interval" name="htoeau_delivery_interval" data-htoeau-delivery form="htoeau-variations-form">
 					<?php
@@ -85,7 +89,7 @@ $discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 )
 			<input type="radio" name="htoeau_purchase_type" value="once" class="htoeau-subscribe__radio" />
 			<span class="htoeau-subscribe__radio-visual" aria-hidden="true"></span>
 			<span class="htoeau-subscribe__row">
-				<span class="htoeau-subscribe__title"><?php esc_html_e( 'One-Time Purchase', 'hello-elementor-child' ); ?></span>
+				<span class="htoeau-subscribe__title"><?php esc_html_e( 'One-Time Purchase', 'htoeau-child' ); ?></span>
 				<span class="htoeau-subscribe__once-price" data-onetime-amount></span>
 			</span>
 		</label>

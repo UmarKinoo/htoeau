@@ -10,6 +10,17 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
+$use_custom_variable_ui = false;
+if ( $product && function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) ) {
+	$available_variations = $product->get_available_variations();
+	foreach ( $available_variations as $variation ) {
+		if ( ! empty( $variation['is_purchasable'] ) && ! empty( $variation['is_in_stock'] ) ) {
+			$use_custom_variable_ui = true;
+			break;
+		}
+	}
+}
+
 do_action( 'woocommerce_before_single_product' );
 
 if ( post_password_required() ) {
@@ -28,12 +39,22 @@ if ( post_password_required() ) {
 			<div class="htoeau-pdp__info-col">
 				<?php wc_get_template( 'single-product/product-info-panel.php' ); ?>
 
-				<?php if ( $product->is_type( 'variable' ) ) : ?>
+				<?php if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) && $use_custom_variable_ui ) : ?>
 					<?php wc_get_template( 'single-product/quantity-cards.php' ); ?>
 					<?php wc_get_template( 'single-product/subscribe-toggle.php' ); ?>
 					<div class="htoeau-pdp__wc-form" id="htoeau-pdp-purchase">
-						<?php woocommerce_variable_add_to_cart(); ?>
+						<?php
+						if ( function_exists( 'htoeau_child_template_variable_add_to_cart' ) ) {
+							htoeau_child_template_variable_add_to_cart();
+						} else {
+							woocommerce_variable_add_to_cart();
+						}
+						?>
 						<?php wc_get_template( 'single-product/add-to-cart-button.php' ); ?>
+					</div>
+				<?php elseif ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) ) : ?>
+					<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--native-variable" id="htoeau-pdp-purchase">
+						<?php woocommerce_template_single_add_to_cart(); ?>
 					</div>
 				<?php else : ?>
 					<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--simple" id="htoeau-pdp-purchase">
@@ -47,25 +68,13 @@ if ( post_password_required() ) {
 		</div>
 	</div>
 
-	<?php get_template_part( 'template-parts/sample-kit', 'hero' ); ?>
-
-	<?php get_template_part( 'template-parts/transformation', 'section' ); ?>
-
 	<?php
 	/**
-	 * Optional: PHP plugins / mu-plugins can hook here.
+	 * Elementor template slot (Customizer): extra PDP sections (e.g. former sample kit + transformation content).
+	 *
+	 * @see htoeau_child_output_pdp_elementor_template() in inc/elementor-pdp-template.php
 	 */
-	do_action( 'htoeau_after_product_transformation' );
-
-	$htoeau_el_after = false;
-	if ( function_exists( 'elementor_theme_do_location' ) ) {
-		$htoeau_el_after = elementor_theme_do_location( 'htoeau-pdp-after' );
-	}
-	if ( ! $htoeau_el_after && is_active_sidebar( 'htoeau-pdp-after' ) ) {
-		echo '<div class="htoeau-pdp__after-widgets">';
-		dynamic_sidebar( 'htoeau-pdp-after' );
-		echo '</div>';
-	}
+	do_action( 'htoeau_pdp_after_main_columns' );
 	?>
 
 </div>

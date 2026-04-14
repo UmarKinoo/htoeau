@@ -11,6 +11,8 @@ Setup:
 
 See DEPLOY.txt for hosting / Elementor Theme Builder notes.
 
+Currency (GBP/USD store): browsing prices are shown in USD or GBP from visitor location (US territories → USD when store is GBP; UK → GBP when store is USD). No on-page switcher; optional ?htoeau_ccy=GBP|USD sets a cookie for testing.
+
 Brand icons sync from assets/images/ to uploads/htoeau-brand-assets/ on first load; bump HTOEAU_BRAND_ASSETS_SYNC_VER in functions.php to force re-copy.
 
 Git (this folder is its own repo)

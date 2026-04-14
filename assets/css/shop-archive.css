@@ -1,0 +1,563 @@
+/**
+ * Shop / product archives — Figma 1:2706 (hero), 1:2729 (toolbar + grid: full width, px 104, gap 40), 1:2750 (card).
+ */
+
+/* --- Full-width layout (matches PDP) --- */
+body.htoeau-shop-archive #content,
+body.htoeau-shop-archive .site-main,
+body.post-type-archive-product #content,
+body.tax-product_cat #content,
+body.tax-product_tag #content {
+	max-width: 100%;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/* --- Hero 1:2706 — flex row: copy left, image flush right --- */
+.htoeau-shop-hero {
+	position: relative;
+	z-index: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: flex-start;
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	box-sizing: border-box;
+	overflow: visible;
+	color: var(--color-white, #fff);
+	background-color: #f5f5f5;
+	background-image: linear-gradient(217.83deg, #008fa3 15.13%, #016b9f 82.86%);
+}
+
+.htoeau-shop-hero__inner {
+	position: relative;
+	z-index: 2;
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: min(1440px, 100%);
+	margin: 0;
+	padding: 0 clamp(1.25rem, 7.25vw, 6.5rem);
+	padding-right: clamp(1rem, 4vw, 2rem);
+	box-sizing: border-box;
+}
+
+.htoeau-shop-hero__text {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	gap: 2.5rem;
+	max-width: 36.125rem;
+}
+
+.htoeau-shop-hero__title {
+	margin: 0;
+	max-width: 36.125rem; /* 580px */
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 300; /* Figtree Light */
+	font-size: clamp(1.875rem, 2.5vw + 1rem, 2.875rem); /* 46px at desktop */
+	line-height: 1; /* Figma leading-none */
+	letter-spacing: -0.0575em; /* -0.92px @ 46px */
+	color: inherit;
+}
+
+.htoeau-shop-hero__desc {
+	margin: 0;
+	max-width: 36.0625rem; /* 577px */
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 400;
+	font-size: 1rem; /* 16px */
+	line-height: 1.4;
+}
+
+/* Image column: pushed to the far right */
+.htoeau-shop-hero__visual {
+	position: relative;
+	z-index: 1;
+	flex: 0 1 min(56vw, 756px);
+	min-width: 0;
+	margin-left: auto;
+	margin-right: 0;
+	align-self: center;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	max-height: min(80vh, 560px);
+	pointer-events: none;
+}
+
+.htoeau-shop-hero__figure {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	width: 100%;
+	margin: 0;
+}
+
+.htoeau-shop-hero__img {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	max-height: min(80vh, 560px);
+	height: auto;
+	object-fit: contain;
+	object-position: right center;
+	filter: drop-shadow(0 28px 56px rgba(0, 0, 0, 0.22));
+}
+
+@media (max-width: 1024px) {
+	.htoeau-shop-hero {
+		flex-direction: column;
+		align-items: stretch;
+		min-height: 0;
+	}
+
+	.htoeau-shop-hero__inner {
+		max-width: none;
+		padding: 0 clamp(1.25rem, 7.25vw, 6.5rem);
+	}
+
+	.htoeau-shop-hero__visual {
+		flex: 1 1 auto;
+		max-width: 420px;
+		margin: 1.5rem auto 0;
+		justify-content: center;
+		max-height: none;
+	}
+
+	.htoeau-shop-hero__figure {
+		justify-content: center;
+	}
+
+	.htoeau-shop-hero__img {
+		width: 100%;
+		max-height: none;
+		object-position: center;
+	}
+}
+
+@media (max-width: 600px) {
+	.htoeau-shop-hero__text {
+		gap: 1.5rem;
+	}
+
+	.htoeau-shop-hero__title {
+		font-size: clamp(1.5rem, 6vw, 2rem);
+	}
+}
+
+/* --- Toolbar + grid: Figma 1:2729 — full-width white, px-[104px] pt-[40px] pb-[96px] gap-[40px], inner w-[1232px] --- */
+.htoeau-shop-archive-wrap {
+	background: #fff;
+}
+
+.htoeau-shop-archive-shell {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	box-sizing: border-box;
+	background: #fff;
+	/* Frame 1:2729: pt-40 px-104 pb-96; horizontal caps at 104px, scales down on narrow viewports */
+	padding: 40px clamp(1.25rem, 8vw, 104px) 96px;
+}
+
+/*
+ * Figma 1:2729: gap-[40px] between toolbar (1:2730) and grid (1:2748).
+ * Explicit margin-bottom on toolbar (do not also use flex gap here — would double).
+ */
+.htoeau-shop-archive-shell__inner {
+	width: 100%;
+	max-width: 1232px;
+	margin-left: auto;
+	margin-right: auto;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0;
+}
+
+.htoeau-shop-toolbar {
+	background: transparent;
+	padding: 0;
+	margin-bottom: 40px;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* Space after notices when present (WC wrapper) */
+.htoeau-shop-archive-shell__inner > .woocommerce-notices-wrapper:not(:empty) {
+	margin-bottom: 40px;
+}
+
+/* After grid: pagination (Elementor slot is outside shell — full width) */
+.htoeau-shop-archive-shell__inner > .woocommerce-pagination {
+	margin-top: 40px;
+}
+
+.htoeau-shop-toolbar__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+	max-width: none;
+	margin: 0;
+}
+
+.htoeau-shop-toolbar__filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+}
+
+.htoeau-shop-toolbar__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+}
+
+.htoeau-shop-toolbar__count {
+	margin: 0;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 500;
+	font-size: 1rem;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
+	color: rgba(17, 17, 17, 0.5);
+}
+
+.htoeau-shop-toolbar__sort-label {
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 500;
+	font-size: 1rem;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
+	color: #111;
+}
+
+.htoeau-shop-toolbar__field {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	border: 1px solid #008fa3;
+	border-radius: 1000px;
+	padding: 0 1.25rem;
+	min-height: 36px;
+	background: #fff;
+}
+
+.htoeau-shop-toolbar__select {
+	appearance: none;
+	-webkit-appearance: none;
+	margin: 0;
+	padding: 0.35rem 1.75rem 0.35rem 0;
+	border: 0;
+	background: transparent;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 500;
+	font-size: 1rem;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
+	color: #016b9f;
+	cursor: pointer;
+}
+
+.htoeau-shop-toolbar__select option {
+	color: #002c41;
+}
+
+.htoeau-shop-toolbar__chev-wrap {
+	position: absolute;
+	right: 0.85rem;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #016b9f;
+	pointer-events: none;
+	display: flex;
+}
+
+.htoeau-shop-toolbar__chev {
+	display: block;
+}
+
+.htoeau-shop-toolbar__all-filters {
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 500;
+	font-size: 1rem;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
+	color: #1d1d1d;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.htoeau-shop-toolbar__all-filters:hover,
+.htoeau-shop-toolbar__all-filters:focus {
+	color: #016b9f;
+}
+
+/* --- Product grid (Figma 1:2729: gap 20px) --- */
+.woocommerce ul.products.htoeau-shop-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 20px;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background: transparent;
+	width: 100%;
+}
+
+.woocommerce ul.products.htoeau-shop-grid::before,
+.woocommerce ul.products.htoeau-shop-grid::after {
+	display: none;
+}
+
+/*
+ * WooCommerce layout.css sets li.product to ~30.75% width for float grids.
+ * That % is relative to the full ul — in CSS Grid each li still gets that width,
+ * so items stay narrow inside wide cells (huge gutters). Must override.
+ * Note: body.htoeau-shop-archive .woocommerce ul… fails when .woocommerce is only on body
+ * (descendant selector requires an inner .woocommerce wrapper).
+ */
+body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
+	width: 100% !important;
+	max-width: none !important;
+	min-width: 0;
+	margin: 0 !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	float: none !important;
+	clear: none !important;
+	overflow: visible;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+.htoeau-shop-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	height: 100%;
+	min-height: 0;
+	padding: 0 0.625rem 2.5rem;
+	background: #f8f8f8;
+	border-radius: 10px;
+	box-sizing: border-box;
+	overflow: visible;
+}
+
+.htoeau-shop-card__media-link {
+	display: block;
+	width: 100%;
+	text-decoration: none;
+}
+
+.htoeau-shop-card__thumb {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 361px;
+	margin: 0 auto;
+	aspect-ratio: 1;
+	padding: 1.25rem;
+	border-radius: 16px;
+	overflow: hidden;
+	box-sizing: border-box;
+	/* Same as card — no white “plate” (overrides WC/theme img wrappers) */
+	background-color: #f8f8f8 !important;
+}
+
+body.htoeau-shop-archive .htoeau-shop-card__thumb img,
+body.htoeau-shop-archive .htoeau-shop-card__media-link img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	display: block;
+	background: transparent !important;
+	background-color: transparent !important;
+}
+
+.htoeau-shop-card__body {
+	width: 100%;
+	max-width: 346px;
+	margin-top: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	align-items: flex-start;
+	flex-shrink: 0;
+}
+
+.htoeau-shop-card__rating {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.htoeau-shop-card__star {
+	flex-shrink: 0;
+}
+
+.htoeau-shop-card__rating-text {
+	margin: 0;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-size: 0.875rem;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: #002c41;
+}
+
+.htoeau-shop-card__rating-score {
+	font-weight: 700;
+}
+
+.htoeau-shop-card__rating-count {
+	font-weight: 400;
+}
+
+.htoeau-shop-card__title {
+	margin: 0;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-size: 1.5rem;
+	line-height: 1.3;
+	letter-spacing: -0.02em;
+	font-weight: 400;
+	color: #002c41;
+}
+
+.htoeau-shop-card__title a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.htoeau-shop-card__title a:hover,
+.htoeau-shop-card__title a:focus {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.htoeau-shop-card__excerpt {
+	margin: 0;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-size: 0.875rem;
+	line-height: 1.3;
+	letter-spacing: -0.01em;
+	color: #002c41;
+}
+
+.htoeau-shop-card__price-line {
+	margin: 0;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-size: 1rem;
+	line-height: 1.3;
+	letter-spacing: -0.01em;
+	color: #002c41;
+}
+
+.htoeau-shop-card__from {
+	font-weight: 400;
+}
+
+.htoeau-shop-card__per {
+	font-weight: 700;
+}
+
+.htoeau-shop-card__cta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 345px;
+	min-height: 47px;
+	padding: 0.75rem 2rem;
+	border-radius: 1000px;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-weight: 700;
+	font-size: 1rem;
+	line-height: 1.4;
+	letter-spacing: -0.02em;
+	color: #fff !important;
+	text-decoration: none;
+	background: linear-gradient(90deg, #008fa3 0%, #016b9f 100%);
+	box-sizing: border-box;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.htoeau-shop-card__cta:hover,
+.htoeau-shop-card__cta:focus {
+	opacity: 0.94;
+	transform: translateY(-1px);
+}
+
+/* Pagination — do not zero margin-top (shell__inner sets mt for gap after grid) */
+.htoeau-shop-archive .woocommerce-pagination {
+	max-width: none;
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 0;
+	padding: 0;
+}
+
+/* No duplicate WC archive title (toolbar starts below hero) */
+body.htoeau-shop-archive .woocommerce-products-header {
+	display: none;
+}
+
+/* Elementor saved template — full viewport width (breaks out of 1232px shell like hero) */
+.htoeau-shop-elementor-slot-wrap {
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	position: relative;
+	box-sizing: border-box;
+	clear: both;
+}
+
+.htoeau-shop-elementor-slot {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+	.woocommerce ul.products.htoeau-shop-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 600px) {
+	.htoeau-shop-archive-shell {
+		padding-top: 1.5rem;
+		padding-bottom: 3rem;
+	}
+
+	.htoeau-shop-toolbar {
+		margin-bottom: 24px;
+	}
+
+	.woocommerce ul.products.htoeau-shop-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.htoeau-shop-toolbar__meta {
+		width: 100%;
+		justify-content: space-between;
+	}
+}

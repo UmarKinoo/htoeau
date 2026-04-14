@@ -1,5 +1,5 @@
 /**
- * HtoEAU PDP — variation cards, subscribe toggle, CTA label, accordion, gallery, transformation.
+ * HtoEAU PDP — variation cards, subscribe toggle, CTA label, accordion, gallery.
  */
 (function ($) {
 	'use strict';
@@ -60,7 +60,8 @@
 		var $form = $('form.variations_form');
 		var sym = (window.htoeauPdp && htoeauPdp.currencySymbol) || '£';
 		var dec = pdpData && typeof pdpData.decimals === 'number' ? pdpData.decimals : 2;
-		var subscribeMode = true;
+		var legacySubscribeUi = !pdpData || pdpData.legacySubscribeUi !== false;
+		var subscribeMode = legacySubscribeUi;
 
 		/* ---------- Gallery ---------- */
 		var $gal = $('[data-htoeau-gallery]');
@@ -104,22 +105,15 @@
 			}
 		});
 
-		/* ---------- Transformation ---------- */
-		var $tf = $('[data-htoeau-transform]');
-		if ($tf.length) {
-			$tf.on('click', '[data-transform-panel]', function () {
-				var $p = $(this);
-				$tf.find('[data-transform-panel]').removeClass('is-active').attr('aria-expanded', 'false');
-				$p.addClass('is-active').attr('aria-expanded', 'true');
-			});
-		}
-
 		if (!$form.length || !pdpData) {
 			return;
 		}
 
 		var $cards = $('[data-htoeau-qty-card]');
 		var $intent = $('[data-htoeau-purchase-intent]');
+		if (!legacySubscribeUi && $intent.length) {
+			$intent.remove();
+		}
 		var $btn = $('[data-htoeau-add-btn]');
 		var $btnLabel = $('[data-htoeau-add-btn-label]');
 		var $subStrike = $('[data-subscribe-strike]');
@@ -142,7 +136,7 @@
 			if (!v) {
 				return;
 			}
-			var amt = subscribeMode ? parseFloat(v.subscribe) : parseFloat(v.oneTime);
+			var amt = legacySubscribeUi && subscribeMode ? parseFloat(v.subscribe) : parseFloat(v.oneTime);
 			var label = (window.htoeauPdp && htoeauPdp.i18n && htoeauPdp.i18n.addToCart) || 'Add to Cart';
 			$btnLabel.text(label + ' – ' + formatMoney(amt, sym, dec));
 			$btn.prop('disabled', false);

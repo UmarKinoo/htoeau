@@ -9,11 +9,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.2.5' );
+define( 'HTOEAU_CHILD_VERSION', '1.3.7' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
 require_once HTOEAU_CHILD_DIR . '/inc/currency-fx.php';
+require_once HTOEAU_CHILD_DIR . '/inc/wc-subscriptions-bridge.php';
+require_once HTOEAU_CHILD_DIR . '/inc/elementor-pdp-template.php';
+require_once HTOEAU_CHILD_DIR . '/inc/shop-helpers.php';
+require_once HTOEAU_CHILD_DIR . '/inc/elementor-shop-template.php';
+require_once HTOEAU_CHILD_DIR . '/inc/shop-hero-customizer.php';
 
 /**
  * Bump this string to re-copy `/assets/images/*` into `wp-content/uploads/htoeau-brand-assets/`.
@@ -105,20 +110,7 @@ function htoeau_child_enqueue_assets() {
 		HTOEAU_CHILD_VERSION
 	);
 
-	wp_enqueue_style(
-		'htoeau-transformation',
-		HTOEAU_CHILD_URI . '/assets/css/transformation.css',
-		array( 'htoeau-child-style' ),
-		HTOEAU_CHILD_VERSION
-	);
-
 	if ( is_product() ) {
-		wp_enqueue_style(
-			'htoeau-sample-kit-hero',
-			HTOEAU_CHILD_URI . '/assets/css/sample-kit-hero.css',
-			array( 'htoeau-child-style' ),
-			HTOEAU_CHILD_VERSION
-		);
 		$pdp_deps = array( 'jquery' );
 		if ( wp_script_is( 'wc-add-to-cart-variation', 'registered' ) ) {
 			$pdp_deps[] = 'wc-add-to-cart-variation';
@@ -200,46 +192,143 @@ function htoeau_child_woocommerce_setup() {
 add_action( 'after_setup_theme', 'htoeau_child_woocommerce_setup' );
 
 /**
- * Widget area: editors can add blocks/widgets below sample kit + transformation on single product.
- *
- * WP Admin: Appearance → Widgets — look for “Product page — below content”.
+ * Shop / category archives: layout, filters, no sidebar, custom toolbar (see archive-product.php).
  */
-function htoeau_child_register_sidebars() {
-	register_sidebar(
-		array(
-			'name'          => __( 'Product page — below content', 'hello-elementor-child' ),
-			'id'            => 'htoeau-pdp-after',
-			'description'   => __( 'Shown below the PDP sections (after Sample kit + Transformation). Add blocks or legacy widgets here.', 'hello-elementor-child' ),
-			'before_widget' => '<section id="%1$s" class="widget htoeau-pdp-after-widget %2$s">',
-			'after_widget'  => '</section>',
-			'before_title'  => '<h2 class="widget-title htoeau-pdp-after-widget__title">',
-			'after_title'   => '</h2>',
-		)
-	);
+function htoeau_child_shop_archive_setup() {
+	if ( ! function_exists( 'is_shop' ) ) {
+		return;
+	}
+	if ( ! is_shop() && ! is_product_taxonomy() ) {
+		return;
+	}
+	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_output_all_notices', 10 );
+	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
+	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+	remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+	remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 10 );
 }
-add_action( 'widgets_init', 'htoeau_child_register_sidebars' );
+add_action( 'wp', 'htoeau_child_shop_archive_setup', 15 );
 
 /**
- * Elementor Pro: optional Theme Builder location (same visual slot as the widget area).
- * Theme Builder → Add New → Section → choose “HtoEAU — Below product content” if available.
+ * Hide WooCommerce archive page title (custom hero + toolbar; no duplicate H1).
+ *
+ * @param bool $show Whether to show the title.
+ * @return bool
  */
-function htoeau_child_register_elementor_pdp_after_location( $elementor_theme_manager ) {
-	if ( ! defined( 'ELEMENTOR_PRO_VERSION' ) ) {
+function htoeau_child_shop_hide_page_title( $show ) {
+	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+		return false;
+	}
+	return $show;
+}
+add_filter( 'woocommerce_show_page_title', 'htoeau_child_shop_hide_page_title' );
+
+/**
+ * Price sort (toolbar) overrides general sort when set.
+ *
+ * @param array $args Ordering args.
+ * @return array
+ */
+function htoeau_child_shop_catalog_ordering_args( $args ) {
+	if ( ! function_exists( 'is_shop' ) || ( ! is_shop() && ! is_product_taxonomy() ) ) {
+		return $args;
+	}
+	if ( isset( $_GET['htoeau_price_order'] ) && $_GET['htoeau_price_order'] !== '' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$p = sanitize_text_field( wp_unslash( $_GET['htoeau_price_order'] ) );
+		if ( in_array( $p, array( 'price', 'price-desc' ), true ) && function_exists( 'WC' ) && WC()->query ) {
+			return WC()->query->get_catalog_ordering_args( $p );
+		}
+	}
+	return $args;
+}
+add_filter( 'woocommerce_get_catalog_ordering_args', 'htoeau_child_shop_catalog_ordering_args', 20 );
+
+/**
+ * Category / stock filters on the main shop query only.
+ *
+ * @param WP_Query $q Query.
+ */
+function htoeau_child_shop_product_query( $q ) {
+	if ( ! $q->is_main_query() ) {
 		return;
 	}
-	if ( ! is_object( $elementor_theme_manager ) || ! method_exists( $elementor_theme_manager, 'register_location' ) ) {
+	if ( is_shop() && isset( $_GET['htoeau_shop_cat'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$slug = sanitize_title( wp_unslash( $_GET['htoeau_shop_cat'] ) );
+		if ( $slug ) {
+			$tax_query = $q->get( 'tax_query' );
+			if ( ! is_array( $tax_query ) ) {
+				$tax_query = array();
+			}
+			$tax_query[] = array(
+				'taxonomy' => 'product_cat',
+				'field'    => 'slug',
+				'terms'    => $slug,
+			);
+			$q->set( 'tax_query', $tax_query );
+		}
+	}
+
+	if ( isset( $_GET['htoeau_stock'] ) && 'instock' === $_GET['htoeau_stock'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$meta_query = $q->get( 'meta_query' );
+		if ( ! is_array( $meta_query ) ) {
+			$meta_query = array();
+		}
+		$meta_query[] = array(
+			'key'     => '_stock_status',
+			'value'   => 'instock',
+			'compare' => '=',
+		);
+		$q->set( 'meta_query', $meta_query );
+	}
+}
+add_action( 'woocommerce_product_query', 'htoeau_child_shop_product_query', 5 );
+
+/**
+ * Three-column product grid on archives.
+ *
+ * @return int
+ */
+function htoeau_child_loop_shop_columns() {
+	return 3;
+}
+add_filter( 'loop_shop_columns', 'htoeau_child_loop_shop_columns', 20 );
+
+/**
+ * Body class for shop archive CSS.
+ *
+ * @param string[] $classes Classes.
+ * @return string[]
+ */
+function htoeau_child_shop_body_class( $classes ) {
+	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+		$classes[] = 'htoeau-shop-archive';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'htoeau_child_shop_body_class' );
+
+/**
+ * Shop archive CSS after Elementor so theme rules win.
+ */
+function htoeau_child_enqueue_shop_archive_css_after_elementor() {
+	if ( ! function_exists( 'is_shop' ) || ( ! is_shop() && ! is_product_taxonomy() ) ) {
 		return;
 	}
-	$elementor_theme_manager->register_location(
-		'htoeau-pdp-after',
-		array(
-			'label'           => __( 'HtoEAU — Below product content', 'hello-elementor-child' ),
-			'multiple'        => true,
-			'edit_in_content' => false,
-		)
+	$deps = array( 'htoeau-child-style' );
+	foreach ( array( 'elementor-frontend', 'elementor-gf-local-roboto', 'elementor-gf-local-robotoslab' ) as $h ) {
+		if ( wp_style_is( $h, 'registered' ) ) {
+			$deps[] = $h;
+		}
+	}
+	wp_enqueue_style(
+		'htoeau-shop-archive',
+		HTOEAU_CHILD_URI . '/assets/css/shop-archive.css',
+		$deps,
+		HTOEAU_CHILD_VERSION
 	);
 }
-add_action( 'elementor/theme/register_locations', 'htoeau_child_register_elementor_pdp_after_location' );
+add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_shop_archive_css_after_elementor', 999 );
 
 /**
  * Remove default single product layout hooks (custom templates replace them).
@@ -482,6 +571,56 @@ function htoeau_child_register_acf_fields() {
 add_action( 'acf/init', 'htoeau_child_register_acf_fields' );
 
 /**
+ * Variation badge (ACF-backed): WooCommerce’s variation editor does not render ACF meta boxes.
+ * Mirror the same data on the Product → Variations row so it is visible without opening the variation post.
+ *
+ * @param int     $loop           Variation index in the form.
+ * @param array   $variation_data Row data.
+ * @param WP_Post $variation      Variation post.
+ */
+function htoeau_child_render_variation_badge_wc_field( $loop, $variation_data, $variation ) {
+	$variation_id = isset( $variation->ID ) ? (int) $variation->ID : 0;
+	if ( ! $variation_id ) {
+		return;
+	}
+	$value = function_exists( 'get_field' )
+		? (string) get_field( 'variation_badge', $variation_id )
+		: (string) get_post_meta( $variation_id, 'variation_badge', true );
+
+	woocommerce_wp_text_input(
+		array(
+			'id'            => 'htoeau_variation_badge_' . (int) $loop,
+			'name'          => 'htoeau_variation_badge[' . (int) $loop . ']',
+			'value'         => $value,
+			'label'         => __( 'Variation badge', 'hello-elementor-child' ),
+			'description'   => __( 'Shown on the PDP quantity card (e.g. Most Popular, Best Value).', 'hello-elementor-child' ),
+			'desc_tip'      => true,
+			'wrapper_class' => 'form-row form-row-full',
+		)
+	);
+}
+add_action( 'woocommerce_product_after_variable_attributes', 'htoeau_child_render_variation_badge_wc_field', 10, 3 );
+
+/**
+ * Persist variation badge from the WooCommerce variation form (same meta as ACF field `variation_badge`).
+ *
+ * @param int $variation_id Variation post ID.
+ * @param int $i            Loop index.
+ */
+function htoeau_child_save_variation_badge_wc_field( $variation_id, $i ) {
+	if ( ! isset( $_POST['htoeau_variation_badge'][ $i ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return;
+	}
+	$val = sanitize_text_field( wp_unslash( $_POST['htoeau_variation_badge'][ $i ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( function_exists( 'update_field' ) ) {
+		update_field( 'variation_badge', $val, $variation_id );
+	} else {
+		update_post_meta( $variation_id, 'variation_badge', $val );
+	}
+}
+add_action( 'woocommerce_save_product_variation', 'htoeau_child_save_variation_badge_wc_field', 10, 2 );
+
+/**
  * Helper: canonical can-count attribute slug (filterable).
  */
 function htoeau_child_can_count_attribute() {
@@ -523,6 +662,10 @@ function htoeau_child_delivery_interval_label( $slug ) {
  * @return array
  */
 function htoeau_child_add_pdp_cart_item_data( $cart_item_data, $product_id, $variation_id, $quantity ) {
+	$parent = wc_get_product( $product_id );
+	if ( $parent && function_exists( 'htoeau_child_product_is_wcs_subscription' ) && htoeau_child_product_is_wcs_subscription( $parent ) ) {
+		return $cart_item_data;
+	}
 	if ( ! isset( $_POST['htoeau_purchase_intent'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WC validated add-to-cart.
 		return $cart_item_data;
 	}
@@ -553,6 +696,9 @@ add_filter( 'woocommerce_add_cart_item_data', 'htoeau_child_add_pdp_cart_item_da
  * @return array
  */
 function htoeau_child_get_item_data( $item_data, $cart_item ) {
+	if ( ! empty( $cart_item['data'] ) && function_exists( 'htoeau_child_product_is_wcs_subscription' ) && htoeau_child_product_is_wcs_subscription( $cart_item['data'] ) ) {
+		return $item_data;
+	}
 	if ( empty( $cart_item['htoeau_purchase_intent'] ) ) {
 		return $item_data;
 	}
@@ -588,6 +734,9 @@ add_filter( 'woocommerce_get_item_data', 'htoeau_child_get_item_data', 10, 2 );
  * @param WC_Order              $order         Order.
  */
 function htoeau_child_checkout_order_line_item_meta( $item, $cart_item_key, $values, $order ) {
+	if ( ! empty( $values['data'] ) && function_exists( 'htoeau_child_product_is_wcs_subscription' ) && htoeau_child_product_is_wcs_subscription( $values['data'] ) ) {
+		return;
+	}
 	if ( empty( $values['htoeau_purchase_intent'] ) ) {
 		return;
 	}
@@ -621,6 +770,9 @@ function htoeau_child_apply_subscribe_cart_prices( $cart ) {
 	$discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 );
 
 	foreach ( $cart->get_cart() as $cart_item ) {
+		if ( ! empty( $cart_item['data'] ) && function_exists( 'htoeau_child_wcs_is_active' ) && htoeau_child_wcs_is_active() && class_exists( 'WC_Subscriptions_Product' ) && WC_Subscriptions_Product::is_subscription( $cart_item['data'] ) ) {
+			continue;
+		}
 		if ( empty( $cart_item['htoeau_purchase_intent'] ) || 'subscribe' !== $cart_item['htoeau_purchase_intent'] ) {
 			continue;
 		}

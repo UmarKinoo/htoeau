@@ -34,19 +34,19 @@ if ( empty( $steps ) ) {
 	$steps = array(
 		array(
 			'num'   => '1',
-			'title' => __( 'Drink HtoEAU', 'hello-elementor-child' ),
-			'desc'  => __( 'Begin with clean, precision-engineered hydration developed using advanced purification and infusion technologies.', 'hello-elementor-child' ),
+			'title' => __( 'Drink HtoEAU', 'htoeau-child' ),
+			'desc'  => __( 'Begin with clean, precision-engineered hydration developed using advanced purification and infusion technologies.', 'htoeau-child' ),
 			'image' => $img_base . 'transform-bg-1.png',
 		),
 		array(
 			'num'   => '2',
-			'title' => __( 'Rapid Hydration', 'hello-elementor-child' ),
+			'title' => __( 'Rapid Hydration', 'htoeau-child' ),
 			'desc'  => '',
 			'image' => $img_base . 'transform-bg-2.jpg',
 		),
 		array(
 			'num'   => '3',
-			'title' => __( 'Stay Ready for Your Day', 'hello-elementor-child' ),
+			'title' => __( 'Stay Ready for Your Day', 'htoeau-child' ),
 			'desc'  => '',
 			'image' => $img_base . 'transform-bg-3.jpg',
 		),
@@ -56,8 +56,8 @@ if ( empty( $steps ) ) {
 <section class="htoeau-transform" aria-labelledby="htoeau-transform-heading" data-htoeau-transform>
 	<div class="htoeau-transform__inner">
 		<header class="htoeau-transform__header">
-			<h2 id="htoeau-transform-heading" class="htoeau-transform__title"><?php esc_html_e( 'From Molecular Hydrogen to Next-Level Hydration', 'hello-elementor-child' ); ?></h2>
-			<p class="htoeau-transform__subtitle"><?php esc_html_e( 'What happens when advanced infusion technology meets pure hydration?', 'hello-elementor-child' ); ?></p>
+			<h2 id="htoeau-transform-heading" class="htoeau-transform__title"><?php esc_html_e( 'From Molecular Hydrogen to Next-Level Hydration', 'htoeau-child' ); ?></h2>
+			<p class="htoeau-transform__subtitle"><?php esc_html_e( 'What happens when advanced infusion technology meets pure hydration?', 'htoeau-child' ); ?></p>
 		</header>
 		<div class="htoeau-transform__panels" data-transform-panels>
 			<?php foreach ( $steps as $i => $step ) : ?>

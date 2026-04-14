@@ -13,16 +13,16 @@ $pid      = $product->get_id();
 $img_base = htoeau_child_get_brand_images_base_url();
 $defaults = array(
 	array(
-		'title' => __( 'Cellular Hydration: ', 'hello-elementor-child' ),
-		'desc'  => __( "Supports the body\xE2\x80\x99s natural hydration processes and fluid balance.", 'hello-elementor-child' ),
+		'title' => __( 'Cellular Hydration: ', 'htoeau-child' ),
+		'desc'  => __( "Supports the body\xE2\x80\x99s natural hydration processes and fluid balance.", 'htoeau-child' ),
 	),
 	array(
-		'title' => __( 'Precision Hydrogen Infusion: ', 'hello-elementor-child' ),
-		'desc'  => __( 'Infused to a minimum level of 5 mg/L dissolved hydrogen at the point of filling.', 'hello-elementor-child' ),
+		'title' => __( 'Precision Hydrogen Infusion: ', 'htoeau-child' ),
+		'desc'  => __( 'Infused to a minimum level of 5 mg/L dissolved hydrogen at the point of filling.', 'htoeau-child' ),
 	),
 	array(
-		'title' => __( 'Cognitive Clarity: ', 'hello-elementor-child' ),
-		'desc'  => __( 'Proper hydration supports normal focus, alertness, and mental performance.', 'hello-elementor-child' ),
+		'title' => __( 'Cognitive Clarity: ', 'htoeau-child' ),
+		'desc'  => __( 'Proper hydration supports normal focus, alertness, and mental performance.', 'htoeau-child' ),
 	),
 );
 
