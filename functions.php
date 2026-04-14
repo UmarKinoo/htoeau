@@ -441,6 +441,21 @@ function htoeau_child_register_acf_fields() {
 					'rows'        => 2,
 				),
 
+				/* ── Tab: Shop / catalog ── */
+				array(
+					'key'   => 'field_htoeau_tab_shop_catalog',
+					'label' => __( 'Shop / catalog', 'hello-elementor-child' ),
+					'type'  => 'tab',
+				),
+				array(
+					'key'           => 'field_htoeau_shop_catalog_image',
+					'label'         => __( 'Shop card image', 'hello-elementor-child' ),
+					'name'          => 'shop_catalog_image',
+					'type'          => 'image',
+					'return_format' => 'id',
+					'instructions'  => __( 'Optional. Used on shop and archive product cards only. The product image / gallery still controls the PDP.', 'hello-elementor-child' ),
+				),
+
 				/* ── Tab: Subscribe Bullets ── */
 				array(
 					'key'   => 'field_htoeau_tab_subscribe',

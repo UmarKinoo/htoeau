@@ -27,7 +27,7 @@ $link = $product->get_permalink();
 		<a class="htoeau-shop-card__media-link" href="<?php echo esc_url( $link ); ?>" tabindex="-1" aria-hidden="true">
 			<div class="htoeau-shop-card__thumb">
 				<?php
-				// Optional ACF `shop_catalog_image` on product; else default catalog thumbnail.
+				// ACF `shop_catalog_image` (HtoEAU Product → Shop / catalog); else default thumbnail.
 				echo htoeau_child_shop_get_loop_product_thumbnail_html( $product ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				?>
 			</div>

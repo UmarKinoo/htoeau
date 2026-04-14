@@ -115,10 +115,9 @@ function htoeau_child_shop_get_per_can_line_html( WC_Product $product ): string 
 /**
  * Product image HTML for shop/archive cards only (see `woocommerce/content-product.php`).
  *
- * Optional ACF on the product:
- * - Field name: `shop_catalog_image`
- * - Field type: Image
- * - Return format: **Image ID** (or Image Array — `ID` key is used)
+ * Field `shop_catalog_image` is registered with the PDP fields in
+ * `htoeau_child_register_acf_fields()` (local field group `group_htoeau_product`, tab
+ * “Shop / catalog”). Return format: Image ID (array with `ID` is also accepted).
  *
  * When set and valid, that image is shown on archive/shop cards. Otherwise the usual
  * product thumbnail (featured image) is used. Single product / gallery are unchanged.
