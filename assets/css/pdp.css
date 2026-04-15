@@ -686,6 +686,12 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	flex-wrap: wrap;
 }
 
+/* Keep "Subscribe & Save" + save badge + amount on one line. */
+.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__row {
+	align-items: center;
+	flex-wrap: nowrap;
+}
+
 /* Custom radio ring (replaces tiny 16px SVGs — reads clearly as “pick one option”). */
 .htoeau-subscribe__radio-visual {
 	position: absolute;
@@ -745,7 +751,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	justify-content: flex-end;
 }
 
@@ -787,6 +793,9 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	border-radius: var(--radius-md);
 	padding: 16px 40px 16px 16px;
 	margin-top: 8px;
+	height: 36px;
+	display: flex;
+	align-items: center;
 }
 
 .htoeau-subscribe__dropdown select {
@@ -800,6 +809,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	color: var(--color-primary-dark);
 	appearance: none;
 	cursor: pointer;
+	line-height: 1;
 }
 
 .htoeau-subscribe__chev {
@@ -1323,13 +1333,18 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 		line-height: 1.2;
 	}
 
+	.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__row {
+		gap: 8px;
+	}
+
 	.htoeau-subscribe__dropdown-wrap {
 		padding: 0 16px;
 	}
 
 	.htoeau-subscribe__dropdown {
 		border-radius: 6px;
-		padding: 12px 36px 12px 16px;
+		height: 36px;
+		padding: 0 36px 0 16px;
 		margin-top: 0;
 	}
 
