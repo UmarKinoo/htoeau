@@ -32,39 +32,39 @@ if ( post_password_required() ) {
 
 	<div class="htoeau-pdp">
 		<div class="htoeau-pdp__inner">
-			<div class="htoeau-pdp__gallery-col">
-				<?php wc_get_template( 'single-product/product-image-gallery.php' ); ?>
-				<?php wc_get_template( 'single-product/testimonial.php' ); ?>
-			</div>
-			<div class="htoeau-pdp__info-col">
-				<?php wc_get_template( 'single-product/product-info-panel.php' ); ?>
+		<div class="htoeau-pdp__gallery-col">
+			<?php wc_get_template( 'single-product/product-image-gallery.php' ); ?>
+		</div>
+		<div class="htoeau-pdp__info-col">
+			<?php wc_get_template( 'single-product/product-info-panel.php' ); ?>
 
-				<?php if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) && $use_custom_variable_ui ) : ?>
-					<?php wc_get_template( 'single-product/quantity-cards.php' ); ?>
-					<?php wc_get_template( 'single-product/subscribe-toggle.php' ); ?>
-					<div class="htoeau-pdp__wc-form" id="htoeau-pdp-purchase">
-						<?php
-						if ( function_exists( 'htoeau_child_template_variable_add_to_cart' ) ) {
-							htoeau_child_template_variable_add_to_cart();
-						} else {
-							woocommerce_variable_add_to_cart();
-						}
-						?>
-						<?php wc_get_template( 'single-product/add-to-cart-button.php' ); ?>
-					</div>
-				<?php elseif ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) ) : ?>
-					<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--native-variable" id="htoeau-pdp-purchase">
-						<?php woocommerce_template_single_add_to_cart(); ?>
-					</div>
-				<?php else : ?>
-					<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--simple" id="htoeau-pdp-purchase">
-						<?php woocommerce_template_single_add_to_cart(); ?>
-					</div>
-				<?php endif; ?>
+			<?php if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) && $use_custom_variable_ui ) : ?>
+				<?php wc_get_template( 'single-product/quantity-cards.php' ); ?>
+				<?php wc_get_template( 'single-product/subscribe-toggle.php' ); ?>
+				<div class="htoeau-pdp__wc-form" id="htoeau-pdp-purchase">
+					<?php
+					if ( function_exists( 'htoeau_child_template_variable_add_to_cart' ) ) {
+						htoeau_child_template_variable_add_to_cart();
+					} else {
+						woocommerce_variable_add_to_cart();
+					}
+					?>
+					<?php wc_get_template( 'single-product/add-to-cart-button.php' ); ?>
+				</div>
+			<?php elseif ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) ) : ?>
+				<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--native-variable" id="htoeau-pdp-purchase">
+					<?php woocommerce_template_single_add_to_cart(); ?>
+				</div>
+			<?php else : ?>
+				<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--simple" id="htoeau-pdp-purchase">
+					<?php woocommerce_template_single_add_to_cart(); ?>
+				</div>
+			<?php endif; ?>
 
-				<?php wc_get_template( 'single-product/feature-icons.php' ); ?>
-				<?php wc_get_template( 'single-product/accordion-tabs.php' ); ?>
-			</div>
+			<?php wc_get_template( 'single-product/feature-icons.php' ); ?>
+			<?php wc_get_template( 'single-product/testimonial.php' ); ?>
+			<?php wc_get_template( 'single-product/accordion-tabs.php' ); ?>
+		</div>
 		</div>
 	</div>
 

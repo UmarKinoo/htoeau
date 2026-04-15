@@ -1,5 +1,7 @@
 /**
- * HtoEAU single product PDP — pixel-aligned to Figma desktop tokens.
+ * HtoEAU single product PDP — pixel-aligned to Figma desktop + mobile.
+ *
+ * Mobile frame: Figma node 1:1245 (Product Page Mobile, 390px) — file ghyTkZS0JtoxOqEAsXuy7r
  */
 
 /* Hide WooCommerce breadcrumb trail on PDP (often duplicated with Elementor/header). */
@@ -45,12 +47,19 @@ body.single-product .woocommerce-breadcrumb {
 	width: 504px;
 	max-width: 100%;
 	flex-shrink: 0;
+	min-width: 0;
 	display: flex;
 	flex-direction: column;
 	gap: 32px;
 }
 
 /* Gallery */
+.htoeau-gallery {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
 .htoeau-gallery__main-wrap {
 	position: relative;
 	width: 100%;
@@ -370,6 +379,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	display: flex;
 	gap: 9px;
 	width: 100%;
+	min-width: 0;
 	position: relative;
 	padding-top: 40px;
 	padding-bottom: 18px;
@@ -1055,6 +1065,10 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	margin: 0 0 0.75em;
 }
 
+.htoeau-accordion__panel-inner h2 {
+	display: none;
+}
+
 /* Simple product add to cart */
 .htoeau-pdp__wc-form--simple .cart.htoeau-simple-cart,
 .htoeau-pdp__wc-form--simple .cart {
@@ -1149,14 +1163,28 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	font-weight: 700;
 }
 
-/* Tablet / mobile */
+/*
+ * Tablet / mobile — Figma inset is 20px from the *screen* edge (350px content on 390px wide).
+ * Elementor (and similar) often adds column padding around the product; without this, that padding
+ * stacks with .htoeau-pdp padding and the row of three variation cards overflows / clips.
+ */
 @media screen and (max-width: 1200px) {
-	.htoeau-pdp {
-		padding: 48px 24px 64px;
+	body.single-product div.product > .htoeau-pdp {
+		position: relative;
+		left: 50%;
+		width: 100vw;
+		max-width: 100vw;
+		box-sizing: border-box;
+		transform: translateX(-50%);
+		padding: 48px 20px 64px;
+		padding-left: max(20px, env(safe-area-inset-left, 0px));
+		padding-right: max(20px, env(safe-area-inset-right, 0px));
 	}
 
 	.htoeau-pdp__inner {
 		gap: 48px;
+		width: 100%;
+		max-width: none;
 	}
 
 	.htoeau-gallery__arrow--prev {
@@ -1172,35 +1200,268 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	.htoeau-pdp__info-col {
 		width: 100%;
 		max-width: 608px;
+		min-width: 0;
 		margin: 0 auto;
 	}
 }
 
-@media screen and (max-width: 600px) {
-	.htoeau-product-title {
-		font-size: 32px;
-		letter-spacing: -0.64px;
+/*
+ * Narrow phones — Figma 1:1245 (Product Page Mobile, 390px).
+ * Sections above .htoeau-pdp (promo bar, header, trust strip) = Elementor / plugin, not this file.
+ */
+@media screen and (max-width: 430px) {
+	body.single-product div.product > .htoeau-pdp {
+		padding: 24px 20px 40px;
+		padding-left: max(20px, env(safe-area-inset-left, 0px));
+		padding-right: max(20px, env(safe-area-inset-right, 0px));
 	}
 
+	.htoeau-pdp__inner {
+		gap: 32px;
+	}
+
+	/* Figma 1:1283 stack: 20px between rating / title / price / desc blocks */
+	.htoeau-info-panel {
+		gap: 20px;
+	}
+
+	/* Figma 1:1274: 20px horizontal inset to content; 20px between info stack and qty/subscribe/CTA */
+	.htoeau-pdp__info-col {
+		gap: 20px;
+	}
+
+	.htoeau-gallery__arrow {
+		display: none;
+	}
+
+	.htoeau-gallery__slide {
+		padding: 0;
+	}
+
+	.htoeau-gallery__slide img {
+		max-width: 100%;
+		max-height: 100%;
+		width: 100%;
+		height: 100%;
+	}
+
+	.htoeau-gallery__thumbs {
+		gap: 8px;
+		justify-content: flex-start;
+	}
+
+	/* Thumbs ~63.6px on 350px row — equal flex, 6px radius, 2px active border #008fa3 */
+	.htoeau-gallery__thumb {
+		flex: 1 1 0;
+		min-width: 0;
+		width: auto;
+		height: auto;
+		aspect-ratio: 1 / 1;
+		border-radius: 6px;
+	}
+
+	.htoeau-from-per-can,
+	.htoeau-simple-product-price {
+		font-size: 16px;
+		letter-spacing: -0.32px;
+	}
+
+	.htoeau-short-desc {
+		font-size: 14px;
+		line-height: 1.4;
+	}
+
+	/* Figma 1:1302 / 1:1311 / 1:1327: pack title 18px / -0.36px; body copy 12px / 10px unit */
+	.htoeau-qty-card__label {
+		font-size: 18px;
+		letter-spacing: -0.36px;
+	}
+
+	.htoeau-qty-card__prices {
+		font-size: 12px;
+		letter-spacing: -0.12px;
+	}
+
+	.htoeau-qty-card__unit {
+		font-size: 10px;
+		letter-spacing: -0.1px;
+	}
+
+	.htoeau-qty-card__badge {
+		padding: 6px;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: -0.2px;
+		line-height: 1.2;
+	}
+
+	/* Figma 1:1346: Subscribe title 16px / -0.32px; radio x=16; dropdown 6px radius, 12px vertical padding */
+	.htoeau-subscribe__title {
+		font-size: 16px;
+		line-height: 1.3;
+		letter-spacing: -0.32px;
+	}
+
+	.htoeau-subscribe__label {
+		padding: 18px 16px 12px 40px;
+	}
+
+	.htoeau-subscribe__label--simple {
+		padding: 18px 16px 18px 40px;
+	}
+
+	.htoeau-subscribe__radio-visual {
+		left: 16px;
+		top: 19px;
+	}
+
+	.htoeau-subscribe__badge-save {
+		padding: 6px;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: -0.2px;
+		line-height: 1.2;
+	}
+
+	.htoeau-subscribe__dropdown-wrap {
+		padding: 0 16px;
+	}
+
+	.htoeau-subscribe__dropdown {
+		border-radius: 6px;
+		padding: 12px 36px 12px 16px;
+		margin-top: 0;
+	}
+
+	.htoeau-subscribe__dropdown select {
+		font-size: 14px;
+		letter-spacing: -0.28px;
+	}
+
+	.htoeau-subscribe__bullets {
+		margin-top: 10px;
+		padding: 0 16px 0;
+		gap: 10px;
+	}
+
+	.htoeau-subscribe__bullets li {
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.4;
+		gap: 5px;
+	}
+
+	.htoeau-subscribe__bullets li img {
+		width: 10px;
+		height: 8px;
+	}
+
+	.htoeau-subscribe__once-price {
+		font-size: 12px;
+		letter-spacing: -0.12px;
+	}
+
+	.htoeau-subscribe__prices {
+		font-size: 12px;
+		letter-spacing: -0.12px;
+		gap: 4px;
+	}
+
+	/* Figma 1:1397: testimonial — padding 20px, gap 12px, 12px quote */
+	.htoeau-testimonial {
+		padding: 20px;
+		gap: 12px;
+	}
+
+	.htoeau-testimonial__quote {
+		font-size: 12px;
+		letter-spacing: -0.12px;
+		line-height: 1.3;
+	}
+
+	.htoeau-testimonial__role {
+		font-size: 8px;
+	}
+
+	/* Figma 1:1412 / 1:1413: accordion title 18px, body 14px */
+	.htoeau-accordion__title {
+		font-size: 18px;
+		letter-spacing: -0.36px;
+	}
+
+	.htoeau-accordion__trigger {
+		padding: 20px;
+	}
+
+	.htoeau-accordion__panel {
+		padding: 0 20px 20px;
+	}
+
+	.htoeau-accordion__panel-inner {
+		font-size: 14px;
+		letter-spacing: -0.28px;
+		line-height: 1.2;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	/* Figma mobile: 36px / -0.72px / leading 1 (two-line title) */
+	.htoeau-product-title {
+		font-size: 36px;
+		letter-spacing: -0.72px;
+		line-height: 1;
+	}
+
+	/*
+	 * Figma 1:1245 keeps three pack cards in one row (~111px + 9px gap); do not stack.
+	 */
 	.htoeau-qty-cards {
-		flex-direction: column;
+		flex-direction: row;
+		flex-wrap: nowrap;
 		align-items: stretch;
-		padding-top: 48px;
-		padding-bottom: 16px;
+		gap: 9px;
+		padding-top: 40px;
+		padding-bottom: 18px;
 	}
 
 	.htoeau-qty-card {
-		flex: none;
-		width: 100%;
+		flex: 1 1 0;
+		min-width: 0;
+		width: auto;
 		height: auto;
 	}
 
 	.htoeau-qty-card__cans-visual {
 		margin-top: -40px;
+		transform: scale(0.6);
+		transform-origin: center bottom;
 	}
 
+	/*
+	 * Figma 1:1378–1:1391: one column of rows; each row icon 24px + 12px gap + text (14px / 1.4).
+	 */
 	.htoeau-features {
 		flex-direction: column;
+		gap: 16px;
+		align-items: stretch;
+	}
+
+	.htoeau-features__col {
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 12px;
+		max-width: 100%;
+	}
+
+	.htoeau-features__icon {
+		width: 24px;
+		height: 24px;
+		margin-top: 0;
+	}
+
+	.htoeau-features__text {
+		flex: 1 1 auto;
+		min-width: 0;
 	}
 
 	.htoeau-gallery__thumbs {
@@ -1210,8 +1471,11 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 		-webkit-overflow-scrolling: touch;
 	}
 
-	.htoeau-gallery__thumb {
-		flex-shrink: 0;
+	/* >430px: keep fixed thumb strip scroll; ≤430px uses equal flex thumbs from block above */
+	@media screen and (min-width: 431px) {
+		.htoeau-gallery__thumb {
+			flex-shrink: 0;
+		}
 	}
 
 	.htoeau-simple-cart__actions {
@@ -1271,8 +1535,18 @@ body.single-product [class*="elementor-kit"] .htoeau-gallery .htoeau-gallery__th
 	color: inherit !important;
 }
 
+/* Figma 1:1278 mobile thumbs: 6px radius — kit override uses 8px; win on small viewports */
+@media screen and (max-width: 430px) {
+	body.single-product .elementor-kit-6 .htoeau-gallery .htoeau-gallery__thumb,
+	body.single-product [class*="elementor-kit"] .htoeau-gallery .htoeau-gallery__thumb {
+		border-radius: 6px !important;
+	}
+}
+
 /* Pack cards, CTA, accordions — Elementor global button styles override <button> defaults. */
 body.single-product .htoeau-pdp .htoeau-qty-card {
+	min-width: 0 !important;
+	max-width: 100%;
 	color: var(--color-primary-dark) !important;
 	background: transparent !important;
 	background-color: transparent !important;
