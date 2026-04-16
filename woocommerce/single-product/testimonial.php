@@ -8,7 +8,7 @@
 defined( 'ABSPATH' ) || exit;
 
 $defaults = array(
-	'quote'       => __( '"I\'ve reached a level of physical fitness where I can ascertain if any supplement I take can give me an extra edge. HtoEau is something I drink before every workout now, and no matter how tired I may feel before training I can now push through with seemingly an extra gear and end up having a great session. If you\'re serious about fitness and recovery it\'s a must have pre-workout! I couldn\'t recommend it enough!"', 'htoeau-child' ),
+	'quote'       => __( '"I\'ve reached a level of physical fitness where I can ascertain if any supplement I take can give me an extra edge. HtoEAU is something I drink before every workout now, and no matter how tired I may feel before training I can now push through with seemingly an extra gear and end up having a great session. If you\'re serious about fitness and recovery it\'s a must have pre-workout! I couldn\'t recommend it enough!"', 'htoeau-child' ),
 	'name'        => __( 'Daniel Ventura, ', 'htoeau-child' ),
 	'credentials' => __( 'WBFF Pro Fitness Model, Actor, Advanced Personal Trainer', 'htoeau-child' ),
 );
