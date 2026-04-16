@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.4.5' );
+define( 'HTOEAU_CHILD_VERSION', '1.4.8' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -454,6 +454,21 @@ function htoeau_child_register_acf_fields() {
 					'type'          => 'image',
 					'return_format' => 'id',
 					'instructions'  => __( 'Optional. Used on shop and archive product cards only. The product image / gallery still controls the PDP.', 'hello-elementor-child' ),
+				),
+
+				/* ── Tab: PDP quantity cards ── */
+				array(
+					'key'   => 'field_htoeau_tab_pdp_qty_cards',
+					'label' => __( 'PDP quantity cards', 'hello-elementor-child' ),
+					'type'  => 'tab',
+				),
+				array(
+					'key'           => 'field_htoeau_pdp_can_image',
+					'label'         => __( 'Can graphic', 'hello-elementor-child' ),
+					'name'          => 'pdp_can_image',
+					'type'          => 'image',
+					'return_format' => 'array',
+					'instructions'  => __( 'Optional. Tall narrow can art for the pack cards (12 / 48 / 96). Leave empty to use the default theme can. Prefer a PNG with similar proportions to a slim can, not the square main product photo.', 'hello-elementor-child' ),
 				),
 
 				/* ── Tab: Subscribe Bullets ── */

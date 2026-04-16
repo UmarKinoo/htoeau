@@ -22,6 +22,17 @@ $img_base = htoeau_child_get_brand_images_base_url();
 
 $product_attributes = $product->get_attributes();
 
+$pdp_can_image = '';
+if ( function_exists( 'get_field' ) ) {
+	$acf_img = get_field( 'pdp_can_image', $product->get_id() );
+	if ( is_array( $acf_img ) && ! empty( $acf_img['url'] ) ) {
+		$pdp_can_image = $acf_img['url'];
+	} elseif ( is_string( $acf_img ) && '' !== $acf_img ) {
+		$pdp_can_image = $acf_img;
+	}
+}
+$can_image_url = $pdp_can_image ? $pdp_can_image : $img_base . 'can-label.png';
+
 $format_variation_card_labels = function ( $attributes, $current_product, $product_attrs_meta ) {
 	$parts = array();
 
@@ -196,7 +207,7 @@ $decimals        = wc_get_price_decimals();
 					$can_map = array( 12 => 1, 24 => 2, 48 => 4, 96 => 8 );
 					$show    = isset( $can_map[ $r['cans'] ] ) ? $can_map[ $r['cans'] ] : min( 8, max( 1, (int) round( $r['cans'] / 12 ) ) );
 					for ( $i = 0; $i < $show; $i++ ) {
-						echo '<span class="htoeau-qty-card__can"><img src="' . esc_url( $img_base . 'can-label.png' ) . '" alt="" width="30" height="80" loading="lazy" /></span>';
+						echo '<span class="htoeau-qty-card__can"><img src="' . esc_url( $can_image_url ) . '" alt="" width="30" height="80" loading="lazy" /></span>';
 					}
 				}
 				?>
