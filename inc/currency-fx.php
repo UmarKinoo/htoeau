@@ -143,11 +143,34 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	}
 	$store   = get_woocommerce_currency();
 	$display = htoeau_child_fx_get_display_currency();
+	$target_symbol = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol( $display ) : '';
 	if ( $store === $display ) {
-		return wc_price( $amount, $args );
+		$formatted = wc_price( $amount, $args );
+		if ( $target_symbol ) {
+			$formatted = str_replace(
+				array(
+					get_woocommerce_currency_symbol( 'GBP' ),
+					get_woocommerce_currency_symbol( 'EUR' ),
+				),
+				$target_symbol,
+				$formatted
+			);
+		}
+		return $formatted;
 	}
 	$args['currency'] = $display;
-	return wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
+	$formatted        = wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
+	if ( $target_symbol ) {
+		$formatted = str_replace(
+			array(
+				get_woocommerce_currency_symbol( 'GBP' ),
+				get_woocommerce_currency_symbol( 'EUR' ),
+			),
+			$target_symbol,
+			$formatted
+		);
+	}
+	return $formatted;
 }
 
 /**
@@ -298,6 +321,8 @@ function htoeau_child_fx_debug_console_output() {
 		'gbp_display_countries'      => array_values( (array) $gbp_countries ),
 		'eur_display_countries'      => array_values( (array) $eur_countries ),
 		'request_uri'                => isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		'sample_wc_price_store'      => function_exists( 'wc_price' ) ? wp_strip_all_tags( wc_price( 2.36 ) ) : '',
+		'sample_fx_wc_price'         => function_exists( 'htoeau_child_fx_wc_price' ) ? wp_strip_all_tags( htoeau_child_fx_wc_price( 2.36 ) ) : '',
 	);
 	$json = wp_json_encode( $payload );
 	if ( ! $json ) {
