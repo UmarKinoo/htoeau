@@ -186,7 +186,13 @@ if ( ! $default_id && ! empty( $pdp_variations ) ) {
 }
 
 $fx_display_ccy  = function_exists( 'htoeau_child_fx_get_display_currency' ) ? htoeau_child_fx_get_display_currency() : get_woocommerce_currency();
-$currency_symbol = get_woocommerce_currency_symbol( $fx_display_ccy );
+$symbol_map      = array(
+	'GBP' => html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ),
+	'EUR' => html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' ),
+);
+$currency_symbol = isset( $symbol_map[ $fx_display_ccy ] )
+	? $symbol_map[ $fx_display_ccy ]
+	: html_entity_decode( get_woocommerce_currency_symbol( $fx_display_ccy ), ENT_QUOTES, 'UTF-8' );
 $decimals        = wc_get_price_decimals();
 ?>
 <div class="htoeau-qty-cards" data-htoeau-qty-cards>

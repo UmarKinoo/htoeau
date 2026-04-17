@@ -128,6 +128,15 @@ function htoeau_child_enqueue_assets() {
 		$sym_ccy    = ( function_exists( 'htoeau_child_fx_is_enabled' ) && htoeau_child_fx_is_enabled() && $fx_display )
 			? $fx_display
 			: $fx_store;
+		$symbol_map = array(
+			'GBP' => html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ),
+			'EUR' => html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' ),
+		);
+		$sym_value  = isset( $symbol_map[ $sym_ccy ] )
+			? $symbol_map[ $sym_ccy ]
+			: ( function_exists( 'get_woocommerce_currency_symbol' )
+				? html_entity_decode( get_woocommerce_currency_symbol( $sym_ccy ), ENT_QUOTES, 'UTF-8' )
+				: html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ) );
 		wp_localize_script(
 			'htoeau-pdp',
 			'htoeauPdp',
@@ -135,9 +144,7 @@ function htoeau_child_enqueue_assets() {
 				'i18n' => array(
 					'addToCart' => __( 'Add to Cart', 'hello-elementor-child' ),
 				),
-				'currencySymbol' => function_exists( 'get_woocommerce_currency_symbol' )
-					? html_entity_decode( get_woocommerce_currency_symbol( $sym_ccy ), ENT_QUOTES, 'UTF-8' )
-					: '£',
+				'currencySymbol' => $sym_value,
 				'storeCurrency'   => $fx_store,
 				'displayCurrency' => $fx_display,
 			)
