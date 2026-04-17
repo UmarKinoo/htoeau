@@ -288,7 +288,9 @@ add_filter( 'woocommerce_get_price_html', 'htoeau_child_fx_filter_price_html', 9
  * - GBP / USD: dot (.)
  * - EUR: comma (,)
  *
- * @param string $separator Default separator.
+ * Hooks Woo’s `wc_get_price_decimal_separator` filter (not the option id `woocommerce_price_decimal_sep`).
+ *
+ * @param string $separator Separator from option (filter first argument).
  * @return string
  */
 function htoeau_child_fx_price_decimal_separator( $separator ) {
@@ -311,7 +313,7 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 
 	return $separator;
 }
-add_filter( 'woocommerce_price_decimal_sep', 'htoeau_child_fx_price_decimal_separator', 50, 1 );
+add_filter( 'wc_get_price_decimal_separator', 'htoeau_child_fx_price_decimal_separator', 50, 1 );
 
 /**
  * Customizer: editable USD-per-GBP rate.
