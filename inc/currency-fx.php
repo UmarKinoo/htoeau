@@ -185,15 +185,24 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	}
 
 	if ( ! htoeau_child_fx_is_enabled() ) {
-		return wc_price( $amount, $args );
+		$formatted = wc_price( $amount, $args );
+	} else {
+		$store   = get_woocommerce_currency();
+		$display = htoeau_child_fx_get_display_currency();
+		if ( $store === $display ) {
+			$formatted = wc_price( $amount, $args );
+		} else {
+			$args['currency'] = $display;
+			$formatted        = wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
+		}
 	}
-	$store   = get_woocommerce_currency();
-	$display = htoeau_child_fx_get_display_currency();
-	if ( $store === $display ) {
-		return wc_price( $amount, $args );
+
+	// Hard guard: keep GBP decimals with dot even if another filter/plugin rewrites separators later.
+	if ( 'GBP' === $display_ccy ) {
+		$formatted = preg_replace( '/(\d),(\d{2})\b/', '$1.$2', (string) $formatted );
 	}
-	$args['currency'] = $display;
-	return wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
+
+	return (string) $formatted;
 }
 
 /**
