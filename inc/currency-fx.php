@@ -1,6 +1,6 @@
 <?php
 /**
- * GBP ↔ EUR display conversion (store currency stays the WooCommerce setting; checkout unchanged).
+ * GBP ↔ USD display conversion (store currency stays the WooCommerce setting; checkout unchanged).
  *
  * @package HtoEAU_Child
  */
@@ -15,11 +15,11 @@ define( 'HTOEAU_FX_COOKIE', 'htoeau_display_ccy' );
  * @return string[]
  */
 function htoeau_child_fx_supported_codes() {
-	return apply_filters( 'htoeau_fx_supported_currencies', array( 'GBP', 'EUR' ) );
+	return apply_filters( 'htoeau_fx_supported_currencies', array( 'GBP', 'USD' ) );
 }
 
 /**
- * Whether FX module applies (Woo active, store currency is GBP or EUR).
+ * Whether FX module applies (Woo active, store currency is GBP or USD).
  */
 function htoeau_child_fx_is_enabled() {
 	if ( ! function_exists( 'get_woocommerce_currency' ) ) {
@@ -51,32 +51,32 @@ function htoeau_child_fx_detect_country_code() {
 }
 
 /**
- * Pick GBP or EUR for display from visitor country when the store supports FX.
+ * Pick GBP or USD for display from visitor country when the store supports FX.
  *
  * @return string
  */
 function htoeau_child_fx_geo_guess_display_currency() {
 	$store   = get_woocommerce_currency();
 	$country = htoeau_child_fx_detect_country_code();
-	$eur     = apply_filters(
-		'htoeau_fx_eur_display_countries',
-		array()
+	$usd     = apply_filters(
+		'htoeau_fx_usd_display_countries',
+		array( 'US', 'PR', 'GU', 'VI', 'AS', 'MP' )
 	);
 	$gbp     = apply_filters(
 		'htoeau_fx_gbp_display_countries',
 		array( 'GB', 'GG', 'JE', 'IM' )
 	);
 	if ( 'GBP' === $store ) {
-		if ( $country && in_array( $country, $gbp, true ) ) {
-			return 'GBP';
+		if ( $country && in_array( $country, $usd, true ) ) {
+			return 'USD';
 		}
-		return 'EUR';
+		return 'GBP';
 	}
-	if ( 'EUR' === $store ) {
+	if ( 'USD' === $store ) {
 		if ( $country && in_array( $country, $gbp, true ) ) {
 			return 'GBP';
 		}
-		return 'EUR';
+		return 'USD';
 	}
 	return $store;
 }
@@ -179,34 +179,25 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	if ( ! isset( $args['decimal_separator'] ) ) {
 		if ( 'EUR' === $display_ccy ) {
 			$args['decimal_separator'] = ',';
-		} elseif ( 'GBP' === $display_ccy ) {
+		} elseif ( 'GBP' === $display_ccy || 'USD' === $display_ccy ) {
 			$args['decimal_separator'] = '.';
 		}
 	}
 
 	if ( ! htoeau_child_fx_is_enabled() ) {
-		$formatted = wc_price( $amount, $args );
-	} else {
-		$store   = get_woocommerce_currency();
-		$display = htoeau_child_fx_get_display_currency();
-		if ( $store === $display ) {
-			$formatted = wc_price( $amount, $args );
-		} else {
-			$args['currency'] = $display;
-			$formatted        = wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
-		}
+		return wc_price( $amount, $args );
 	}
-
-	// Hard guard: keep GBP decimals with dot even if another filter/plugin rewrites separators later.
-	if ( 'GBP' === $display_ccy ) {
-		$formatted = preg_replace( '/(\d),(\d{2})\b/', '$1.$2', (string) $formatted );
+	$store   = get_woocommerce_currency();
+	$display = htoeau_child_fx_get_display_currency();
+	if ( $store === $display ) {
+		return wc_price( $amount, $args );
 	}
-
-	return (string) $formatted;
+	$args['currency'] = $display;
+	return wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
 }
 
 /**
- * Set display currency cookie from ?htoeau_ccy=GBP|EUR and redirect (strip query arg).
+ * Set display currency cookie from ?htoeau_ccy=GBP|USD and redirect (strip query arg).
  */
 function htoeau_child_fx_capture_query_currency() {
 	if ( ! isset( $_GET['htoeau_ccy'] ) || ! htoeau_child_fx_is_enabled() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -294,7 +285,7 @@ add_filter( 'woocommerce_get_price_html', 'htoeau_child_fx_filter_price_html', 9
 
 /**
  * Decimal separator by displayed currency:
- * - GBP: dot (.)
+ * - GBP / USD: dot (.)
  * - EUR: comma (,)
  *
  * Hooks Woo’s `wc_get_price_decimal_separator` filter (not the option id `woocommerce_price_decimal_sep`).
@@ -316,7 +307,7 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 		return ',';
 	}
 
-	if ( 'GBP' === $currency ) {
+	if ( 'GBP' === $currency || 'USD' === $currency ) {
 		return '.';
 	}
 
@@ -333,8 +324,8 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 	$wp_customize->add_section(
 		'htoeau_fx',
 		array(
-			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'Browsing prices follow visitor location (UK/Channel Islands/Isle of Man → GBP, all other countries → EUR). Optional override: add ?htoeau_ccy=GBP or EUR to set a cookie. Checkout still uses your store currency.', 'hello-elementor-child' ),
+			'title'       => __( 'HtoEAU currency (GBP ↔ USD)', 'hello-elementor-child' ),
+			'description' => __( 'Browsing prices follow visitor location (e.g. US → USD, UK → GBP when the store is GBP). Optional override: add ?htoeau_ccy=GBP or USD to set a cookie. Checkout still uses your store currency.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);
@@ -351,8 +342,8 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 	$wp_customize->add_control(
 		'htoeau_fx_usd_per_gbp',
 		array(
-			'label'       => __( 'Legacy FX rate (unused for GBP/EUR same-number display)', 'hello-elementor-child' ),
-			'description' => __( 'Kept for backward compatibility. GBP/EUR display currently keeps the same numeric amount and only changes symbol/separator.', 'hello-elementor-child' ),
+			'label'       => __( 'US dollars per 1 British pound', 'hello-elementor-child' ),
+			'description' => __( 'Example: 1.27 means £1.00 ≈ $1.27.', 'hello-elementor-child' ),
 			'section'     => 'htoeau_fx',
 			'type'        => 'number',
 			'input_attrs' => array(
