@@ -143,32 +143,28 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	}
 	$store   = get_woocommerce_currency();
 	$display = htoeau_child_fx_get_display_currency();
-	$target_symbol = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol( $display ) : '';
+	$symbol_map    = array(
+		'GBP' => html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ),
+		'EUR' => html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' ),
+	);
+	$target_symbol = isset( $symbol_map[ $display ] )
+		? $symbol_map[ $display ]
+		: ( function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( $display ), ENT_QUOTES, 'UTF-8' ) : '' );
+	$known_symbols = array_values( $symbol_map );
+	$known_symbols[] = function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( 'GBP' ), ENT_QUOTES, 'UTF-8' ) : html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' );
+	$known_symbols[] = function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( 'EUR' ), ENT_QUOTES, 'UTF-8' ) : html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' );
+	$known_symbols   = array_unique( array_filter( $known_symbols ) );
 	if ( $store === $display ) {
 		$formatted = wc_price( $amount, $args );
 		if ( $target_symbol ) {
-			$formatted = str_replace(
-				array(
-					get_woocommerce_currency_symbol( 'GBP' ),
-					get_woocommerce_currency_symbol( 'EUR' ),
-				),
-				$target_symbol,
-				$formatted
-			);
+			$formatted = str_replace( $known_symbols, $target_symbol, $formatted );
 		}
 		return $formatted;
 	}
 	$args['currency'] = $display;
 	$formatted        = wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
 	if ( $target_symbol ) {
-		$formatted = str_replace(
-			array(
-				get_woocommerce_currency_symbol( 'GBP' ),
-				get_woocommerce_currency_symbol( 'EUR' ),
-			),
-			$target_symbol,
-			$formatted
-		);
+		$formatted = str_replace( $known_symbols, $target_symbol, $formatted );
 	}
 	return $formatted;
 }
@@ -323,6 +319,8 @@ function htoeau_child_fx_debug_console_output() {
 		'request_uri'                => isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		'sample_wc_price_store'      => function_exists( 'wc_price' ) ? wp_strip_all_tags( wc_price( 2.36 ) ) : '',
 		'sample_fx_wc_price'         => function_exists( 'htoeau_child_fx_wc_price' ) ? wp_strip_all_tags( htoeau_child_fx_wc_price( 2.36 ) ) : '',
+		'symbol_for_gbp'             => function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( 'GBP' ), ENT_QUOTES, 'UTF-8' ) : '',
+		'symbol_for_eur'             => function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( 'EUR' ), ENT_QUOTES, 'UTF-8' ) : '',
 	);
 	$json = wp_json_encode( $payload );
 	if ( ! $json ) {
