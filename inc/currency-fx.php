@@ -289,6 +289,34 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 add_filter( 'wc_get_price_decimal_separator', 'htoeau_child_fx_price_decimal_separator', 50, 1 );
 
 /**
+ * Frontend currency symbol by display mode (GBP/EUR), including cart contexts.
+ *
+ * @param string $currency_symbol Symbol resolved by WooCommerce.
+ * @param string $currency        Requested currency code.
+ * @return string
+ */
+function htoeau_child_fx_currency_symbol( $currency_symbol, $currency ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $currency_symbol;
+	}
+
+	$display = function_exists( 'htoeau_child_fx_get_display_currency' )
+		? strtoupper( (string) htoeau_child_fx_get_display_currency() )
+		: strtoupper( (string) $currency );
+
+	if ( 'EUR' === $display ) {
+		return html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' );
+	}
+
+	if ( 'GBP' === $display ) {
+		return html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' );
+	}
+
+	return $currency_symbol;
+}
+add_filter( 'woocommerce_currency_symbol', 'htoeau_child_fx_currency_symbol', 999, 2 );
+
+/**
  * Temporary frontend debug output for FX/country detection.
  */
 function htoeau_child_fx_debug_console_output() {
