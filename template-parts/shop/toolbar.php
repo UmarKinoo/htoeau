@@ -57,7 +57,10 @@ $cats = get_terms(
 	)
 );
 
-$chevron = '<svg class="htoeau-shop-toolbar__chev" width="12" height="6" viewBox="0 0 12 6" aria-hidden="true"><path fill="currentColor" d="M6 6 0 0h12z"/></svg>';
+$img_base = function_exists( 'htoeau_child_get_brand_images_base_url' ) ? htoeau_child_get_brand_images_base_url() : '';
+$chevron  = $img_base
+	? '<img class="htoeau-shop-toolbar__chev" src="' . esc_url( $img_base . 'accordion-closed.svg' ) . '" alt="" width="14" height="24" aria-hidden="true" />'
+	: '<svg class="htoeau-shop-toolbar__chev" width="12" height="6" viewBox="0 0 12 6" aria-hidden="true"><path fill="currentColor" d="M6 6 0 0h12z"/></svg>';
 ?>
 <div class="htoeau-shop-toolbar">
 	<form class="htoeau-shop-toolbar__form" method="get" action="<?php echo esc_url( $base ); ?>">
