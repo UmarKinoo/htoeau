@@ -9,8 +9,6 @@ defined( 'ABSPATH' ) || exit;
 
 global $product;
 
-$img_base = htoeau_child_get_brand_images_base_url();
-
 $lowest_per_can = null;
 if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) ) {
 	foreach ( $product->get_available_variations() as $v ) {
@@ -25,26 +23,8 @@ if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_p
 	}
 }
 
-$review_count = $product->get_review_count();
-$rating       = (float) $product->get_average_rating();
-if ( $rating <= 0 ) {
-	$rating = 4.8; // Design default when no reviews yet.
-}
-if ( $review_count <= 0 ) {
-	$review_count = 72;
-}
 ?>
 <div class="htoeau-info-panel">
-	<div class="htoeau-rating-row">
-		<img class="htoeau-rating-row__stars" src="<?php echo esc_url( $img_base . 'stars-rating.svg' ); ?>" alt="" width="73" height="12" loading="lazy" />
-		<p class="htoeau-rating-row__text">
-			<strong class="htoeau-rating-row__score"><?php echo esc_html( number_format_i18n( $rating, 1 ) ); ?></strong>
-			<span class="htoeau-rating-row__paren"> (</span>
-			<a class="htoeau-rating-row__link" href="<?php echo esc_url( apply_filters( 'htoeau_reviews_link', get_permalink( $product->get_id() ) . '#reviews' ) ); ?>"><?php echo esc_html( sprintf( /* translators: %d: review count */ __( 'see what %d people said', 'hello-elementor-child' ), $review_count ) ); ?></a>
-			<span class="htoeau-rating-row__paren">)</span>
-		</p>
-	</div>
-
 	<h1 class="htoeau-product-title"><?php echo wp_kses_post( $product->get_name() ); ?></h1>
 
 	<?php if ( null !== $lowest_per_can ) : ?>

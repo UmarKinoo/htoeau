@@ -266,6 +266,36 @@ function htoeau_child_fx_filter_price_html( $html, $product ) {
 add_filter( 'woocommerce_get_price_html', 'htoeau_child_fx_filter_price_html', 999, 2 );
 
 /**
+ * Decimal separator by displayed currency:
+ * - GBP / USD: dot (.)
+ * - EUR: comma (,)
+ *
+ * @param string $separator Default separator.
+ * @return string
+ */
+function htoeau_child_fx_price_decimal_separator( $separator ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $separator;
+	}
+
+	$currency = function_exists( 'htoeau_child_fx_get_display_currency' )
+		? htoeau_child_fx_get_display_currency()
+		: ( function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '' );
+
+	$currency = strtoupper( (string) $currency );
+	if ( 'EUR' === $currency ) {
+		return ',';
+	}
+
+	if ( 'GBP' === $currency || 'USD' === $currency ) {
+		return '.';
+	}
+
+	return $separator;
+}
+add_filter( 'woocommerce_price_decimal_sep', 'htoeau_child_fx_price_decimal_separator', 50, 1 );
+
+/**
  * Customizer: editable USD-per-GBP rate.
  *
  * @param WP_Customize_Manager $wp_customize Customizer.
