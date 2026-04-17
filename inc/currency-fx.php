@@ -270,6 +270,50 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 add_filter( 'wc_get_price_decimal_separator', 'htoeau_child_fx_price_decimal_separator', 50, 1 );
 
 /**
+ * Temporary frontend debug output for FX/country detection.
+ */
+function htoeau_child_fx_debug_console_output() {
+	if ( is_admin() ) {
+		return;
+	}
+
+	$store_currency   = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '';
+	$display_currency = function_exists( 'htoeau_child_fx_get_display_currency' ) ? htoeau_child_fx_get_display_currency() : $store_currency;
+	$country          = function_exists( 'htoeau_child_fx_detect_country_code' ) ? htoeau_child_fx_detect_country_code() : '';
+	$cookie_currency  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$cf_country       = isset( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended
+	$decimal_sep      = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '';
+	$enabled          = function_exists( 'htoeau_child_fx_is_enabled' ) ? htoeau_child_fx_is_enabled() : false;
+	$gbp_countries    = apply_filters( 'htoeau_fx_gbp_display_countries', array( 'GB', 'GG', 'JE', 'IM' ) );
+	$eur_countries    = apply_filters( 'htoeau_fx_eur_display_countries', array() );
+
+	$payload = array(
+		'fx_enabled'                 => (bool) $enabled,
+		'detected_country'           => (string) $country,
+		'cloudflare_country_header'  => (string) $cf_country,
+		'cookie_currency'            => (string) $cookie_currency,
+		'store_currency'             => (string) $store_currency,
+		'display_currency'           => (string) $display_currency,
+		'wc_decimal_separator'       => (string) $decimal_sep,
+		'gbp_display_countries'      => array_values( (array) $gbp_countries ),
+		'eur_display_countries'      => array_values( (array) $eur_countries ),
+		'request_uri'                => isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	);
+	$json = wp_json_encode( $payload );
+	if ( ! $json ) {
+		return;
+	}
+	?>
+	<script>
+		console.groupCollapsed('HtoEAU FX Debug');
+		console.log(<?php echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>);
+		console.groupEnd();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'htoeau_child_fx_debug_console_output', 999 );
+
+/**
  * Customizer section for FX behavior notes.
  *
  * @param WP_Customize_Manager $wp_customize Customizer.
