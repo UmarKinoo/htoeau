@@ -166,6 +166,24 @@ function htoeau_child_fx_convert_amount( $amount ) {
  */
 function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	$amount = (float) $amount;
+	if ( ! is_array( $args ) ) {
+		$args = array();
+	}
+
+	$display_ccy = function_exists( 'htoeau_child_fx_get_display_currency' )
+		? htoeau_child_fx_get_display_currency()
+		: ( function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '' );
+	$display_ccy = strtoupper( (string) $display_ccy );
+
+	// Enforce separators by display currency (frontend consistency regardless of Woo global decimal option).
+	if ( ! isset( $args['decimal_separator'] ) ) {
+		if ( 'EUR' === $display_ccy ) {
+			$args['decimal_separator'] = ',';
+		} elseif ( 'GBP' === $display_ccy || 'USD' === $display_ccy ) {
+			$args['decimal_separator'] = '.';
+		}
+	}
+
 	if ( ! htoeau_child_fx_is_enabled() ) {
 		return wc_price( $amount, $args );
 	}
