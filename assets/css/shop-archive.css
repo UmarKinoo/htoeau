@@ -288,6 +288,8 @@ body.tax-product_tag #content {
 
 .htoeau-shop-toolbar__chev {
 	display: block;
+	width: 12px;
+	height: 6px;
 }
 
 .htoeau-shop-toolbar__all-filters {
