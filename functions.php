@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.4.13' );
+define( 'HTOEAU_CHILD_VERSION', '1.4.14' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -19,6 +19,7 @@ require_once HTOEAU_CHILD_DIR . '/inc/elementor-pdp-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-helpers.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-shop-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-hero-customizer.php';
+require_once HTOEAU_CHILD_DIR . '/inc/pdp-faq.php';
 
 /**
  * Bump this string to re-copy `/assets/images/*` into `wp-content/uploads/htoeau-brand-assets/`.
@@ -558,6 +559,95 @@ function htoeau_child_register_acf_fields() {
 					'name'          => 'transform_step_3_image',
 					'type'          => 'image',
 					'return_format' => 'array',
+				),
+
+				/* ── Tab: PDP FAQ ── */
+				array(
+					'key'   => 'field_htoeau_tab_pdp_faq',
+					'label' => __( 'PDP FAQ', 'hello-elementor-child' ),
+					'type'  => 'tab',
+				),
+				array(
+					'key'           => 'field_htoeau_pdp_faq_heading',
+					'label'         => __( 'FAQ — heading', 'hello-elementor-child' ),
+					'name'          => 'pdp_faq_heading',
+					'type'          => 'text',
+					'placeholder'   => __( 'Frequently Asked Questions', 'hello-elementor-child' ),
+					'instructions'  => __( 'Optional. Leave empty to use the default heading. At least one question below must be filled for the FAQ block to appear.', 'hello-elementor-child' ),
+				),
+				array(
+					'key'           => 'field_htoeau_pdp_faq_subheading',
+					'label'         => __( 'FAQ — subheading', 'hello-elementor-child' ),
+					'name'          => 'pdp_faq_subheading',
+					'type'          => 'textarea',
+					'rows'          => 3,
+					'instructions'  => __( 'Optional intro text under the heading.', 'hello-elementor-child' ),
+				),
+				array(
+					'key'          => 'field_htoeau_pdp_faq_1_q',
+					'label'        => __( 'Question 1', 'hello-elementor-child' ),
+					'name'         => 'pdp_faq_1_question',
+					'type'         => 'text',
+				),
+				array(
+					'key'         => 'field_htoeau_pdp_faq_1_a',
+					'label'       => __( 'Answer 1', 'hello-elementor-child' ),
+					'name'        => 'pdp_faq_1_answer',
+					'type'        => 'textarea',
+					'rows'        => 4,
+				),
+				array(
+					'key'          => 'field_htoeau_pdp_faq_2_q',
+					'label'        => __( 'Question 2', 'hello-elementor-child' ),
+					'name'         => 'pdp_faq_2_question',
+					'type'         => 'text',
+				),
+				array(
+					'key'         => 'field_htoeau_pdp_faq_2_a',
+					'label'       => __( 'Answer 2', 'hello-elementor-child' ),
+					'name'        => 'pdp_faq_2_answer',
+					'type'        => 'textarea',
+					'rows'        => 4,
+				),
+				array(
+					'key'          => 'field_htoeau_pdp_faq_3_q',
+					'label'        => __( 'Question 3', 'hello-elementor-child' ),
+					'name'         => 'pdp_faq_3_question',
+					'type'         => 'text',
+				),
+				array(
+					'key'         => 'field_htoeau_pdp_faq_3_a',
+					'label'       => __( 'Answer 3', 'hello-elementor-child' ),
+					'name'        => 'pdp_faq_3_answer',
+					'type'        => 'textarea',
+					'rows'        => 4,
+				),
+				array(
+					'key'          => 'field_htoeau_pdp_faq_4_q',
+					'label'        => __( 'Question 4', 'hello-elementor-child' ),
+					'name'         => 'pdp_faq_4_question',
+					'type'         => 'text',
+				),
+				array(
+					'key'         => 'field_htoeau_pdp_faq_4_a',
+					'label'       => __( 'Answer 4', 'hello-elementor-child' ),
+					'name'        => 'pdp_faq_4_answer',
+					'type'        => 'textarea',
+					'rows'        => 4,
+				),
+				array(
+					'key'          => 'field_htoeau_pdp_faq_5_q',
+					'label'        => __( 'Question 5', 'hello-elementor-child' ),
+					'name'         => 'pdp_faq_5_question',
+					'type'         => 'text',
+				),
+				array(
+					'key'         => 'field_htoeau_pdp_faq_5_a',
+					'label'       => __( 'Answer 5', 'hello-elementor-child' ),
+					'name'        => 'pdp_faq_5_answer',
+					'type'        => 'textarea',
+					'rows'        => 4,
+					'instructions' => __( 'Up to five pairs (ACF Free). Uses the same layout as the HtoEAU FAQ Accordion Elementor widget.', 'hello-elementor-child' ),
 				),
 			),
 			'location'              => array(

@@ -66,6 +66,8 @@ if ( post_password_required() ) {
 			<?php wc_get_template( 'single-product/accordion-tabs.php' ); ?>
 		</div>
 		</div>
+
+		<?php wc_get_template( 'single-product/pdp-faq.php' ); ?>
 	</div>
 
 	<?php

@@ -52,6 +52,15 @@ body.single-product .woocommerce-breadcrumb {
 	gap: 32px;
 }
 
+/* ACF PDP FAQ (under gallery + info columns; shares HtoEAU FAQ Accordion styles). */
+.htoeau-pdp-faq-wrap {
+	width: 100%;
+	max-width: 1232px;
+	margin: clamp(40px, 6vw, 64px) auto 0;
+	padding-top: clamp(32px, 5vw, 48px);
+	border-top: 1px solid rgba(0, 44, 65, 0.12);
+}
+
 /* Gallery */
 .htoeau-gallery {
 	display: flex;
