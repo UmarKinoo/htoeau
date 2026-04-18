@@ -338,6 +338,23 @@ function htoeau_child_enqueue_shop_archive_css_after_elementor() {
 add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_shop_archive_css_after_elementor', 999 );
 
 /**
+ * Shop toolbar: auto-submit form on select change (GET filters/sort).
+ */
+function htoeau_child_enqueue_shop_archive_toolbar_js() {
+	if ( ! function_exists( 'is_shop' ) || ( ! is_shop() && ! is_product_taxonomy() ) ) {
+		return;
+	}
+	wp_enqueue_script(
+		'htoeau-shop-archive-toolbar',
+		HTOEAU_CHILD_URI . '/assets/js/shop-archive-toolbar.js',
+		array(),
+		HTOEAU_CHILD_VERSION,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_shop_archive_toolbar_js', 1000 );
+
+/**
  * Remove default single product layout hooks (custom templates replace them).
  */
 function htoeau_child_remove_single_product_hooks() {
