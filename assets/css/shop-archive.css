@@ -345,6 +345,17 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	overflow: visible;
 	background: transparent !important;
 	box-shadow: none !important;
+	/* Figma 1:2265 — horizontal card when grid cell is wide enough */
+	container-type: inline-size;
+	container-name: htoeau-shop-card;
+}
+
+/* Wide desktop: one column so cards can use Figma 1:2265 row layout */
+@media (min-width: 1200px) {
+	body.htoeau-shop-archive ul.products.htoeau-shop-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+	}
 }
 
 .htoeau-shop-card {
@@ -354,11 +365,12 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	gap: 2rem;
 	height: 100%;
 	min-height: 0;
-	padding: 0 0.625rem 2.5rem;
-	background: #f8f8f8;
+	padding: 1.5rem 1rem 2rem;
+	background: #fff;
 	border-radius: 10px;
 	box-sizing: border-box;
 	overflow: visible;
+	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
 .htoeau-shop-card__media-link {
@@ -379,7 +391,6 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	border-radius: 16px;
 	overflow: hidden;
 	box-sizing: border-box;
-	/* Same as card — no white “plate” (overrides WC/theme img wrappers) */
 	background-color: #f8f8f8 !important;
 }
 
@@ -397,13 +408,48 @@ body.htoeau-shop-archive .htoeau-shop-card__media-link img {
 
 .htoeau-shop-card__body {
 	width: 100%;
-	max-width: 346px;
+	max-width: 26rem; /* 416px Figma 1:2267 */
 	margin-top: 0;
 	display: flex;
 	flex-direction: column;
 	gap: 1.25rem;
 	align-items: flex-start;
 	flex-shrink: 0;
+}
+
+/* Figma 1:2265 — desktop row: image | rating + copy + CTA */
+@container htoeau-shop-card (min-width: 900px) {
+	.htoeau-shop-card {
+		flex-direction: row;
+		align-items: center;
+		gap: 24px;
+		padding: 32px;
+	}
+
+	.htoeau-shop-card__media-link {
+		flex: 1 1 0;
+		min-width: 0;
+		max-width: none;
+		align-self: stretch;
+	}
+
+	.htoeau-shop-card__thumb {
+		height: 191px;
+		min-height: 191px;
+		max-height: 191px;
+		aspect-ratio: auto;
+		max-width: none;
+		width: 100%;
+		margin: 0;
+		padding: 0 0.5rem;
+	}
+
+	.htoeau-shop-card__body {
+		width: 416px;
+		max-width: 416px;
+		flex-shrink: 0;
+		gap: 23px;
+	}
 }
 
 .htoeau-shop-card__rating {
