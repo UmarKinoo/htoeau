@@ -211,41 +211,79 @@ body.tax-product_tag #content {
 	.htoeau-shop-toolbar__row {
 		flex-direction: column;
 		align-items: stretch;
-		gap: 1.5rem;
+		gap: 1.875rem;
 	}
 
+	/* Figma 1:2386 — gap 16px; horizontal scroll; pills stay within shell (avoids page overflow-x). */
 	.htoeau-shop-toolbar__filters {
 		display: flex;
 		flex-wrap: nowrap;
 		align-items: center;
+		justify-content: flex-start;
 		gap: 1rem;
 		overflow-x: auto;
 		overflow-y: hidden;
-		padding-bottom: 0.25rem;
+		padding-top: 0;
+		padding-bottom: 0.5rem;
+		margin: 0;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
 		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-x: contain;
+		touch-action: pan-x;
 		scrollbar-width: thin;
 	}
 
 	.htoeau-shop-toolbar__filters .htoeau-shop-toolbar__field {
+		display: inline-flex;
 		flex: 0 0 auto;
+		align-items: center;
+		justify-content: space-between;
+		box-sizing: border-box;
+		height: 36px;
+		min-height: 36px;
+		max-height: 36px;
+		padding: 0 1.5rem;
 	}
 
-	.htoeau-shop-toolbar__field:has(.htoeau-shop-toolbar__select--price) {
+	/* Figma: Price 132px, Category / Availability 148px */
+	.htoeau-shop-toolbar__field--price {
+		width: 8.25rem;
 		min-width: 8.25rem;
+		max-width: 8.25rem;
 	}
 
-	.htoeau-shop-toolbar__field:has(select[name="htoeau_shop_cat"]) {
+	.htoeau-shop-toolbar__field--category,
+	.htoeau-shop-toolbar__field--stock {
+		width: 9.25rem;
 		min-width: 9.25rem;
+		max-width: 9.25rem;
 	}
 
-	.htoeau-shop-toolbar__field:has(select[name="htoeau_stock"]) {
-		min-width: 9.25rem;
+	.htoeau-shop-toolbar__filters .htoeau-shop-toolbar__select {
+		flex: 1 1 auto;
+		min-width: 0;
+		width: 100%;
+		padding: 0 1.125rem 0 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		line-height: 1.4;
+	}
+
+	.htoeau-shop-toolbar__filters .htoeau-shop-toolbar__chev-wrap {
+		right: 1rem;
+		flex-shrink: 0;
 	}
 
 	.htoeau-shop-toolbar__all-filters {
 		flex: 0 0 auto;
 		align-self: center;
-		margin-right: 1.25rem;
+		margin: 0;
+		padding: 0;
+		line-height: 1.4;
+		white-space: nowrap;
 	}
 
 	.htoeau-shop-toolbar__meta {
@@ -253,6 +291,8 @@ body.tax-product_tag #content {
 		justify-content: space-between;
 		flex-wrap: nowrap;
 		gap: 1rem;
+		align-items: center;
+		padding-top: 0.25rem;
 	}
 }
 

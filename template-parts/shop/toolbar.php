@@ -44,8 +44,9 @@ $sort_options = array(
 
 $price_options = array(
 	''           => __( 'Price', 'hello-elementor-child' ),
-	'price'      => __( 'Price: low to high', 'hello-elementor-child' ),
-	'price-desc' => __( 'Price: high to low', 'hello-elementor-child' ),
+	/* Short labels so the closed select text fits Figma pill widths on mobile. */
+	'price'      => __( 'Low to high', 'hello-elementor-child' ),
+	'price-desc' => __( 'High to low', 'hello-elementor-child' ),
 );
 
 $cats = get_terms(
@@ -63,7 +64,7 @@ $chevron = '<svg class="htoeau-shop-toolbar__chev" width="12" height="6" viewBox
 	<form class="htoeau-shop-toolbar__form" method="get" action="<?php echo esc_url( $base ); ?>">
 		<div class="htoeau-shop-toolbar__row">
 			<div class="htoeau-shop-toolbar__filters">
-				<label class="htoeau-shop-toolbar__field">
+				<label class="htoeau-shop-toolbar__field htoeau-shop-toolbar__field--price">
 					<span class="screen-reader-text"><?php esc_html_e( 'Sort by price', 'hello-elementor-child' ); ?></span>
 					<select class="htoeau-shop-toolbar__select htoeau-shop-toolbar__select--price" aria-label="<?php esc_attr_e( 'Sort by price', 'hello-elementor-child' ); ?>">
 						<?php foreach ( $price_options as $val => $lab ) : ?>
@@ -74,7 +75,7 @@ $chevron = '<svg class="htoeau-shop-toolbar__chev" width="12" height="6" viewBox
 				</label>
 
 				<?php if ( is_shop() ) : ?>
-				<label class="htoeau-shop-toolbar__field">
+				<label class="htoeau-shop-toolbar__field htoeau-shop-toolbar__field--category">
 					<span class="screen-reader-text"><?php esc_html_e( 'Filter by category', 'hello-elementor-child' ); ?></span>
 					<select class="htoeau-shop-toolbar__select" name="htoeau_shop_cat">
 						<option value=""><?php esc_html_e( 'Category', 'hello-elementor-child' ); ?></option>
@@ -95,7 +96,7 @@ $chevron = '<svg class="htoeau-shop-toolbar__chev" width="12" height="6" viewBox
 				</label>
 				<?php endif; ?>
 
-				<label class="htoeau-shop-toolbar__field">
+				<label class="htoeau-shop-toolbar__field htoeau-shop-toolbar__field--stock">
 					<span class="screen-reader-text"><?php esc_html_e( 'Availability', 'hello-elementor-child' ); ?></span>
 					<select class="htoeau-shop-toolbar__select" name="htoeau_stock">
 						<option value=""><?php esc_html_e( 'Availability', 'hello-elementor-child' ); ?></option>
