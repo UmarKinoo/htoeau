@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.4.10' );
+define( 'HTOEAU_CHILD_VERSION', '1.4.11' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -230,26 +230,6 @@ function htoeau_child_shop_hide_page_title( $show ) {
 	return $show;
 }
 add_filter( 'woocommerce_show_page_title', 'htoeau_child_shop_hide_page_title' );
-
-/**
- * Price sort (toolbar) overrides general sort when set.
- *
- * @param array $args Ordering args.
- * @return array
- */
-function htoeau_child_shop_catalog_ordering_args( $args ) {
-	if ( ! function_exists( 'is_shop' ) || ( ! is_shop() && ! is_product_taxonomy() ) ) {
-		return $args;
-	}
-	if ( isset( $_GET['htoeau_price_order'] ) && $_GET['htoeau_price_order'] !== '' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$p = sanitize_text_field( wp_unslash( $_GET['htoeau_price_order'] ) );
-		if ( in_array( $p, array( 'price', 'price-desc' ), true ) && function_exists( 'WC' ) && WC()->query ) {
-			return WC()->query->get_catalog_ordering_args( $p );
-		}
-	}
-	return $args;
-}
-add_filter( 'woocommerce_get_catalog_ordering_args', 'htoeau_child_shop_catalog_ordering_args', 20 );
 
 /**
  * Category / stock filters on the main shop query only.

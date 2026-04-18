@@ -18,12 +18,12 @@ $total = isset( $wp_query->found_posts ) ? (int) $wp_query->found_posts : 0;
 $total_label = $total < 100 ? str_pad( (string) $total, 2, '0', STR_PAD_LEFT ) : (string) $total;
 
 $orderby_default = apply_filters( 'woocommerce_default_catalog_orderby', 'menu_order' );
-$orderby_cur     = isset( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-if ( '' === $orderby_cur ) {
-	$orderby_cur = $orderby_default;
-}
+$orderby_raw     = isset( $_GET['orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['orderby'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-$price_order_cur = isset( $_GET['htoeau_price_order'] ) ? sanitize_text_field( wp_unslash( $_GET['htoeau_price_order'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+// Price sort uses native WooCommerce orderby=price|price-desc (custom htoeau_price_order was blocked by WAF with 503).
+$is_price_sort = in_array( $orderby_raw, array( 'price', 'price-desc' ), true );
+$price_order_cur = $is_price_sort ? $orderby_raw : '';
+$orderby_cur     = $is_price_sort ? $orderby_default : ( '' !== $orderby_raw ? $orderby_raw : $orderby_default );
 
 $stock_cur = isset( $_GET['htoeau_stock'] ) ? sanitize_text_field( wp_unslash( $_GET['htoeau_stock'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
@@ -65,7 +65,7 @@ $chevron = '<svg class="htoeau-shop-toolbar__chev" width="12" height="6" viewBox
 			<div class="htoeau-shop-toolbar__filters">
 				<label class="htoeau-shop-toolbar__field">
 					<span class="screen-reader-text"><?php esc_html_e( 'Sort by price', 'hello-elementor-child' ); ?></span>
-					<select class="htoeau-shop-toolbar__select" name="htoeau_price_order">
+					<select class="htoeau-shop-toolbar__select htoeau-shop-toolbar__select--price" aria-label="<?php esc_attr_e( 'Sort by price', 'hello-elementor-child' ); ?>">
 						<?php foreach ( $price_options as $val => $lab ) : ?>
 							<option value="<?php echo esc_attr( $val ); ?>"<?php selected( $price_order_cur, $val ); ?>><?php echo esc_html( $lab ); ?></option>
 						<?php endforeach; ?>
