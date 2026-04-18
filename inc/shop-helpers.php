@@ -80,12 +80,24 @@ function htoeau_child_shop_get_per_can_line_html( WC_Product $product ): string 
 
 	if ( $product->is_type( 'variable' ) ) {
 		$lowest_per_can = null;
-		foreach ( $product->get_available_variations() as $v ) {
-			$cans = htoeau_child_get_can_count_from_variation_attrs( $v['attributes'] );
-			if ( $cans < 1 || empty( $v['display_price'] ) ) {
+		// Avoid get_available_variations() here — it is very heavy in a shop loop and can cause 503/timeouts.
+		foreach ( $product->get_children() as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
+			if ( ! $variation instanceof WC_Product_Variation ) {
 				continue;
 			}
-			$per = (float) $v['display_price'] / $cans;
+			if ( ! $variation->variation_is_visible() ) {
+				continue;
+			}
+			$cans = htoeau_child_get_can_count_from_variation_attrs( $variation->get_variation_attributes() );
+			if ( $cans < 1 ) {
+				continue;
+			}
+			$display = (float) wc_get_price_to_display( $variation );
+			if ( $display <= 0 ) {
+				continue;
+			}
+			$per = $display / $cans;
 			if ( null === $lowest_per_can || $per < $lowest_per_can ) {
 				$lowest_per_can = $per;
 			}
