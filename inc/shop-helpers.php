@@ -71,6 +71,12 @@ function htoeau_child_shop_get_card_excerpt( WC_Product $product ): string {
  * @return string HTML.
  */
 function htoeau_child_shop_get_per_can_line_html( WC_Product $product ): string {
+	static $cache = array();
+	$pid = $product->get_id();
+	if ( isset( $cache[ $pid ] ) ) {
+		return $cache[ $pid ];
+	}
+
 	$fx_price = static function ( float $amount ): string {
 		if ( function_exists( 'htoeau_child_fx_wc_price' ) ) {
 			return htoeau_child_fx_wc_price( $amount );
@@ -80,48 +86,95 @@ function htoeau_child_shop_get_per_can_line_html( WC_Product $product ): string 
 
 	if ( $product->is_type( 'variable' ) ) {
 		$lowest_per_can = null;
-		// Avoid get_available_variations() here — it is very heavy in a shop loop and can cause 503/timeouts.
-		foreach ( $product->get_children() as $variation_id ) {
-			$variation = wc_get_product( $variation_id );
-			if ( ! $variation instanceof WC_Product_Variation ) {
-				continue;
-			}
-			if ( ! $variation->variation_is_visible() ) {
-				continue;
-			}
-			$cans = htoeau_child_get_can_count_from_variation_attrs( $variation->get_variation_attributes() );
-			if ( $cans < 1 ) {
-				continue;
-			}
-			$display = (float) wc_get_price_to_display( $variation );
-			if ( $display <= 0 ) {
-				continue;
-			}
-			$per = $display / $cans;
-			if ( null === $lowest_per_can || $per < $lowest_per_can ) {
-				$lowest_per_can = $per;
+		/**
+		 * Fast path: bulk variation prices (already display-adjusted) + one meta read per variation.
+		 * Avoids get_available_variations(), wc_get_product() per variation, and wc_get_price_to_display()
+		 * in a tight loop — those can still 503 on shared hosting when combined with sort/filter queries.
+		 */
+		/** @var WC_Product_Variable $product */
+		$price_rows = $product->get_variation_prices( true );
+		if ( ! empty( $price_rows['price'] ) && is_array( $price_rows['price'] ) ) {
+			$attr_tax = function_exists( 'htoeau_child_can_count_attribute' )
+				? htoeau_child_can_count_attribute()
+				: 'pa_can-count';
+			$meta_key = 'attribute_' . $attr_tax;
+
+			foreach ( $price_rows['price'] as $variation_id => $price_string ) {
+				$variation_id = (int) $variation_id;
+				$display      = (float) $price_string;
+				if ( $variation_id < 1 || $display <= 0 ) {
+					continue;
+				}
+				$can_raw = get_post_meta( $variation_id, $meta_key, true );
+				$cans    = (int) preg_replace( '/\D/', '', (string) $can_raw );
+				if ( $cans < 1 ) {
+					$cans = (int) htoeau_child_shop_infer_can_count_from_variation_meta( $variation_id );
+				}
+				if ( $cans < 1 ) {
+					continue;
+				}
+				$per = $display / $cans;
+				if ( null === $lowest_per_can || $per < $lowest_per_can ) {
+					$lowest_per_can = $per;
+				}
 			}
 		}
+
 		if ( null !== $lowest_per_can ) {
-			return sprintf(
+			$cache[ $pid ] = sprintf(
 				'<span class="htoeau-shop-card__from">%s</span> <strong class="htoeau-shop-card__per">%s %s</strong>',
 				esc_html__( 'From', 'hello-elementor-child' ),
 				wp_kses_post( $fx_price( $lowest_per_can ) ),
 				esc_html__( 'per can', 'hello-elementor-child' )
 			);
+			return $cache[ $pid ];
 		}
 	}
 
 	$price = (float) wc_get_price_to_display( $product );
 	if ( $price > 0 ) {
-		return sprintf(
+		$cache[ $pid ] = sprintf(
 			'<span class="htoeau-shop-card__from">%s</span> <strong class="htoeau-shop-card__per">%s</strong>',
 			esc_html__( 'From', 'hello-elementor-child' ),
 			wp_kses_post( $fx_price( $price ) )
 		);
+		return $cache[ $pid ];
 	}
 
+	$cache[ $pid ] = '';
 	return '';
+}
+
+/**
+ * Fallback can count from variation post meta when the primary attribute key is missing.
+ *
+ * @param int $variation_id Variation ID.
+ * @return int
+ */
+function htoeau_child_shop_infer_can_count_from_variation_meta( $variation_id ): int {
+	$variation_id = (int) $variation_id;
+	if ( $variation_id < 1 ) {
+		return 0;
+	}
+	$all = get_post_meta( $variation_id );
+	if ( ! is_array( $all ) ) {
+		return 0;
+	}
+	foreach ( $all as $key => $values ) {
+		if ( ! is_string( $key ) ) {
+			continue;
+		}
+		$lk = strtolower( $key );
+		if ( false === strpos( $lk, 'attribute_' ) || false === strpos( $lk, 'can' ) ) {
+			continue;
+		}
+		$val = isset( $values[0] ) ? $values[0] : '';
+		$n   = (int) preg_replace( '/\D/', '', (string) $val );
+		if ( $n > 0 ) {
+			return $n;
+		}
+	}
+	return 0;
 }
 
 /**
