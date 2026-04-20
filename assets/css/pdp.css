@@ -183,7 +183,7 @@ body.single-product .woocommerce-breadcrumb {
 body.single-product .htoeau-pdp .htoeau-gallery__arrow {
 	background-color: var(--color-light-gray) !important;
 	border-radius: 34px !important;
-	color: inherit !important;
+	color: #016b9f !important;
 	font-family: var(--font-primary), system-ui, sans-serif !important;
 	font-weight: 400 !important;
 	min-width: 0;
@@ -219,11 +219,11 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 }
 
 .htoeau-gallery__arrow--prev .htoeau-pdp-chevron {
-	transform: rotate(90deg);
+	transform: rotate(0deg);
 }
 
 .htoeau-gallery__arrow--next .htoeau-pdp-chevron {
-	transform: rotate(-90deg);
+	transform: rotate(0deg);
 }
 
 /* Testimonial */

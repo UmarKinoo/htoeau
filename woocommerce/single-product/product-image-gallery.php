@@ -29,8 +29,8 @@ if ( count( $all_ids ) > 5 ) {
 <div class="htoeau-gallery" data-htoeau-gallery>
 	<div class="htoeau-gallery__main-wrap">
 		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--prev" data-gallery-prev aria-label="<?php esc_attr_e( 'Previous image', 'htoeau-child' ); ?>">
-			<svg class="htoeau-pdp-chevron" width="14" height="24" viewBox="0 0 14 24" aria-hidden="true" focusable="false">
-				<path d="M3.5 9.5 7 14l3.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+			<svg class="htoeau-pdp-chevron" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+				<path d="M9 6L15 12L9 18" fill="none" stroke="#016b9f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 			</svg>
 		</button>
 		<div class="htoeau-gallery__main">
@@ -50,8 +50,8 @@ if ( count( $all_ids ) > 5 ) {
 			<?php endforeach; ?>
 		</div>
 		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--next" data-gallery-next aria-label="<?php esc_attr_e( 'Next image', 'htoeau-child' ); ?>">
-			<svg class="htoeau-pdp-chevron" width="14" height="24" viewBox="0 0 14 24" aria-hidden="true" focusable="false">
-				<path d="M3.5 9.5 7 14l3.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+			<svg class="htoeau-pdp-chevron" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+				<path d="M9 6L15 12L9 18" fill="none" stroke="#016b9f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 			</svg>
 		</button>
 	</div>
