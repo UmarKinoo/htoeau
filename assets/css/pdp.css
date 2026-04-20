@@ -29,7 +29,7 @@ body.single-product .woocommerce-breadcrumb {
 	display: grid;
 	grid-template-columns: minmax(0, 608fr) minmax(0, 504fr);
 	align-items: start;
-	gap: clamp(28px, 4.2vw, 120px);
+	gap: 120px;
 	width: 100%;
 }
 
