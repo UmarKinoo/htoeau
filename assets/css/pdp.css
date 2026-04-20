@@ -1235,7 +1235,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 
 	.htoeau-gallery__arrow--prev {
 		left: 8px;
-		transform: translateY(-50%) scaleX(-1);
+		transform: translateY(-50%);
 	}
 
 	.htoeau-gallery__arrow--next {
