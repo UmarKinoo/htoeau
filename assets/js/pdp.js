@@ -119,6 +119,7 @@
 		var $subStrike = $('[data-subscribe-strike]');
 		var $subAmt = $('[data-subscribe-amount]');
 		var $onceAmt = $('[data-onetime-amount]');
+		var $perCan = $('[data-htoeau-per-can]');
 
 		function updatePurchasePanels(v) {
 			if (!v) {
@@ -142,6 +143,17 @@
 			$btn.prop('disabled', false);
 		}
 
+		function updatePerCan(v) {
+			if (!v || !$perCan.length) {
+				return;
+			}
+			var per = parseFloat(v.perCan);
+			if (!isFinite(per) || per <= 0) {
+				return;
+			}
+			$perCan.text(formatMoney(per, sym, dec) + ' per can');
+		}
+
 		function selectCardByVariationId(vid) {
 			$cards.removeClass('is-selected').attr('aria-pressed', 'false');
 			$cards.filter('[data-variation-id="' + vid + '"]').addClass('is-selected').attr('aria-pressed', 'true');
@@ -152,6 +164,7 @@
 			var v = getPdpVariation(pdpData, vid);
 			updatePurchasePanels(v);
 			updateCta(v);
+			updatePerCan(v);
 			selectCardByVariationId(vid);
 		}
 

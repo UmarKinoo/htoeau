@@ -13,7 +13,6 @@ if ( empty( $tabs ) ) {
 	return;
 }
 
-$img_base = htoeau_child_get_brand_images_base_url();
 $index    = 0;
 ?>
 <div class="htoeau-accordion" id="htoeau-product-accordion" data-htoeau-accordion>
@@ -30,8 +29,9 @@ $index    = 0;
 			<button type="button" class="htoeau-accordion__trigger" id="<?php echo esc_attr( $btn_id ); ?>" data-htoeau-acc-trigger aria-expanded="<?php echo $is_open ? 'true' : 'false'; ?>" aria-controls="<?php echo esc_attr( $panel_id ); ?>">
 				<span class="htoeau-accordion__title"><?php echo esc_html( $tab['title'] ); ?></span>
 				<span class="htoeau-accordion__icon" aria-hidden="true">
-					<img class="htoeau-accordion__icon-open" src="<?php echo esc_url( $img_base . 'accordion-open.svg' ); ?>" alt="" width="14" height="24" />
-					<img class="htoeau-accordion__icon-closed" src="<?php echo esc_url( $img_base . 'accordion-closed.svg' ); ?>" alt="" width="14" height="24" />
+					<svg class="htoeau-pdp-chevron" width="14" height="24" viewBox="0 0 14 24" focusable="false">
+						<path d="M3.5 9.5 7 14l3.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
 				</span>
 			</button>
 			<div class="htoeau-accordion__panel" id="<?php echo esc_attr( $panel_id ); ?>" role="region" aria-labelledby="<?php echo esc_attr( $btn_id ); ?>" <?php echo $is_open ? '' : 'hidden'; ?>>

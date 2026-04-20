@@ -71,7 +71,11 @@ $discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 )
 					}
 					?>
 				</select>
-				<span class="htoeau-subscribe__chev" aria-hidden="true"><img src="<?php echo esc_url( $img_base . 'chevron-dropdown.svg' ); ?>" alt="" width="9" height="16" /></span>
+				<span class="htoeau-subscribe__chev" aria-hidden="true">
+					<svg class="htoeau-pdp-chevron" width="12" height="6" viewBox="0 0 12 6" focusable="false">
+						<path d="M1 1l5 4 5-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</span>
 			</div>
 		</div>
 		<ul class="htoeau-subscribe__bullets">

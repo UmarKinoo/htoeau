@@ -25,12 +25,13 @@ if ( count( $all_ids ) > 5 ) {
 	$all_ids = array_slice( $all_ids, 0, 5 );
 }
 
-$img_base = htoeau_child_get_brand_images_base_url();
 ?>
 <div class="htoeau-gallery" data-htoeau-gallery>
 	<div class="htoeau-gallery__main-wrap">
 		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--prev" data-gallery-prev aria-label="<?php esc_attr_e( 'Previous image', 'htoeau-child' ); ?>">
-			<img src="<?php echo esc_url( $img_base . 'chevron-right.svg' ); ?>" alt="" width="24" height="24" loading="lazy" />
+			<svg class="htoeau-pdp-chevron" width="14" height="24" viewBox="0 0 14 24" aria-hidden="true" focusable="false">
+				<path d="M3.5 9.5 7 14l3.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
 		</button>
 		<div class="htoeau-gallery__main">
 			<?php foreach ( $all_ids as $index => $aid ) : ?>
@@ -49,7 +50,9 @@ $img_base = htoeau_child_get_brand_images_base_url();
 			<?php endforeach; ?>
 		</div>
 		<button type="button" class="htoeau-gallery__arrow htoeau-gallery__arrow--next" data-gallery-next aria-label="<?php esc_attr_e( 'Next image', 'htoeau-child' ); ?>">
-			<img src="<?php echo esc_url( $img_base . 'chevron-right.svg' ); ?>" alt="" width="24" height="24" loading="lazy" />
+			<svg class="htoeau-pdp-chevron" width="14" height="24" viewBox="0 0 14 24" aria-hidden="true" focusable="false">
+				<path d="M3.5 9.5 7 14l3.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
 		</button>
 	</div>
 	<?php if ( count( $all_ids ) > 1 ) : ?>

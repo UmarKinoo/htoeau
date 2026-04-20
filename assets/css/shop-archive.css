@@ -363,6 +363,11 @@ body.tax-product_tag #content {
 	gap: 1rem;
 }
 
+/* Temporarily hide entire archive toolbar section per request. */
+.htoeau-shop-toolbar {
+	display: none !important;
+}
+
 .htoeau-shop-toolbar__meta {
 	display: flex;
 	flex-wrap: wrap;
