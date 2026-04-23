@@ -491,6 +491,38 @@ function htoeau_child_register_acf_fields() {
 					'instructions' => __( 'Enter one bullet per line. Leave blank for defaults.', 'hello-elementor-child' ),
 				),
 
+				/* ── Tab: Whats Inside Every Can ── */
+				array(
+					'key'   => 'field_htoeau_tab_whats_inside_can',
+					'label' => __( "What's Inside Every Can", 'hello-elementor-child' ),
+					'type'  => 'tab',
+				),
+				array(
+					'key'           => 'field_htoeau_inside_hydrogen_water',
+					'label'         => __( 'Hydrogen Water text', 'hello-elementor-child' ),
+					'name'          => 'inside_can_hydrogen_water_text',
+					'type'          => 'textarea',
+					'rows'          => 4,
+					'default_value' => 'filtered/purified still water, infused with minimum 5mg/l molecular hydrogen gas via proprietary pressure technology - described as a market leader',
+					'instructions'  => __( "Optional override for the PDP What's Inside Every Can tab.", 'hello-elementor-child' ),
+				),
+				array(
+					'key'           => 'field_htoeau_inside_ddw',
+					'label'         => __( 'Deuterium Depleted Water text', 'hello-elementor-child' ),
+					'name'          => 'inside_can_ddw_text',
+					'type'          => 'textarea',
+					'rows'          => 4,
+					'default_value' => 'purified still water, redistilled over 50 times to deplete Deuterium to 50ppm, called "pure Light Water"',
+				),
+				array(
+					'key'           => 'field_htoeau_inside_h2_ddw',
+					'label'         => __( 'H2 DDW text', 'hello-elementor-child' ),
+					'name'          => 'inside_can_h2_ddw_text',
+					'type'          => 'textarea',
+					'rows'          => 4,
+					'default_value' => 'purified still DDW at 50ppm, infused with minimum 5mg/l molecular hydrogen, described as "the ultimate H2 DD fusion - unrivalled anywhere"',
+				),
+
 				/* ── Tab: Transformation Steps ── */
 				array(
 					'key'   => 'field_htoeau_tab_transform',
@@ -998,7 +1030,14 @@ function htoeau_child_product_tabs( $tabs ) {
 		$tabs['description']['title'] = __( 'Product Description', 'hello-elementor-child' );
 	}
 	if ( isset( $tabs['additional_information'] ) ) {
-		$tabs['additional_information']['title'] = __( "What's Inside Every Can", 'hello-elementor-child' );
+		$tabs['additional_information']['title']    = __( "What's Inside Every Can", 'hello-elementor-child' );
+		$tabs['additional_information']['callback'] = 'htoeau_child_whats_inside_every_can_tab_content';
+	} else {
+		$tabs['additional_information'] = array(
+			'title'    => __( "What's Inside Every Can", 'hello-elementor-child' ),
+			'priority' => 25,
+			'callback' => 'htoeau_child_whats_inside_every_can_tab_content',
+		);
 	}
 	unset( $tabs['reviews'] );
 
@@ -1011,6 +1050,42 @@ function htoeau_child_product_tabs( $tabs ) {
 	return $tabs;
 }
 add_filter( 'woocommerce_product_tabs', 'htoeau_child_product_tabs', 50 );
+
+/**
+ * What's Inside Every Can tab body (ACF-backed with defaults).
+ */
+function htoeau_child_whats_inside_every_can_tab_content() {
+	$defaults = array(
+		'hydrogen' => 'filtered/purified still water, infused with minimum 5mg/l molecular hydrogen gas via proprietary pressure technology - described as a market leader',
+		'ddw'      => 'purified still water, redistilled over 50 times to deplete Deuterium to 50ppm, called "pure Light Water"',
+		'h2_ddw'   => 'purified still DDW at 50ppm, infused with minimum 5mg/l molecular hydrogen, described as "the ultimate H2 DD fusion - unrivalled anywhere"',
+	);
+
+	$product_id = get_the_ID();
+	$hydrogen   = '';
+	$ddw        = '';
+	$h2_ddw     = '';
+
+	if ( function_exists( 'get_field' ) && $product_id ) {
+		$hydrogen = trim( (string) get_field( 'inside_can_hydrogen_water_text', $product_id ) );
+		$ddw      = trim( (string) get_field( 'inside_can_ddw_text', $product_id ) );
+		$h2_ddw   = trim( (string) get_field( 'inside_can_h2_ddw_text', $product_id ) );
+	}
+
+	if ( '' === $hydrogen ) {
+		$hydrogen = $defaults['hydrogen'];
+	}
+	if ( '' === $ddw ) {
+		$ddw = $defaults['ddw'];
+	}
+	if ( '' === $h2_ddw ) {
+		$h2_ddw = $defaults['h2_ddw'];
+	}
+
+	echo '<p><strong>' . esc_html__( 'Hydrogen Water:', 'hello-elementor-child' ) . '</strong> ' . esc_html( $hydrogen ) . '</p>';
+	echo '<p><strong>' . esc_html__( 'Deuterium Depleted Water:', 'hello-elementor-child' ) . '</strong> ' . esc_html( $ddw ) . '</p>';
+	echo '<p><strong>' . esc_html__( 'H2 DDW:', 'hello-elementor-child' ) . '</strong> ' . esc_html( $h2_ddw ) . '</p>';
+}
 
 /**
  * Delivery & Returns tab body (filterable).
