@@ -395,6 +395,7 @@
 /* Cart line item */
 .htoeau-checkout-review .shop_table tr.cart_item {
 	border-bottom: 1px solid var(--_border);
+	align-items: flex-start;
 }
 
 .htoeau-checkout-review .shop_table tr.cart_item:first-child {
@@ -403,19 +404,28 @@
 
 .htoeau-checkout-review .shop_table tr.cart_item td.product-name {
 	flex: 1;
-	font-weight: 600;
+	min-width: 0;
 	color: var(--_dark);
 	text-align: left;
 }
 
+/* Name line: keep product name text + quantity badge on the same row */
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name > a,
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name > span:first-of-type {
+	font-weight: 600;
+}
+
 .htoeau-checkout-review .shop_table tr.cart_item td.product-name strong.product-quantity {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	margin-left: 6px;
-	padding: 2px 8px;
+	padding: 2px 7px;
 	border-radius: var(--_pill);
 	background: rgba(0, 143, 163, 0.1);
 	color: var(--_teal);
-	font: 700 0.72rem/1.3 var(--_font);
+	font: 700 0.72rem/1.4 var(--_font);
+	vertical-align: middle;
+	white-space: nowrap;
 }
 
 .htoeau-checkout-review .shop_table tr.cart_item td.product-name dl.variation,
@@ -522,6 +532,7 @@
 	color: var(--_dark);
 	text-transform: none;
 	letter-spacing: 0;
+	text-decoration: none !important;
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
@@ -534,6 +545,21 @@
 	color: var(--_dark);
 	white-space: nowrap;
 	flex-shrink: 0;
+}
+
+/* Description text injected after <label> by shipping plugins — must sit in col 2 row 2 */
+.htoeau-checkout-review ul#shipping_method li > *:not(input[type="radio"]):not(label),
+.htoeau-checkout-review ul#shipping_method li p,
+.htoeau-checkout-review ul#shipping_method li span.description,
+.htoeau-checkout-review ul#shipping_method li small {
+	grid-column: 2;
+	grid-row: 2;
+	min-width: 0;
+	margin: 1px 0 0;
+	font: 400 0.78rem/1.5 var(--_font);
+	color: rgba(0, 44, 65, 0.55);
+	text-decoration: none !important;
+	width: 100%;
 }
 
 .htoeau-checkout-review .woocommerce-shipping-destination {
