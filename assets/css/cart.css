@@ -461,13 +461,14 @@
 }
 
 /* ── Cart totals — order summary card ─────────────────────
-   Clean borderless rows; soft eyebrow header; the Total
-   gets visual dominance via a hard divider above + 1.25rem
-   bold type. ──────────────────────────────────────────── */
+   Strategy: break out of <table> layout entirely.
+   Each <tr> becomes a flex row (label left, value right);
+   the shipping row overrides to flex-column so the label
+   stacks above the radio list which spans the full card. */
 
 .htoeau-cart-page .cart_totals h2 {
 	margin: 0;
-	padding: 18px 22px 12px;
+	padding: 18px 22px 4px;
 	font: 700 0.72rem/1 var(--_font);
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
@@ -476,156 +477,199 @@
 	border: 0;
 }
 
-.htoeau-cart-page .cart_totals table {
+.htoeau-cart-page .cart_totals table,
+.htoeau-cart-page .cart_totals tbody {
+	display: block;
 	width: 100%;
 	margin: 0;
 	border: 0;
 	border-collapse: collapse;
 }
 
-/* Row defaults: borderless, generous padding, two-column key:value */
-.htoeau-cart-page .cart_totals tbody tr {
-	border: 0;
+/* Reset every WC default border + background inside the totals card */
+.htoeau-cart-page .cart_totals tbody tr,
+.htoeau-cart-page .cart_totals tbody tr th,
+.htoeau-cart-page .cart_totals tbody tr td {
+	border: 0 !important;
 	background: transparent !important;
 }
 
-.htoeau-cart-page .cart_totals tbody th,
-.htoeau-cart-page .cart_totals tbody td {
+/* Default row: horizontal flex (label left, value right) */
+.htoeau-cart-page .cart_totals tbody tr {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
 	padding: 10px 22px;
-	border: 0;
-	background: transparent;
-	font: 500 0.9rem/1.45 var(--_font);
-	vertical-align: top;
 }
 
-.htoeau-cart-page .cart_totals tbody th {
-	width: 40%;
-	text-align: left;
+.htoeau-cart-page .cart_totals tbody tr th,
+.htoeau-cart-page .cart_totals tbody tr td {
+	display: block;
+	width: auto;
+	padding: 0;
+	margin: 0;
+	font: 500 0.9rem/1.4 var(--_font);
+	vertical-align: baseline;
+}
+
+.htoeau-cart-page .cart_totals tbody tr th {
 	color: rgba(0, 44, 65, 0.62);
 	font-weight: 500;
-	text-transform: none;
-}
-
-.htoeau-cart-page .cart_totals tbody td {
-	text-align: right;
-	color: var(--_dark);
-	font-weight: 700;
-}
-
-/* Currency amounts inside cells — never let WC inject grey colour */
-.htoeau-cart-page .cart_totals td .amount,
-.htoeau-cart-page .cart_totals td bdi {
-	color: var(--_dark);
-	font-weight: 700;
-}
-
-/* First row: extra breathing room from the eyebrow header */
-.htoeau-cart-page .cart_totals tbody tr:first-child th,
-.htoeau-cart-page .cart_totals tbody tr:first-child td {
-	padding-top: 8px;
-}
-
-/* ── Shipping row ──────────────────────────────────────── */
-.htoeau-cart-page .cart_totals .shipping td {
 	text-align: left;
-	font-weight: 500;
 }
 
+.htoeau-cart-page .cart_totals tbody tr td {
+	color: var(--_dark);
+	font-weight: 700;
+	text-align: right;
+}
+
+.htoeau-cart-page .cart_totals tbody td .amount,
+.htoeau-cart-page .cart_totals tbody td bdi {
+	color: var(--_dark);
+	font-weight: 700;
+}
+
+/* ── Shipping row: stacked layout ──────────────────────── */
+.htoeau-cart-page .cart_totals .shipping {
+	flex-direction: column !important;
+	align-items: stretch !important;
+	gap: 8px !important;
+	padding: 14px 22px !important;
+}
+
+.htoeau-cart-page .cart_totals .shipping th {
+	font: 700 0.7rem/1 var(--_font) !important;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: rgba(0, 44, 65, 0.55) !important;
+	font-weight: 700 !important;
+}
+
+.htoeau-cart-page .cart_totals .shipping td {
+	font: 500 0.875rem/1.4 var(--_font) !important;
+	font-weight: 500 !important;
+	text-align: left !important;
+	color: var(--_dark) !important;
+}
+
+/* Shipping radio list */
 .htoeau-cart-page .cart_totals ul#shipping_method {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
 }
 
 .htoeau-cart-page .cart_totals ul#shipping_method li {
+	display: grid;
+	grid-template-columns: 20px 1fr;
+	column-gap: 10px;
+	row-gap: 2px;
+	padding: 8px 0;
 	margin: 0;
-	padding: 0;
-	display: flex;
-	align-items: flex-start;
-	gap: 8px;
-	font: 500 0.875rem/1.4 var(--_font);
-	color: var(--_dark);
+	align-items: baseline;
+	font-size: 0.875rem;
+}
+
+.htoeau-cart-page .cart_totals ul#shipping_method li + li {
+	border-top: 1px solid var(--_border);
 }
 
 .htoeau-cart-page .cart_totals ul#shipping_method input[type="radio"] {
-	margin: 3px 0 0;
+	grid-column: 1;
+	grid-row: 1;
+	margin: 0;
 	accent-color: var(--_teal);
 	cursor: pointer;
-	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	align-self: center;
 }
 
 .htoeau-cart-page .cart_totals ul#shipping_method label {
+	grid-column: 2;
+	grid-row: 1;
 	cursor: pointer;
 	color: var(--_dark);
-	font-weight: 500;
-	flex: 1;
+	font: 600 0.875rem/1.4 var(--_font);
+	margin: 0;
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
 }
 
 .htoeau-cart-page .cart_totals ul#shipping_method label .amount,
 .htoeau-cart-page .cart_totals ul#shipping_method label bdi {
 	font-weight: 700;
 	color: var(--_dark);
+	flex-shrink: 0;
+	white-space: nowrap;
 }
 
+/* Description row (any sibling element after label) */
+.htoeau-cart-page .cart_totals ul#shipping_method li > *:not(input):not(label) {
+	grid-column: 2;
+	grid-row: 2;
+	margin: 2px 0 0;
+	font: 400 0.78rem/1.4 var(--_font);
+	color: rgba(0, 44, 65, 0.55);
+}
+
+/* "Shipping options will be updated…" / address line */
 .htoeau-cart-page .cart_totals .woocommerce-shipping-destination {
-	margin: 12px 0 0;
+	margin: 4px 0 0;
 	font: 400 0.78rem/1.5 var(--_font);
 	color: rgba(0, 44, 65, 0.55);
 }
 
-/* "Calculate shipping" / change-address — use brand teal, not red */
+/* Calculate shipping — subtle teal link, not red */
 .htoeau-cart-page .cart_totals .shipping-calculator-button,
-.htoeau-cart-page .cart_totals .shipping-calculator-form-wrap a,
 .htoeau-cart-page .cart_totals .woocommerce-shipping-destination a {
 	color: var(--_teal) !important;
 	text-decoration: none;
-	font: 600 0.8rem/1.4 var(--_font);
-	border-bottom: 1.5px solid currentColor;
-	display: inline-block;
+	font: 600 0.78rem/1.4 var(--_font);
+	border-bottom: 1px solid currentColor;
 	padding-bottom: 1px;
-	margin-top: 6px;
+	display: inline-block;
+	margin-top: 4px;
 }
 
-.htoeau-cart-page .cart_totals .shipping-calculator-button:hover {
+.htoeau-cart-page .cart_totals .shipping-calculator-button:hover,
+.htoeau-cart-page .cart_totals .woocommerce-shipping-destination a:hover {
 	color: var(--_cyan) !important;
 }
 
 /* ── Total row: visually dominant ──────────────────────── */
 .htoeau-cart-page .cart_totals .order-total {
-	border-top: 1.5px solid var(--_dark);
-}
-
-.htoeau-cart-page .cart_totals .order-total th,
-.htoeau-cart-page .cart_totals .order-total td {
-	padding: 18px 22px;
-	border: 0;
-	background: transparent;
+	border-top: 1.5px solid var(--_dark) !important;
+	margin-top: 6px;
+	padding: 18px 22px !important;
 }
 
 .htoeau-cart-page .cart_totals .order-total th {
-	font: 800 0.95rem/1.2 var(--_font);
-	color: var(--_dark);
+	font: 800 0.95rem/1 var(--_font) !important;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
+	color: var(--_dark) !important;
 }
 
 .htoeau-cart-page .cart_totals .order-total td,
 .htoeau-cart-page .cart_totals .order-total td .amount,
 .htoeau-cart-page .cart_totals .order-total td bdi {
-	font: 800 1.3rem/1.2 var(--_font);
-	color: var(--_dark);
+	font: 800 1.3rem/1 var(--_font) !important;
+	color: var(--_dark) !important;
 	letter-spacing: -0.01em;
 }
 
-/* Tiny tax notice under total */
 .htoeau-cart-page .cart_totals .order-total td small.includes_tax {
 	display: block;
 	margin-top: 4px;
-	font: 400 0.72rem/1.3 var(--_font);
-	color: rgba(0, 44, 65, 0.55);
+	font: 400 0.72rem/1.3 var(--_font) !important;
+	color: rgba(0, 44, 65, 0.55) !important;
 	letter-spacing: 0;
 }
 
