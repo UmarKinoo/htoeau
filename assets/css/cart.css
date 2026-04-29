@@ -315,29 +315,72 @@
 	gap: 12px;
 }
 
+/* ── Coupon: unified input + inline apply pill ──────────── */
 .htoeau-cart-form .coupon {
 	display: flex;
-	gap: 8px;
-	align-items: center;
-	flex: 1 1 220px;
+	align-items: stretch;
+	flex: 1 1 280px;
+	max-width: 380px;
+	height: 42px;
+	border: 1.5px solid var(--_border);
+	border-radius: var(--_pill);
+	background: var(--_surface);
+	padding: 0;
+	overflow: hidden;
+	transition: border-color var(--_ease), box-shadow var(--_ease);
+}
+
+.htoeau-cart-form .coupon:focus-within {
+	border-color: var(--_teal);
+	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.12);
 }
 
 .htoeau-cart-form .coupon .input-text {
 	flex: 1 1 auto;
-	height: 40px;
-	border: 1.5px solid var(--_border);
-	border-radius: var(--_pill);
-	padding: 0 16px;
+	height: 100%;
+	border: 0 !important;
+	border-radius: 0 !important;
+	padding: 0 6px 0 18px;
 	font: 500 0.875rem/1 var(--_font);
 	color: var(--_dark);
-	background: var(--_surface);
-	transition: border-color var(--_ease), box-shadow var(--_ease);
+	background: transparent;
+	box-shadow: none !important;
+	min-width: 0;
 }
 
 .htoeau-cart-form .coupon .input-text:focus {
 	outline: none;
-	border-color: var(--_teal);
-	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.12);
+	box-shadow: none !important;
+}
+
+.htoeau-cart-form .coupon .input-text::placeholder {
+	color: rgba(0, 44, 65, 0.4);
+}
+
+/* Apply button: secondary / utility — sits INSIDE the coupon pill */
+.htoeau-cart-form .coupon button[name="apply_coupon"],
+.htoeau-cart-form .coupon .button {
+	flex-shrink: 0;
+	height: 32px;
+	margin: 4px 4px 4px 0;
+	padding: 0 18px;
+	border: 0;
+	border-radius: var(--_pill);
+	background: var(--_dark) !important;
+	color: #fff !important;
+	font: 700 0.72rem/1 var(--_font);
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	cursor: pointer;
+	box-shadow: none !important;
+	transform: none !important;
+	transition: background-color var(--_ease);
+}
+
+.htoeau-cart-form .coupon button[name="apply_coupon"]:hover,
+.htoeau-cart-form .coupon .button:hover {
+	background: var(--_teal) !important;
+	opacity: 1 !important;
 }
 
 .htoeau-cart-form .actions-right {
