@@ -100,8 +100,16 @@
 	color: var(--_dark);
 	text-transform: uppercase;
 	letter-spacing: 0.07em;
+	border: 0;
 	border-bottom: 1.5px solid var(--_border);
 	background: var(--_surface-alt);
+}
+
+/* Remove + thumbnail headers: no visible content — fade them out */
+.htoeau-cart-form .shop_table thead th.product-remove,
+.htoeau-cart-form .shop_table thead th.product-thumbnail {
+	background: transparent;
+	border-bottom-color: transparent;
 }
 
 /* ── Table cells ─────────────────────────────────────────── */
@@ -110,7 +118,13 @@
 	vertical-align: middle;
 	font: 500 0.9rem/1.4 var(--_font);
 	color: var(--_dark);
-	border-color: var(--_border);
+	border: 0;
+	border-bottom: 1px solid var(--_border);
+}
+
+/* Last data row (actions row) has its own top border — skip bottom */
+.htoeau-cart-form .shop_table tbody tr:last-child td {
+	border-bottom: 0;
 }
 
 /* ── Row hover ───────────────────────────────────────────── */
@@ -292,7 +306,7 @@
 }
 
 /* ── Shared button base ──────────────────────────────────── */
-.htoeau-cart-form .button,
+.htoeau-cart-form .button:not(.htoeau-qty-btn),
 .htoeau-cart-page .wc-proceed-to-checkout a.checkout-button {
 	display: inline-flex;
 	align-items: center;
@@ -311,17 +325,27 @@
 	transition: opacity var(--_ease), transform var(--_ease), box-shadow var(--_ease);
 }
 
-.htoeau-cart-form .button:hover,
+.htoeau-cart-form .button:not(.htoeau-qty-btn):hover,
 .htoeau-cart-page .wc-proceed-to-checkout a.checkout-button:hover {
 	opacity: 0.88;
 	box-shadow: 0 4px 18px rgba(0, 143, 163, 0.32);
 	transform: translateY(-1px);
 }
 
-.htoeau-cart-form .button:active,
+.htoeau-cart-form .button:not(.htoeau-qty-btn):active,
 .htoeau-cart-page .wc-proceed-to-checkout a.checkout-button:active {
 	transform: translateY(0);
 	box-shadow: none;
+}
+
+/* Explicit reset so qty stepper buttons can never inherit gradient styles */
+.htoeau-qty-btn {
+	background: transparent !important;
+	color: var(--_dark) !important;
+	box-shadow: none !important;
+	transform: none !important;
+	border-radius: 0 !important;
+	letter-spacing: 0 !important;
 }
 
 /* Ghost / outline button (Continue shopping) */
