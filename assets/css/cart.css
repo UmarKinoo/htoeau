@@ -111,27 +111,90 @@
 }
 
 .htoeau-cart-testimonials {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 10px;
+	position: relative;
+	padding-bottom: 24px;
 }
 
-.htoeau-cart-testimonials .htoeau-testimonial {
+.htoeau-cart-testimonials__viewport {
+	overflow: hidden;
+}
+
+.htoeau-cart-testimonials__track {
+	display: flex;
+	transition: transform 0.35s ease;
+	will-change: transform;
+}
+
+.htoeau-cart-testimonials__slide {
+	flex: 0 0 100%;
 	padding: 16px 12px;
 	border-radius: 16px;
 	background: var(--color-brand-dark-cyan);
 	color: #fff;
-	min-height: 220px;
+	min-height: 210px;
 }
 
-.htoeau-cart-testimonials .htoeau-testimonial__quote {
+.htoeau-cart-testimonials__slide .htoeau-testimonial__quote {
 	color: #fff;
 	font-size: 0.8rem;
 }
 
-.htoeau-cart-testimonials .htoeau-testimonial__name,
-.htoeau-cart-testimonials .htoeau-testimonial__role {
+.htoeau-cart-testimonials__slide .htoeau-testimonial__name,
+.htoeau-cart-testimonials__slide .htoeau-testimonial__role {
 	color: #fff;
+}
+
+.htoeau-cart-testimonials__nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	border: 0;
+	background: #0f6f78;
+	color: #fff;
+	font-size: 16px;
+	line-height: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.htoeau-cart-testimonials__nav[disabled] {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.htoeau-cart-testimonials__nav--prev {
+	left: -13px;
+}
+
+.htoeau-cart-testimonials__nav--next {
+	right: -13px;
+}
+
+.htoeau-cart-testimonials__dots {
+	margin-top: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.htoeau-cart-testimonials__dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	border: 0;
+	background: #d0d6d8;
+	padding: 0;
+	cursor: pointer;
+}
+
+.htoeau-cart-testimonials__dot[aria-selected="true"] {
+	background: #0f6f78;
 }
 
 .htoeau-cart-faq {
@@ -180,8 +243,7 @@
 	}
 
 	.htoeau-cart-testimonials {
-		grid-template-columns: repeat(3, minmax(160px, 1fr));
-		overflow-x: auto;
+		max-width: 420px;
 	}
 }
 

@@ -358,6 +358,14 @@ function htoeau_child_enqueue_cart_css_after_elementor() {
 		$deps,
 		HTOEAU_CHILD_VERSION
 	);
+
+	wp_enqueue_script(
+		'htoeau-cart-carousel',
+		HTOEAU_CHILD_URI . '/assets/js/cart-carousel.js',
+		array(),
+		HTOEAU_CHILD_VERSION,
+		true
+	);
 }
 add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_cart_css_after_elementor', 999 );
 

@@ -165,21 +165,36 @@ do_action( 'woocommerce_before_cart' );
 					<img src="<?php echo esc_url( $img_base . 'payment-cards.svg' ); ?>" alt="" loading="lazy" />
 				<?php endif; ?>
 			</div>
-			<div class="htoeau-cart-testimonials">
-				<?php foreach ( $testimonials as $t ) : ?>
-					<article class="htoeau-testimonial">
-						<p class="htoeau-testimonial__quote"><?php echo esc_html( $t['quote'] ); ?></p>
-						<div class="htoeau-testimonial__meta">
-							<?php if ( $img_base ) : ?>
-								<img class="htoeau-testimonial__stars" src="<?php echo esc_url( $img_base . 'stars-testimonial.svg' ); ?>" alt="" width="63" height="10" loading="lazy" />
-							<?php endif; ?>
-							<p class="htoeau-testimonial__byline">
-								<span class="htoeau-testimonial__name"><?php echo esc_html( $t['name'] ); ?></span>
-								<span class="htoeau-testimonial__role"><?php echo esc_html( $t['role'] ); ?></span>
-							</p>
-						</div>
-					</article>
-				<?php endforeach; ?>
+			<div class="htoeau-cart-testimonials" data-htoeau-cart-carousel>
+				<div class="htoeau-cart-testimonials__viewport">
+					<div class="htoeau-cart-testimonials__track">
+						<?php foreach ( $testimonials as $idx => $t ) : ?>
+							<article class="htoeau-testimonial htoeau-cart-testimonials__slide" aria-hidden="<?php echo 0 === $idx ? 'false' : 'true'; ?>">
+								<p class="htoeau-testimonial__quote"><?php echo esc_html( $t['quote'] ); ?></p>
+								<div class="htoeau-testimonial__meta">
+									<?php if ( $img_base ) : ?>
+										<img class="htoeau-testimonial__stars" src="<?php echo esc_url( $img_base . 'stars-testimonial.svg' ); ?>" alt="" width="63" height="10" loading="lazy" />
+									<?php endif; ?>
+									<p class="htoeau-testimonial__byline">
+										<span class="htoeau-testimonial__name"><?php echo esc_html( $t['name'] ); ?></span>
+										<span class="htoeau-testimonial__role"><?php echo esc_html( $t['role'] ); ?></span>
+									</p>
+								</div>
+							</article>
+						<?php endforeach; ?>
+					</div>
+				</div>
+				<button type="button" class="htoeau-cart-testimonials__nav htoeau-cart-testimonials__nav--prev" aria-label="<?php esc_attr_e( 'Previous testimonial', 'hello-elementor-child' ); ?>">
+					&#10094;
+				</button>
+				<button type="button" class="htoeau-cart-testimonials__nav htoeau-cart-testimonials__nav--next" aria-label="<?php esc_attr_e( 'Next testimonial', 'hello-elementor-child' ); ?>">
+					&#10095;
+				</button>
+				<div class="htoeau-cart-testimonials__dots" role="tablist" aria-label="<?php esc_attr_e( 'Testimonials', 'hello-elementor-child' ); ?>">
+					<?php foreach ( $testimonials as $idx => $t ) : ?>
+						<button type="button" class="htoeau-cart-testimonials__dot" role="tab" aria-selected="<?php echo 0 === $idx ? 'true' : 'false'; ?>" tabindex="<?php echo 0 === $idx ? '0' : '-1'; ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Testimonial %d', 'hello-elementor-child' ), $idx + 1 ) ); ?>"></button>
+					<?php endforeach; ?>
+				</div>
 			</div>
 		</aside>
 	</div>
