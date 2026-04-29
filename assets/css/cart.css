@@ -91,25 +91,29 @@
 	margin: 0;
 	width: 100%;
 	border-collapse: collapse;
+	table-layout: fixed;
 }
 
-/* ── Table head ──────────────────────────────────────────── */
-.htoeau-cart-form .shop_table thead th {
-	padding: 14px 14px;
-	font: 700 0.72rem/1 var(--_font);
-	color: var(--_dark);
-	text-transform: uppercase;
-	letter-spacing: 0.07em;
-	border: 0;
-	border-bottom: 1.5px solid var(--_border);
-	background: var(--_surface-alt);
+/* ── Hide column-header row (modern cart pattern) ────────── */
+.htoeau-cart-form .shop_table thead {
+	display: none;
 }
 
-/* Remove + thumbnail headers: no visible content — fade them out */
-.htoeau-cart-form .shop_table thead th.product-remove,
-.htoeau-cart-form .shop_table thead th.product-thumbnail {
-	background: transparent;
-	border-bottom-color: transparent;
+/* ── Fixed column widths (so qty / price / subtotal stay tight
+   and remove / thumbnail don't blow up) ──────────────────── */
+.htoeau-cart-form .product-remove    { width: 48px; }
+.htoeau-cart-form .product-thumbnail { width: 100px; }
+.htoeau-cart-form .product-price     { width: 110px; }
+.htoeau-cart-form .product-quantity  { width: 148px; }
+.htoeau-cart-form .product-subtotal  { width: 116px; }
+/* product-name takes the remaining space */
+
+/* ── Kill WooCommerce zebra striping (.shop_table_responsive
+   adds nth-child(2n) bg). Use !important — we're fighting
+   woocommerce.css which is enqueued after our file. ─────── */
+.htoeau-cart-form .shop_table tbody tr td,
+.htoeau-cart-form .shop_table.shop_table_responsive tbody tr td {
+	background-color: transparent !important;
 }
 
 /* ── Table cells ─────────────────────────────────────────── */
@@ -128,12 +132,50 @@
 }
 
 /* ── Row hover ───────────────────────────────────────────── */
-.htoeau-cart-form .shop_table tbody tr.cart_item {
-	transition: background var(--_ease);
+.htoeau-cart-form .shop_table tbody tr.cart_item td {
+	transition: background-color var(--_ease);
 }
 
-.htoeau-cart-form .shop_table tbody tr.cart_item:hover {
-	background: rgba(0, 143, 163, 0.03);
+.htoeau-cart-form .shop_table tbody tr.cart_item:hover td {
+	background-color: rgba(0, 143, 163, 0.04) !important;
+}
+
+/* ── Variation / meta row (Subscribe & Save, Deliver…) ──── */
+.htoeau-cart-form .product-name dl.variation,
+.htoeau-cart-form .product-name .wc-item-meta {
+	margin: 8px 0 0;
+	padding: 0;
+	font: 500 0.78rem/1.5 var(--_font);
+	color: rgba(0, 44, 65, 0.62);
+}
+
+.htoeau-cart-form .product-name dl.variation dt,
+.htoeau-cart-form .product-name .wc-item-meta strong {
+	font-weight: 700;
+	color: var(--_dark);
+	margin-right: 4px;
+	display: inline;
+	float: none;
+}
+
+.htoeau-cart-form .product-name dl.variation dd {
+	margin: 0;
+	display: inline;
+}
+
+.htoeau-cart-form .product-name dl.variation dd p {
+	display: inline;
+	margin: 0;
+}
+
+.htoeau-cart-form .product-name dl.variation dd::after {
+	content: '';
+	display: block;
+}
+
+/* Tighten product-name padding so it sits closer to the thumbnail */
+.htoeau-cart-form .product-name {
+	padding-left: 4px;
 }
 
 /* ── Product thumbnail ───────────────────────────────────── */
