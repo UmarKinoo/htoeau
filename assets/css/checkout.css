@@ -1,0 +1,764 @@
+/* ── Local design tokens (mirror cart) ──────────────────── */
+.htoeau-checkout-page {
+	--_teal:        var(--color-brand-teal, #008fa3);
+	--_dark:        var(--color-primary-dark, #002c41);
+	--_cyan:        var(--color-brand-dark-cyan, #055b65);
+	--_red:         var(--color-sale-red, #e66363);
+	--_border:      rgba(0, 44, 65, 0.09);
+	--_border-2:    rgba(0, 44, 65, 0.16);
+	--_surface:     #fff;
+	--_surface-alt: #f6f9fa;
+	--_shadow-sm:   0 2px 8px rgba(0, 44, 65, 0.06);
+	--_shadow:      0 4px 24px rgba(0, 44, 65, 0.09);
+	--_radius:      var(--radius-md, 8px);
+	--_pill:        var(--radius-pill, 1000px);
+	--_font:        var(--font-primary, 'Figtree', system-ui, sans-serif);
+	--_ease:        0.2s ease;
+}
+
+/* ── Page shell ──────────────────────────────────────────── */
+.htoeau-checkout-page {
+	padding: 48px clamp(16px, 5vw, 80px) 96px;
+	color: var(--_dark);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.htoeau-checkout-page__head {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.htoeau-checkout-page__title {
+	margin: 0 0 16px;
+	font: 800 clamp(2rem, 3.5vw, 3.25rem)/1 var(--_font);
+	letter-spacing: -0.03em;
+	text-transform: uppercase;
+}
+
+.htoeau-checkout-page__trust {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+	align-items: center;
+	justify-content: center;
+}
+
+.htoeau-checkout-trust-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font: 600 0.78rem/1.2 var(--_font);
+	color: var(--_cyan);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.htoeau-checkout-trust-item svg {
+	flex-shrink: 0;
+	color: var(--_teal);
+}
+
+/* ── WC default top notices: login + coupon toggles ─────── */
+.htoeau-checkout-page .woocommerce-info,
+.htoeau-checkout-page .woocommerce-form-login-toggle,
+.htoeau-checkout-page .woocommerce-form-coupon-toggle {
+	background: var(--_surface);
+	border: 1.5px solid var(--_border);
+	border-left: 4px solid var(--_teal);
+	border-radius: var(--_radius);
+	padding: 14px 18px;
+	margin: 0 0 16px;
+	font: 500 0.875rem/1.5 var(--_font);
+	color: var(--_dark);
+	box-shadow: var(--_shadow-sm);
+}
+
+.htoeau-checkout-page .woocommerce-info::before,
+.htoeau-checkout-page .woocommerce-error::before,
+.htoeau-checkout-page .woocommerce-message::before {
+	display: none !important;
+}
+
+.htoeau-checkout-page .woocommerce-info a,
+.htoeau-checkout-page .woocommerce-form-login-toggle a,
+.htoeau-checkout-page .woocommerce-form-coupon-toggle a {
+	color: var(--_teal);
+	font-weight: 700;
+	text-decoration: none;
+	border-bottom: 1.5px solid currentColor;
+	padding-bottom: 1px;
+}
+
+.htoeau-checkout-page .woocommerce-error {
+	background: #fff5f5;
+	border-left: 4px solid var(--_red);
+	color: var(--_dark);
+	border-radius: var(--_radius);
+	padding: 14px 18px;
+	margin: 0 0 16px;
+	list-style: none;
+	box-shadow: var(--_shadow-sm);
+}
+
+.htoeau-checkout-page .woocommerce-error li {
+	font: 500 0.875rem/1.5 var(--_font);
+}
+
+.htoeau-checkout-page .woocommerce-message {
+	background: #f0fbf6;
+	border-left: 4px solid #28a745;
+	border-radius: var(--_radius);
+	padding: 14px 18px;
+	margin: 0 0 16px;
+	font: 500 0.875rem/1.5 var(--_font);
+	box-shadow: var(--_shadow-sm);
+}
+
+/* Login + coupon expanded forms */
+.htoeau-checkout-page .woocommerce-form-login,
+.htoeau-checkout-page .checkout_coupon {
+	background: var(--_surface);
+	border: 1.5px solid var(--_border);
+	border-radius: var(--_radius);
+	padding: 20px;
+	margin: 0 0 20px;
+	box-shadow: var(--_shadow-sm);
+}
+
+/* ── Two-column grid ─────────────────────────────────────── */
+.htoeau-checkout-form__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 400px;
+	gap: 32px;
+	align-items: start;
+}
+
+.htoeau-checkout-form__side {
+	position: sticky;
+	top: 20px;
+}
+
+/* ── Customer details sections ───────────────────────────── */
+.htoeau-checkout-section {
+	background: var(--_surface);
+	border-radius: var(--_radius);
+	box-shadow: var(--_shadow);
+	padding: 24px 28px 28px;
+	margin: 0 0 20px;
+}
+
+.htoeau-checkout-section h3 {
+	margin: 0 0 18px;
+	padding: 0;
+	font: 800 1.05rem/1 var(--_font);
+	color: var(--_dark);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	border: 0;
+}
+
+.htoeau-checkout-section h3 small {
+	display: inline-block;
+	margin-left: 8px;
+	font: 500 0.78rem/1 var(--_font);
+	color: rgba(0, 44, 65, 0.55);
+	text-transform: none;
+	letter-spacing: 0;
+	vertical-align: middle;
+}
+
+.htoeau-checkout-section h3 .woocommerce-form__label-checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: 16px;
+	font: 600 0.85rem/1 var(--_font);
+	text-transform: none;
+	letter-spacing: 0;
+	color: var(--_dark);
+	cursor: pointer;
+}
+
+/* Hide the empty "additional information" / shipping section if no fields */
+.htoeau-checkout-section--shipping .shipping_address {
+	margin-top: 16px;
+}
+
+/* ── Form rows / fields ──────────────────────────────────── */
+.htoeau-checkout-form .form-row {
+	margin: 0 0 16px;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.htoeau-checkout-form .form-row.form-row-first,
+.htoeau-checkout-form .form-row.form-row-last {
+	width: calc(50% - 8px);
+	float: none;
+	display: inline-flex;
+	vertical-align: top;
+}
+
+.htoeau-checkout-form .form-row.form-row-first {
+	margin-right: 16px;
+}
+
+.htoeau-checkout-form .form-row.form-row-wide {
+	width: 100%;
+	clear: both;
+}
+
+.htoeau-checkout-form label {
+	display: block;
+	margin: 0 0 6px;
+	font: 600 0.78rem/1.2 var(--_font);
+	color: var(--_dark);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.htoeau-checkout-form label .required,
+.htoeau-checkout-form label abbr.required {
+	color: var(--_teal);
+	text-decoration: none;
+	font-weight: 800;
+	margin-left: 2px;
+	border: 0;
+}
+
+.htoeau-checkout-form label .optional {
+	color: rgba(0, 44, 65, 0.5);
+	font-weight: 500;
+}
+
+/* Inputs + selects + textareas — unified pill-rounded style */
+.htoeau-checkout-form input[type="text"],
+.htoeau-checkout-form input[type="email"],
+.htoeau-checkout-form input[type="tel"],
+.htoeau-checkout-form input[type="number"],
+.htoeau-checkout-form input[type="password"],
+.htoeau-checkout-form input[type="url"],
+.htoeau-checkout-form select,
+.htoeau-checkout-form textarea,
+.htoeau-checkout-form .select2-selection--single,
+.htoeau-checkout-form .select2-selection {
+	width: 100% !important;
+	height: 46px !important;
+	min-height: 46px !important;
+	border: 1.5px solid var(--_border) !important;
+	border-radius: var(--_radius) !important;
+	padding: 0 14px !important;
+	font: 500 0.9rem/1 var(--_font) !important;
+	color: var(--_dark) !important;
+	background: var(--_surface) !important;
+	box-shadow: none !important;
+	transition: border-color var(--_ease), box-shadow var(--_ease);
+	box-sizing: border-box;
+}
+
+.htoeau-checkout-form textarea {
+	height: auto !important;
+	min-height: 96px !important;
+	padding: 12px 14px !important;
+	line-height: 1.5 !important;
+	resize: vertical;
+}
+
+.htoeau-checkout-form input[type="text"]:focus,
+.htoeau-checkout-form input[type="email"]:focus,
+.htoeau-checkout-form input[type="tel"]:focus,
+.htoeau-checkout-form input[type="number"]:focus,
+.htoeau-checkout-form input[type="password"]:focus,
+.htoeau-checkout-form select:focus,
+.htoeau-checkout-form textarea:focus,
+.htoeau-checkout-form .select2-container--focus .select2-selection {
+	outline: none;
+	border-color: var(--_teal) !important;
+	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.12) !important;
+}
+
+.htoeau-checkout-form ::placeholder {
+	color: rgba(0, 44, 65, 0.4);
+}
+
+/* Select2 (Country / State pickers) */
+.htoeau-checkout-form .select2-selection__rendered {
+	line-height: 44px !important;
+	padding: 0 !important;
+	color: var(--_dark) !important;
+}
+
+.htoeau-checkout-form .select2-selection__arrow {
+	height: 44px !important;
+	right: 8px !important;
+}
+
+.htoeau-checkout-form .select2-selection__placeholder {
+	color: rgba(0, 44, 65, 0.4) !important;
+}
+
+/* Field validation states */
+.htoeau-checkout-form .form-row.woocommerce-invalid input,
+.htoeau-checkout-form .form-row.woocommerce-invalid select,
+.htoeau-checkout-form .form-row.woocommerce-invalid .select2-selection {
+	border-color: var(--_red) !important;
+}
+
+.htoeau-checkout-form .form-row.woocommerce-validated input,
+.htoeau-checkout-form .form-row.woocommerce-validated select {
+	border-color: rgba(40, 167, 69, 0.4) !important;
+}
+
+/* Checkboxes (ship to different address, terms) */
+.htoeau-checkout-form input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	margin: 0 8px 0 0;
+	accent-color: var(--_teal);
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.htoeau-checkout-form .form-row label.checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	font: 500 0.875rem/1.4 var(--_font);
+	color: var(--_dark);
+	text-transform: none;
+	letter-spacing: 0;
+	cursor: pointer;
+}
+
+/* ── Sidebar: order summary card ─────────────────────────── */
+.htoeau-checkout-review {
+	background: var(--_surface);
+	border-radius: var(--_radius);
+	box-shadow: var(--_shadow);
+	overflow: hidden;
+}
+
+.htoeau-checkout-review__title {
+	margin: 0;
+	padding: 20px 22px 12px;
+	font: 700 0.72rem/1 var(--_font);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: rgba(0, 44, 65, 0.55);
+	background: transparent;
+	border: 0;
+}
+
+/* ── Review-order table ──────────────────────────────────── */
+.htoeau-checkout-review .shop_table {
+	width: 100%;
+	margin: 0;
+	border: 0;
+	border-collapse: collapse;
+	background: transparent;
+	display: block;
+}
+
+.htoeau-checkout-review .shop_table thead {
+	display: none;
+}
+
+.htoeau-checkout-review .shop_table tbody,
+.htoeau-checkout-review .shop_table tfoot {
+	display: block;
+	width: 100%;
+}
+
+.htoeau-checkout-review .shop_table tr {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 12px 22px;
+	border: 0;
+	background: transparent;
+}
+
+.htoeau-checkout-review .shop_table tr td,
+.htoeau-checkout-review .shop_table tr th {
+	display: block;
+	padding: 0;
+	margin: 0;
+	border: 0 !important;
+	background: transparent !important;
+	font: 500 0.875rem/1.4 var(--_font);
+	color: var(--_dark);
+}
+
+/* Cart line item */
+.htoeau-checkout-review .shop_table tr.cart_item {
+	border-bottom: 1px solid var(--_border);
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item:first-child {
+	border-top: 1px solid var(--_border);
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name {
+	flex: 1;
+	font-weight: 600;
+	color: var(--_dark);
+	text-align: left;
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name strong.product-quantity {
+	display: inline-block;
+	margin-left: 6px;
+	padding: 2px 8px;
+	border-radius: var(--_pill);
+	background: rgba(0, 143, 163, 0.1);
+	color: var(--_teal);
+	font: 700 0.72rem/1.3 var(--_font);
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name dl.variation,
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name .wc-item-meta {
+	display: block;
+	margin: 6px 0 0;
+	padding: 0;
+	font: 500 0.78rem/1.4 var(--_font);
+	color: rgba(0, 44, 65, 0.6);
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name dl.variation dt {
+	font-weight: 700;
+	color: var(--_dark);
+	margin-right: 4px;
+	display: inline;
+	float: none;
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name dl.variation dd {
+	display: inline;
+	margin: 0;
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-name dl.variation dd::after {
+	content: '';
+	display: block;
+}
+
+.htoeau-checkout-review .shop_table tr.cart_item td.product-total {
+	font-weight: 700;
+	color: var(--_dark);
+	white-space: nowrap;
+}
+
+/* Subtotal / shipping / fees rows in tfoot */
+.htoeau-checkout-review .shop_table tfoot tr th {
+	color: rgba(0, 44, 65, 0.62);
+	font-weight: 500;
+}
+
+.htoeau-checkout-review .shop_table tfoot tr td {
+	font-weight: 700;
+	text-align: right;
+}
+
+/* Shipping row: stack vertically (label above radio list) */
+.htoeau-checkout-review .shop_table tfoot tr.shipping {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 6px;
+	padding: 14px 22px;
+}
+
+.htoeau-checkout-review .shop_table tfoot tr.shipping th {
+	font: 700 0.7rem/1 var(--_font);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: rgba(0, 44, 65, 0.55);
+}
+
+.htoeau-checkout-review .shop_table tfoot tr.shipping td {
+	text-align: left;
+	font-weight: 500;
+}
+
+.htoeau-checkout-review ul#shipping_method {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.htoeau-checkout-review ul#shipping_method li {
+	display: grid;
+	grid-template-columns: 20px 1fr;
+	column-gap: 10px;
+	row-gap: 2px;
+	padding: 8px 0;
+	margin: 0;
+	align-items: baseline;
+}
+
+.htoeau-checkout-review ul#shipping_method li + li {
+	border-top: 1px solid var(--_border);
+}
+
+.htoeau-checkout-review ul#shipping_method input[type="radio"] {
+	grid-column: 1;
+	grid-row: 1;
+	margin: 0;
+	accent-color: var(--_teal);
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	align-self: center;
+}
+
+.htoeau-checkout-review ul#shipping_method label {
+	grid-column: 2;
+	grid-row: 1;
+	cursor: pointer;
+	margin: 0;
+	font: 600 0.875rem/1.4 var(--_font);
+	color: var(--_dark);
+	text-transform: none;
+	letter-spacing: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+}
+
+.htoeau-checkout-review ul#shipping_method label .amount,
+.htoeau-checkout-review ul#shipping_method label bdi {
+	font-weight: 700;
+	color: var(--_dark);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.htoeau-checkout-review .woocommerce-shipping-destination {
+	margin: 6px 0 0;
+	font: 400 0.78rem/1.5 var(--_font);
+	color: rgba(0, 44, 65, 0.55);
+}
+
+/* Order total — visually dominant */
+.htoeau-checkout-review .shop_table tfoot tr.order-total {
+	border-top: 1.5px solid var(--_dark);
+	margin-top: 4px;
+	padding: 18px 22px;
+}
+
+.htoeau-checkout-review .shop_table tfoot tr.order-total th {
+	font: 800 0.95rem/1 var(--_font);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--_dark);
+}
+
+.htoeau-checkout-review .shop_table tfoot tr.order-total td,
+.htoeau-checkout-review .shop_table tfoot tr.order-total td .amount,
+.htoeau-checkout-review .shop_table tfoot tr.order-total td bdi {
+	font: 800 1.3rem/1 var(--_font);
+	color: var(--_dark);
+}
+
+.htoeau-checkout-review .shop_table tfoot tr.order-total small.includes_tax {
+	display: block;
+	margin-top: 4px;
+	font: 400 0.72rem/1.3 var(--_font);
+	color: rgba(0, 44, 65, 0.55);
+}
+
+/* ── Payment methods ─────────────────────────────────────── */
+.htoeau-checkout-review #payment {
+	background: var(--_surface-alt);
+	padding: 18px 22px 22px;
+	border-top: 1px solid var(--_border);
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods {
+	list-style: none;
+	margin: 0 0 16px;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods li.wc_payment_method {
+	margin: 0;
+	padding: 0;
+	background: var(--_surface);
+	border: 1.5px solid var(--_border);
+	border-radius: var(--_radius);
+	overflow: hidden;
+	transition: border-color var(--_ease), box-shadow var(--_ease);
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods li.wc_payment_method:has(input[type="radio"]:checked) {
+	border-color: var(--_teal);
+	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.1);
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods > li > input[type="radio"] {
+	margin: 0 0 0 14px;
+	accent-color: var(--_teal);
+	cursor: pointer;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods > li > label {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 14px 14px 8px;
+	margin: 0;
+	cursor: pointer;
+	font: 700 0.9rem/1.3 var(--_font);
+	color: var(--_dark);
+	text-transform: none;
+	letter-spacing: 0;
+	flex: 1;
+	width: calc(100% - 36px);
+	box-sizing: border-box;
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods > li > label img {
+	max-height: 24px;
+	width: auto;
+	margin: 0 4px;
+	vertical-align: middle;
+}
+
+.htoeau-checkout-review #payment .payment_box {
+	margin: 0;
+	padding: 14px 16px 16px;
+	background: var(--_surface-alt);
+	border-top: 1px solid var(--_border);
+	font: 400 0.825rem/1.5 var(--_font);
+	color: rgba(0, 44, 65, 0.7);
+	border-radius: 0;
+}
+
+.htoeau-checkout-review #payment .payment_box::before {
+	display: none !important;
+}
+
+.htoeau-checkout-review #payment .payment_box p:last-child {
+	margin-bottom: 0;
+}
+
+/* Terms & conditions */
+.htoeau-checkout-review .woocommerce-terms-and-conditions-wrapper {
+	margin: 0 0 16px;
+}
+
+.htoeau-checkout-review .woocommerce-terms-and-conditions-wrapper .form-row.validate-required {
+	margin: 0;
+}
+
+.htoeau-checkout-review .woocommerce-privacy-policy-text p {
+	font: 400 0.78rem/1.5 var(--_font);
+	color: rgba(0, 44, 65, 0.6);
+	margin: 0 0 10px;
+}
+
+.htoeau-checkout-review .woocommerce-privacy-policy-text a {
+	color: var(--_teal);
+	text-decoration: underline;
+}
+
+/* ── Place order button — primary CTA ────────────────────── */
+.htoeau-checkout-review .place-order {
+	margin: 0;
+	padding: 0;
+}
+
+.htoeau-checkout-review .place-order .button,
+.htoeau-checkout-review #place_order {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 56px;
+	margin: 0;
+	padding: 0 24px;
+	border: 0;
+	border-radius: var(--_pill);
+	background: var(--brand-gradient, linear-gradient(90deg, #008fa3 0%, #016b9f 100%)) !important;
+	color: #fff !important;
+	font: 800 1rem/1 var(--_font);
+	letter-spacing: 0.04em;
+	cursor: pointer;
+	text-transform: none;
+	box-shadow: none;
+	transition: opacity var(--_ease), transform var(--_ease), box-shadow var(--_ease);
+}
+
+.htoeau-checkout-review .place-order .button:hover,
+.htoeau-checkout-review #place_order:hover {
+	opacity: 0.9;
+	box-shadow: 0 6px 20px rgba(0, 143, 163, 0.32);
+	transform: translateY(-1px);
+}
+
+.htoeau-checkout-review .place-order .button:active,
+.htoeau-checkout-review #place_order:active {
+	transform: translateY(0);
+	box-shadow: none;
+}
+
+.htoeau-checkout-review .place-order .button:disabled,
+.htoeau-checkout-review #place_order:disabled,
+.htoeau-checkout-review #place_order.disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+/* ── Loading overlays + spinners ─────────────────────────── */
+.htoeau-checkout-page .blockUI.blockOverlay {
+	background: rgba(255, 255, 255, 0.8) !important;
+}
+
+.htoeau-checkout-page .processing {
+	pointer-events: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1100px) {
+	.htoeau-checkout-form__grid {
+		grid-template-columns: 1fr;
+	}
+
+	.htoeau-checkout-form__side {
+		position: static;
+		max-width: 540px;
+	}
+}
+
+@media (max-width: 700px) {
+	.htoeau-checkout-page {
+		padding-top: 36px;
+		padding-bottom: 56px;
+	}
+
+	.htoeau-checkout-section {
+		padding: 18px 18px 20px;
+	}
+
+	.htoeau-checkout-form .form-row.form-row-first,
+	.htoeau-checkout-form .form-row.form-row-last {
+		width: 100%;
+		display: flex;
+		margin-right: 0;
+	}
+
+	.htoeau-checkout-form__side {
+		max-width: 100%;
+	}
+}

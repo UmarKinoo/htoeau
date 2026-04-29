@@ -199,14 +199,6 @@ do_action( 'woocommerce_before_cart' );
 				<h3 class="htoeau-cart-help__title"><?php esc_html_e( 'Need help?', 'hello-elementor-child' ); ?></h3>
 				<p><?php esc_html_e( 'Our customer service is ready to answer any questions about your order.', 'hello-elementor-child' ); ?></p>
 				<p><a href="mailto:<?php echo esc_attr( $support_email ); ?>"><?php echo esc_html( $support_email ); ?></a></p>
-				<?php if ( $img_base ) : ?>
-					<img
-						src="<?php echo esc_url( $img_base . 'payment-cards.svg' ); ?>"
-						alt="<?php esc_attr_e( 'Accepted payment methods', 'hello-elementor-child' ); ?>"
-						loading="lazy"
-						style="display:block;margin-top:12px;max-width:100%;height:auto;"
-					/>
-				<?php endif; ?>
 			</div>
 
 			<div class="htoeau-cart-testimonials" data-htoeau-cart-carousel>
@@ -266,42 +258,6 @@ do_action( 'woocommerce_before_cart' );
 
 		</aside>
 	</div>
-
-	<!-- ── FAQ ────────────────────────────────────────────── -->
-	<section class="htoeau-cart-faq" aria-label="<?php esc_attr_e( 'Frequently asked questions', 'hello-elementor-child' ); ?>">
-		<h2 class="htoeau-cart-faq__title"><?php esc_html_e( 'Frequently Asked Questions', 'hello-elementor-child' ); ?></h2>
-
-		<details class="htoeau-cart-faq__item" open>
-			<summary><?php esc_html_e( 'How long will my order take to be delivered?', 'hello-elementor-child' ); ?></summary>
-			<p><?php esc_html_e( 'Shipping within Europe takes 1 to 3 days. Orders within the Netherlands are delivered the next day.', 'hello-elementor-child' ); ?></p>
-		</details>
-
-		<details class="htoeau-cart-faq__item">
-			<summary><?php esc_html_e( 'How will my order be delivered?', 'hello-elementor-child' ); ?></summary>
-			<p><?php esc_html_e( 'We deliver through our trusted shipping partners with tracked delivery options.', 'hello-elementor-child' ); ?></p>
-		</details>
-
-		<details class="htoeau-cart-faq__item">
-			<summary><?php esc_html_e( 'What if I do not like the water?', 'hello-elementor-child' ); ?></summary>
-			<p><?php esc_html_e( 'You can use our return policy window — contact support and we will help immediately.', 'hello-elementor-child' ); ?></p>
-		</details>
-
-		<details class="htoeau-cart-faq__item">
-			<summary><?php esc_html_e( 'How can I reach HtoEAU?', 'hello-elementor-child' ); ?></summary>
-			<p>
-				<?php
-				echo wp_kses(
-					sprintf(
-						/* translators: %s: support email address link */
-						__( 'Email us at %s and our team will respond quickly.', 'hello-elementor-child' ),
-						'<a href="mailto:' . esc_attr( $support_email ) . '">' . esc_html( $support_email ) . '</a>'
-					),
-					array( 'a' => array( 'href' => array() ) )
-				);
-				?>
-			</p>
-		</details>
-	</section>
 
 </section>
 
