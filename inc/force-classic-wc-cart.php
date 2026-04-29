@@ -10,7 +10,10 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Replace Cart block output with the classic [woocommerce_cart] shortcode on the cart page.
+ * Force classic [woocommerce_cart] output on the cart page.
+ *
+ * This guarantees child-theme template overrides in `woocommerce/cart/*.php` are used
+ * even when the cart page content is built with Woo blocks or Elementor content.
  *
  * @param string $content Post content.
  * @return string
@@ -24,10 +27,6 @@ function htoeau_child_force_classic_cart_shortcode( $content ) {
 		return $content;
 	}
 
-	if ( ! function_exists( 'has_block' ) || ! has_block( 'woocommerce/cart', $content ) ) {
-		return $content;
-	}
-
 	return do_shortcode( '[woocommerce_cart]' );
 }
-add_filter( 'the_content', 'htoeau_child_force_classic_cart_shortcode', 5 );
+add_filter( 'the_content', 'htoeau_child_force_classic_cart_shortcode', 1 );
