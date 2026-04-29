@@ -9,17 +9,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.4.18' );
+define( 'HTOEAU_CHILD_VERSION', '1.4.19' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
 require_once HTOEAU_CHILD_DIR . '/inc/currency-fx.php';
 require_once HTOEAU_CHILD_DIR . '/inc/wc-subscriptions-bridge.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-pdp-template.php';
+require_once HTOEAU_CHILD_DIR . '/inc/elementor-cart-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-helpers.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-shop-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-hero-customizer.php';
 require_once HTOEAU_CHILD_DIR . '/inc/pdp-faq.php';
+require_once HTOEAU_CHILD_DIR . '/inc/force-classic-wc-cart.php';
 
 /**
  * Bump this string to re-copy `/assets/images/*` into `wp-content/uploads/htoeau-brand-assets/`.
@@ -334,6 +336,30 @@ function htoeau_child_enqueue_shop_archive_toolbar_js() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_shop_archive_toolbar_js', 1000 );
+
+/**
+ * Cart page CSS after Elementor so branded layout overrides default WooCommerce styles.
+ */
+function htoeau_child_enqueue_cart_css_after_elementor() {
+	if ( ! function_exists( 'is_cart' ) || ! is_cart() ) {
+		return;
+	}
+
+	$deps = array( 'htoeau-child-style' );
+	foreach ( array( 'elementor-frontend', 'elementor-gf-local-roboto', 'elementor-gf-local-robotoslab' ) as $h ) {
+		if ( wp_style_is( $h, 'registered' ) ) {
+			$deps[] = $h;
+		}
+	}
+
+	wp_enqueue_style(
+		'htoeau-cart',
+		HTOEAU_CHILD_URI . '/assets/css/cart.css',
+		$deps,
+		HTOEAU_CHILD_VERSION
+	);
+}
+add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_cart_css_after_elementor', 999 );
 
 /**
  * Remove default single product layout hooks (custom templates replace them).
