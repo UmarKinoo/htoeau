@@ -22,6 +22,7 @@ require_once HTOEAU_CHILD_DIR . '/inc/elementor-shop-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-hero-customizer.php';
 require_once HTOEAU_CHILD_DIR . '/inc/pdp-faq.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-classic-wc-cart.php';
+require_once HTOEAU_CHILD_DIR . '/inc/force-cart-template-include.php';
 
 /**
  * Bump this string to re-copy `/assets/images/*` into `wp-content/uploads/htoeau-brand-assets/`.
