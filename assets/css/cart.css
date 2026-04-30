@@ -303,92 +303,21 @@
 	color: var(--_teal);
 }
 
-/* ── Cart actions row ─────────────────────────────────────
-   Grid (not flex) so coupon and action-buttons each get a
-   guaranteed track width and never collapse. ─────────────── */
+/* ── Cart actions row ─────────────────────────────────────── */
 .htoeau-cart-form td.actions {
 	padding: 16px 18px;
 	background: var(--_surface-alt);
 	border-top: 1.5px solid var(--_border);
-	display: grid;
-	grid-template-columns: minmax(280px, 1fr) auto;
-	align-items: center;
-	gap: 16px;
-}
-
-/* ── Coupon: unified input + inline apply pill ──────────── */
-.htoeau-cart-form .coupon {
 	display: flex;
-	align-items: stretch;
-	width: 100%;
-	max-width: 380px;
-	height: 44px;
-	border: 1.5px solid var(--_border);
-	border-radius: var(--_pill);
-	background: var(--_surface);
-	padding: 0;
-	overflow: hidden;
-	transition: border-color var(--_ease), box-shadow var(--_ease);
-}
-
-.htoeau-cart-form .coupon:focus-within {
-	border-color: var(--_teal);
-	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.12);
-}
-
-.htoeau-cart-form .coupon .input-text {
-	flex: 1 1 auto;
-	height: 100%;
-	border: 0 !important;
-	border-radius: 0 !important;
-	padding: 0 6px 0 18px;
-	font: 500 0.875rem/1 var(--_font);
-	color: var(--_dark);
-	background: transparent;
-	box-shadow: none !important;
-	min-width: 0;
-}
-
-.htoeau-cart-form .coupon .input-text:focus {
-	outline: none;
-	box-shadow: none !important;
-}
-
-.htoeau-cart-form .coupon .input-text::placeholder {
-	color: rgba(0, 44, 65, 0.4);
-}
-
-/* Apply button: secondary / utility — sits INSIDE the coupon pill */
-.htoeau-cart-form .coupon button[name="apply_coupon"],
-.htoeau-cart-form .coupon .button {
-	flex-shrink: 0;
-	height: 32px;
-	margin: 4px 4px 4px 0;
-	padding: 0 18px;
-	border: 0;
-	border-radius: var(--_pill);
-	background: var(--_dark) !important;
-	color: #fff !important;
-	font: 700 0.72rem/1 var(--_font);
-	text-transform: uppercase;
-	letter-spacing: 0.07em;
-	cursor: pointer;
-	box-shadow: none !important;
-	transform: none !important;
-	transition: background-color var(--_ease);
-}
-
-.htoeau-cart-form .coupon button[name="apply_coupon"]:hover,
-.htoeau-cart-form .coupon .button:hover {
-	background: var(--_teal) !important;
-	opacity: 1 !important;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px;
 }
 
 .htoeau-cart-form .actions-right {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	justify-self: end;
 }
 
 /* ── Shared button base ──────────────────────────────────── */
@@ -976,16 +905,13 @@
 	}
 
 	.htoeau-cart-form td.actions {
-		grid-template-columns: 1fr;
-		gap: 12px;
-	}
-
-	.htoeau-cart-form .coupon {
-		max-width: 100%;
+		flex-wrap: wrap;
+		gap: 10px;
 	}
 
 	.htoeau-cart-form .actions-right {
-		justify-self: stretch;
+		flex: 1;
+		justify-content: flex-end;
 	}
 
 	.htoeau-cart-form .actions-right .button,

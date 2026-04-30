@@ -401,6 +401,62 @@ function htoeau_child_enqueue_checkout_css_after_elementor() {
 add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_checkout_css_after_elementor', 999 );
 
 /**
+ * Inject branded inline coupon form into checkout sidebar (above payment methods).
+ */
+function htoeau_checkout_inline_coupon() {
+	if ( ! wc_coupons_enabled() ) {
+		return;
+	}
+	?>
+	<div class="htoeau-checkout-coupon">
+		<button
+			type="button"
+			class="htoeau-checkout-coupon__toggle"
+			aria-expanded="false"
+			aria-controls="htoeau-coupon-body"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+			<?php esc_html_e( 'Have a promo code?', 'hello-elementor-child' ); ?>
+			<svg class="htoeau-checkout-coupon__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+		</button>
+		<div class="htoeau-checkout-coupon__body" id="htoeau-coupon-body" hidden>
+			<form class="checkout_coupon woocommerce-form-coupon" method="post">
+				<div class="htoeau-checkout-coupon__row">
+					<input
+						type="text"
+						name="coupon_code"
+						class="input-text htoeau-checkout-coupon__input"
+						id="coupon_code_checkout"
+						value=""
+						placeholder="<?php esc_attr_e( 'Enter promo code', 'hello-elementor-child' ); ?>"
+					/>
+					<button
+						type="submit"
+						class="button htoeau-checkout-coupon__btn"
+						name="apply_coupon"
+						value="apply_coupon"
+					><?php esc_html_e( 'Apply', 'hello-elementor-child' ); ?></button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script>
+	(function(){
+		var btn = document.querySelector('.htoeau-checkout-coupon__toggle');
+		if (!btn) return;
+		btn.addEventListener('click', function(){
+			var expanded = this.getAttribute('aria-expanded') === 'true';
+			this.setAttribute('aria-expanded', !expanded);
+			var body = document.getElementById('htoeau-coupon-body');
+			if (body) { body.hidden = expanded; }
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'woocommerce_review_order_before_payment', 'htoeau_checkout_inline_coupon', 5 );
+
+/**
  * Remove default single product layout hooks (custom templates replace them).
  */
 function htoeau_child_remove_single_product_hooks() {

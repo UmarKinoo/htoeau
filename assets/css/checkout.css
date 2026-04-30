@@ -596,6 +596,108 @@
 	color: rgba(0, 44, 65, 0.55);
 }
 
+/* ── Inline promo code (checkout sidebar) ────────────────── */
+.htoeau-checkout-coupon {
+	border-top: 1px solid var(--_border);
+	padding: 0;
+}
+
+.htoeau-checkout-coupon__toggle {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 14px 22px;
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	font: 600 0.82rem/1.2 var(--_font);
+	color: var(--_teal);
+	text-align: left;
+	letter-spacing: 0.02em;
+	transition: background-color var(--_ease);
+}
+
+.htoeau-checkout-coupon__toggle:hover {
+	background: rgba(0, 143, 163, 0.04);
+}
+
+.htoeau-checkout-coupon__toggle svg:first-child {
+	flex-shrink: 0;
+	color: var(--_teal);
+}
+
+.htoeau-checkout-coupon__chevron {
+	margin-left: auto;
+	flex-shrink: 0;
+	transition: transform var(--_ease);
+	color: rgba(0, 44, 65, 0.45);
+}
+
+.htoeau-checkout-coupon__toggle[aria-expanded="true"] .htoeau-checkout-coupon__chevron {
+	transform: rotate(180deg);
+}
+
+.htoeau-checkout-coupon__body {
+	padding: 0 22px 16px;
+}
+
+.htoeau-checkout-coupon__body[hidden] {
+	display: none;
+}
+
+.htoeau-checkout-coupon__row {
+	display: flex;
+	gap: 8px;
+	align-items: stretch;
+}
+
+.htoeau-checkout-coupon__input {
+	flex: 1 1 auto;
+	height: 42px !important;
+	min-height: 42px !important;
+	min-width: 0;
+	padding: 0 14px !important;
+	border: 1.5px solid var(--_border) !important;
+	border-radius: var(--_pill) !important;
+	font: 500 0.875rem/1 var(--_font) !important;
+	color: var(--_dark) !important;
+	background: var(--_surface) !important;
+	box-shadow: none !important;
+	transition: border-color var(--_ease), box-shadow var(--_ease);
+}
+
+.htoeau-checkout-coupon__input:focus {
+	outline: none;
+	border-color: var(--_teal) !important;
+	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.12) !important;
+}
+
+.htoeau-checkout-coupon__input::placeholder {
+	color: rgba(0, 44, 65, 0.4);
+}
+
+.htoeau-checkout-coupon__btn {
+	flex-shrink: 0;
+	height: 42px;
+	padding: 0 20px;
+	border: 0 !important;
+	border-radius: var(--_pill) !important;
+	background: var(--brand-gradient, linear-gradient(90deg, #008fa3 0%, #016b9f 100%)) !important;
+	color: #fff !important;
+	font: 700 0.8rem/1 var(--_font) !important;
+	letter-spacing: 0.04em;
+	cursor: pointer;
+	box-shadow: none !important;
+	transform: none !important;
+	transition: opacity var(--_ease);
+	white-space: nowrap;
+}
+
+.htoeau-checkout-coupon__btn:hover {
+	opacity: 0.88 !important;
+}
+
 /* ── Payment methods ─────────────────────────────────────── */
 .htoeau-checkout-review #payment {
 	background: var(--_surface-alt);
