@@ -402,24 +402,20 @@ add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_checkout_css_after_eleme
 
 /**
  * Inject branded inline coupon form into checkout sidebar (above payment methods).
+ * Uses <details>/<summary> to avoid WooCommerce button CSS inheritance.
  */
 function htoeau_checkout_inline_coupon() {
 	if ( ! wc_coupons_enabled() ) {
 		return;
 	}
 	?>
-	<div class="htoeau-checkout-coupon">
-		<button
-			type="button"
-			class="htoeau-checkout-coupon__toggle"
-			aria-expanded="false"
-			aria-controls="htoeau-coupon-body"
-		>
+	<details class="htoeau-checkout-coupon">
+		<summary class="htoeau-checkout-coupon__summary">
 			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-			<?php esc_html_e( 'Have a promo code?', 'hello-elementor-child' ); ?>
+			<span><?php esc_html_e( 'Have a promo code?', 'hello-elementor-child' ); ?></span>
 			<svg class="htoeau-checkout-coupon__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-		</button>
-		<div class="htoeau-checkout-coupon__body" id="htoeau-coupon-body" hidden>
+		</summary>
+		<div class="htoeau-checkout-coupon__body">
 			<form class="checkout_coupon woocommerce-form-coupon" method="post">
 				<div class="htoeau-checkout-coupon__row">
 					<input
@@ -428,30 +424,18 @@ function htoeau_checkout_inline_coupon() {
 						class="input-text htoeau-checkout-coupon__input"
 						id="coupon_code_checkout"
 						value=""
-						placeholder="<?php esc_attr_e( 'Enter promo code', 'hello-elementor-child' ); ?>"
+						placeholder="<?php esc_attr_e( 'Promo code', 'hello-elementor-child' ); ?>"
 					/>
 					<button
 						type="submit"
-						class="button htoeau-checkout-coupon__btn"
+						class="htoeau-checkout-coupon__btn"
 						name="apply_coupon"
 						value="apply_coupon"
 					><?php esc_html_e( 'Apply', 'hello-elementor-child' ); ?></button>
 				</div>
 			</form>
 		</div>
-	</div>
-	<script>
-	(function(){
-		var btn = document.querySelector('.htoeau-checkout-coupon__toggle');
-		if (!btn) return;
-		btn.addEventListener('click', function(){
-			var expanded = this.getAttribute('aria-expanded') === 'true';
-			this.setAttribute('aria-expanded', !expanded);
-			var body = document.getElementById('htoeau-coupon-body');
-			if (body) { body.hidden = expanded; }
-		});
-	})();
-	</script>
+	</details>
 	<?php
 }
 add_action( 'woocommerce_checkout_order_review', 'htoeau_checkout_inline_coupon', 15 );
