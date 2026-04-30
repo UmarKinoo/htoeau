@@ -596,30 +596,44 @@
 	color: rgba(0, 44, 65, 0.55);
 }
 
-/* ── Inline promo code (checkout sidebar) ────────────────── */
+/* ── Inline promo code — shadcn-style card ───────────────── */
 .htoeau-checkout-coupon {
-	border-top: 1px solid var(--_border);
-	padding: 0;
+	margin: 16px 22px;
+	border: 1px solid var(--_border);
+	border-radius: var(--_radius);
+	background: var(--_surface);
+	overflow: hidden;
 }
 
-.htoeau-checkout-coupon__toggle {
-	width: 100%;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 14px 22px;
-	background: transparent;
-	border: 0;
-	cursor: pointer;
-	font: 600 0.82rem/1.2 var(--_font);
-	color: var(--_teal);
-	text-align: left;
-	letter-spacing: 0.02em;
-	transition: background-color var(--_ease);
+/* Toggle row — reset ALL inherited WC button styles */
+.htoeau-checkout-coupon__toggle,
+.htoeau-checkout-page .htoeau-checkout-coupon__toggle {
+	width: 100% !important;
+	display: flex !important;
+	align-items: center !important;
+	gap: 10px !important;
+	padding: 13px 16px !important;
+	background: var(--_surface) !important;
+	background-image: none !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	cursor: pointer !important;
+	font: 500 0.875rem/1.4 var(--_font) !important;
+	color: var(--_dark) !important;
+	text-align: left !important;
+	text-transform: none !important;
+	letter-spacing: 0 !important;
+	transition: background-color 0.15s ease !important;
+	height: auto !important;
+	line-height: 1.4 !important;
 }
 
-.htoeau-checkout-coupon__toggle:hover {
-	background: rgba(0, 143, 163, 0.04);
+.htoeau-checkout-coupon__toggle:hover,
+.htoeau-checkout-page .htoeau-checkout-coupon__toggle:hover {
+	background: var(--_surface-alt) !important;
+	opacity: 1 !important;
+	transform: none !important;
 }
 
 .htoeau-checkout-coupon__toggle svg:first-child {
@@ -630,16 +644,19 @@
 .htoeau-checkout-coupon__chevron {
 	margin-left: auto;
 	flex-shrink: 0;
-	transition: transform var(--_ease);
-	color: rgba(0, 44, 65, 0.45);
+	color: rgba(0, 44, 65, 0.4);
+	transition: transform 0.2s ease;
 }
 
 .htoeau-checkout-coupon__toggle[aria-expanded="true"] .htoeau-checkout-coupon__chevron {
 	transform: rotate(180deg);
 }
 
+/* Expanded body */
 .htoeau-checkout-coupon__body {
-	padding: 0 22px 16px;
+	padding: 12px 14px 14px;
+	border-top: 1px solid var(--_border);
+	background: var(--_surface-alt);
 }
 
 .htoeau-checkout-coupon__body[hidden] {
@@ -649,53 +666,66 @@
 .htoeau-checkout-coupon__row {
 	display: flex;
 	gap: 8px;
-	align-items: stretch;
+	align-items: center;
 }
 
-.htoeau-checkout-coupon__input {
-	flex: 1 1 auto;
-	height: 42px !important;
-	min-height: 42px !important;
-	min-width: 0;
-	padding: 0 14px !important;
-	border: 1.5px solid var(--_border) !important;
-	border-radius: var(--_pill) !important;
-	font: 500 0.875rem/1 var(--_font) !important;
+/* Input */
+.htoeau-checkout-coupon__input,
+.htoeau-checkout-page .htoeau-checkout-coupon__input {
+	flex: 1 1 auto !important;
+	height: 40px !important;
+	min-height: 40px !important;
+	min-width: 0 !important;
+	padding: 0 13px !important;
+	border: 1px solid var(--_border) !important;
+	border-radius: var(--_radius) !important;
+	font: 400 0.875rem/1 var(--_font) !important;
 	color: var(--_dark) !important;
 	background: var(--_surface) !important;
 	box-shadow: none !important;
-	transition: border-color var(--_ease), box-shadow var(--_ease);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-.htoeau-checkout-coupon__input:focus {
-	outline: none;
+.htoeau-checkout-coupon__input:focus,
+.htoeau-checkout-page .htoeau-checkout-coupon__input:focus {
+	outline: none !important;
 	border-color: var(--_teal) !important;
 	box-shadow: 0 0 0 3px rgba(0, 143, 163, 0.12) !important;
 }
 
 .htoeau-checkout-coupon__input::placeholder {
-	color: rgba(0, 44, 65, 0.4);
+	color: rgba(0, 44, 65, 0.38);
 }
 
-.htoeau-checkout-coupon__btn {
-	flex-shrink: 0;
-	height: 42px;
-	padding: 0 20px;
+/* Apply button — brand gradient pill */
+.htoeau-checkout-coupon__btn,
+.htoeau-checkout-page .htoeau-checkout-coupon__btn {
+	flex-shrink: 0 !important;
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	height: 40px !important;
+	padding: 0 18px !important;
 	border: 0 !important;
 	border-radius: var(--_pill) !important;
 	background: var(--brand-gradient, linear-gradient(90deg, #008fa3 0%, #016b9f 100%)) !important;
+	background-image: var(--brand-gradient, linear-gradient(90deg, #008fa3 0%, #016b9f 100%)) !important;
 	color: #fff !important;
 	font: 700 0.8rem/1 var(--_font) !important;
-	letter-spacing: 0.04em;
-	cursor: pointer;
+	letter-spacing: 0.03em !important;
+	cursor: pointer !important;
+	white-space: nowrap !important;
 	box-shadow: none !important;
 	transform: none !important;
-	transition: opacity var(--_ease);
-	white-space: nowrap;
+	text-transform: none !important;
+	transition: opacity 0.15s ease !important;
 }
 
-.htoeau-checkout-coupon__btn:hover {
+.htoeau-checkout-coupon__btn:hover,
+.htoeau-checkout-page .htoeau-checkout-coupon__btn:hover {
 	opacity: 0.88 !important;
+	transform: none !important;
+	box-shadow: none !important;
 }
 
 /* ── Payment methods ─────────────────────────────────────── */
