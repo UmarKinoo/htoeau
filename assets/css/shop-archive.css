@@ -585,7 +585,7 @@ body.htoeau-shop-archive .htoeau-shop-card__media-link img {
 .htoeau-shop-card__title {
 	margin: 0;
 	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
-	font-size: 1.5rem;
+	font-size: 1.5rem !important;
 	line-height: 1.3;
 	letter-spacing: -0.02em;
 	font-weight: 400;
