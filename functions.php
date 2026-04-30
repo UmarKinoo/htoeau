@@ -454,7 +454,7 @@ function htoeau_checkout_inline_coupon() {
 	</script>
 	<?php
 }
-add_action( 'woocommerce_review_order_before_payment', 'htoeau_checkout_inline_coupon', 5 );
+add_action( 'woocommerce_checkout_order_review', 'htoeau_checkout_inline_coupon', 15 );
 
 /**
  * Remove default single product layout hooks (custom templates replace them).

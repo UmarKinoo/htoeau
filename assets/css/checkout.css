@@ -700,9 +700,11 @@
 
 /* ── Payment methods ─────────────────────────────────────── */
 .htoeau-checkout-review #payment {
-	background: var(--_surface-alt);
+	background: var(--_surface);
 	padding: 18px 22px 22px;
 	border-top: 1px solid var(--_border);
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .htoeau-checkout-review #payment .wc_payment_methods {
@@ -712,6 +714,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+	width: 100%;
 }
 
 .htoeau-checkout-review #payment .wc_payment_methods li.wc_payment_method {
@@ -721,6 +724,8 @@
 	border: 1.5px solid var(--_border);
 	border-radius: var(--_radius);
 	overflow: hidden;
+	width: 100%;
+	box-sizing: border-box;
 	transition: border-color var(--_ease), box-shadow var(--_ease);
 }
 
@@ -736,6 +741,7 @@
 	width: 16px;
 	height: 16px;
 	vertical-align: middle;
+	flex-shrink: 0;
 }
 
 .htoeau-checkout-review #payment .wc_payment_methods > li > label {
@@ -750,7 +756,8 @@
 	text-transform: none;
 	letter-spacing: 0;
 	flex: 1;
-	width: calc(100% - 36px);
+	min-width: 0;
+	width: calc(100% - 44px);
 	box-sizing: border-box;
 }
 
@@ -761,14 +768,27 @@
 	vertical-align: middle;
 }
 
+/* Card form container — white, full-width, no grey box */
 .htoeau-checkout-review #payment .payment_box {
 	margin: 0;
-	padding: 14px 16px 16px;
-	background: var(--_surface-alt);
+	padding: 16px 18px 18px;
+	background: var(--_surface);
 	border-top: 1px solid var(--_border);
 	font: 400 0.825rem/1.5 var(--_font);
 	color: rgba(0, 44, 65, 0.7);
 	border-radius: 0;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Mollie / payment plugin injected fields: ensure full width */
+.htoeau-checkout-review #payment .payment_box > *,
+.htoeau-checkout-review #payment .payment_box table,
+.htoeau-checkout-review #payment .payment_box .mollie-components-wrapper,
+.htoeau-checkout-review #payment .payment_box iframe {
+	width: 100% !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
 }
 
 .htoeau-checkout-review #payment .payment_box::before {
