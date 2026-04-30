@@ -788,17 +788,27 @@ details[open].htoeau-checkout-coupon .htoeau-checkout-coupon__chevron {
 	vertical-align: middle;
 }
 
-/* Card form container — white, full-width, no grey box */
-.htoeau-checkout-review #payment .payment_box {
-	margin: 0;
-	padding: 16px 18px 18px;
-	background: var(--_surface);
-	border-top: 1px solid var(--_border);
-	font: 400 0.825rem/1.5 var(--_font);
-	color: rgba(0, 44, 65, 0.7);
-	border-radius: 0;
-	width: 100%;
-	box-sizing: border-box;
+/* Card form container — override WC core #e5e5e5 grey */
+.woocommerce-checkout #payment div.payment_box,
+.htoeau-checkout-review #payment .payment_box,
+.htoeau-checkout-page #payment div.payment_box {
+	margin: 0 !important;
+	padding: 16px 18px 18px !important;
+	background-color: var(--_surface, #fff) !important;
+	background-image: none !important;
+	border-top: 1px solid var(--_border) !important;
+	border-radius: 0 !important;
+	font: 400 0.825rem/1.5 var(--_font) !important;
+	color: rgba(0, 44, 65, 0.7) !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+	box-shadow: none !important;
+}
+
+/* Arrow/triangle that WC renders above .payment_box */
+.woocommerce-checkout #payment div.payment_box::before,
+.htoeau-checkout-page #payment div.payment_box::before {
+	display: none !important;
 }
 
 /* Mollie / payment plugin injected fields: ensure full width */
