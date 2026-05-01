@@ -829,6 +829,17 @@ details[open].htoeau-checkout-coupon .htoeau-checkout-coupon__chevron {
 	margin-bottom: 0;
 }
 
+/* Mollie: any same-origin card inputs (rare); iframes ignore this. Mirrors iframe styles set in PHP. */
+.htoeau-checkout-review #payment .payment_box .mollie-components input:not([type="hidden"]):not(.mollie-component-hidden-input),
+.htoeau-checkout-review #payment .payment_box input#expiryDate {
+	box-sizing: border-box !important;
+	height: 46px !important;
+	min-height: 46px !important;
+	padding: 0 14px !important;
+	font: 500 0.9rem/1 var(--_font) !important;
+	line-height: 46px !important;
+}
+
 /* Terms & conditions */
 .htoeau-checkout-review .woocommerce-terms-and-conditions-wrapper {
 	margin: 0 0 16px;
