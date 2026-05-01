@@ -118,6 +118,18 @@ function htoeau_child_enqueue_assets() {
 		HTOEAU_CHILD_VERSION
 	);
 
+	$icon_script_deps = array( 'jquery' );
+	if ( wp_script_is( 'elementor-frontend', 'registered' ) ) {
+		$icon_script_deps[] = 'elementor-frontend';
+	}
+	wp_enqueue_script(
+		'htoeau-elementor-check-icons',
+		HTOEAU_CHILD_URI . '/assets/js/elementor-check-icons.js',
+		$icon_script_deps,
+		HTOEAU_CHILD_VERSION,
+		true
+	);
+
 	if ( is_product() ) {
 		$pdp_deps = array( 'jquery' );
 		if ( wp_script_is( 'wc-add-to-cart-variation', 'registered' ) ) {
