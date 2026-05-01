@@ -26,6 +26,7 @@ require_once HTOEAU_CHILD_DIR . '/inc/force-cart-template-include.php';
 require_once HTOEAU_CHILD_DIR . '/inc/cart-block-wrapper.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-classic-wc-checkout.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-checkout-template-include.php';
+require_once HTOEAU_CHILD_DIR . '/inc/mollie-components-checkout-styles.php';
 
 /**
  * Bump this string to re-copy `/assets/images/*` into `wp-content/uploads/htoeau-brand-assets/`.
