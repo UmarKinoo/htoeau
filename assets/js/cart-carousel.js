@@ -72,6 +72,11 @@
 			var input = wrap.querySelector('input.qty');
 			if (!input) return;
 
+			// Remove any WooCommerce-injected native +/- buttons to avoid duplicates.
+			wrap.querySelectorAll('button.plus, button.minus, .qty_button').forEach(function (btn) {
+				btn.parentNode.removeChild(btn);
+			});
+
 			var dec = document.createElement('button');
 			dec.type = 'button';
 			dec.className = 'htoeau-qty-btn htoeau-qty-btn--dec';
@@ -112,5 +117,9 @@
 
 	document.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
 	initQuantitySteppers();
+
+	// Re-init after WC AJAX cart updates (e.g. Update cart button).
+	document.body.addEventListener('updated_cart_totals', initQuantitySteppers);
+	document.body.addEventListener('updated_wc_div', initQuantitySteppers);
 
 })();

@@ -282,25 +282,34 @@
 	margin: 0;
 }
 
-.htoeau-qty-btn {
+/* Cover both our custom buttons and any WC-injected .plus/.minus buttons. */
+.htoeau-qty-btn,
+.htoeau-cart-form .product-quantity .quantity button.plus,
+.htoeau-cart-form .product-quantity .quantity button.minus {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 34px;
 	height: 38px;
 	flex-shrink: 0;
-	border: 0;
-	background: transparent;
-	color: var(--_dark);
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	color: var(--_dark) !important;
 	font: 400 1.2rem/1 var(--_font);
 	cursor: pointer;
 	padding: 0;
+	box-shadow: none !important;
+	transform: none !important;
+	letter-spacing: 0 !important;
 	transition: background var(--_ease), color var(--_ease);
 }
 
-.htoeau-qty-btn:hover {
-	background: rgba(0, 143, 163, 0.07);
-	color: var(--_teal);
+.htoeau-qty-btn:hover,
+.htoeau-cart-form .product-quantity .quantity button.plus:hover,
+.htoeau-cart-form .product-quantity .quantity button.minus:hover {
+	background: rgba(0, 143, 163, 0.07) !important;
+	color: var(--_teal) !important;
 }
 
 /* ── Cart actions row ─────────────────────────────────────── */
@@ -353,15 +362,7 @@
 	box-shadow: none;
 }
 
-/* Explicit reset so qty stepper buttons can never inherit gradient styles */
-.htoeau-qty-btn {
-	background: transparent !important;
-	color: var(--_dark) !important;
-	box-shadow: none !important;
-	transform: none !important;
-	border-radius: 0 !important;
-	letter-spacing: 0 !important;
-}
+
 
 /* Ghost / outline button (Continue shopping) */
 .htoeau-btn-ghost {
