@@ -69,8 +69,10 @@
 	// the order summary in the native right column.
 
 	function injectSidebar() {
-		var source  = document.querySelector('.htoeau-cart-sidebar-inject');
-		var totals  = document.querySelector('.wp-block-woocommerce-cart-totals-block');
+		var source = document.querySelector('.htoeau-cart-sidebar-inject');
+		// Prefer the WC block totals block; fall back to the sidebar wrapper.
+		var totals = document.querySelector('.wp-block-woocommerce-cart-totals-block') ||
+		             document.querySelector('.wc-block-components-sidebar');
 
 		if (!source || !totals) return;
 
