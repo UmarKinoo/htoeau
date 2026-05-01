@@ -160,27 +160,24 @@ do_action( 'woocommerce_before_cart' );
 
 						<tr>
 							<td colspan="6" class="actions">
+								<div class="htoeau-cart-actions-bar">
+									<div class="htoeau-cart-actions-lead">
+										<?php do_action( 'woocommerce_cart_actions' ); ?>
+										<a href="<?php echo esc_url( $shop_url ); ?>" class="htoeau-btn-ghost">
+											&#8592; <?php esc_html_e( 'Continue shopping', 'hello-elementor-child' ); ?>
+										</a>
+									</div>
+									<div class="htoeau-cart-actions-trail">
+										<button
+											type="submit"
+											class="button htoeau-cart-update"
+											name="update_cart"
+											value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"
+										><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
+									</div>
 
-								<button
-									type="submit"
-									class="button"
-									name="update_cart"
-									value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"
-									style="display:none"
-									aria-hidden="true"
-									tabindex="-1"
-								><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
-
-								<div class="actions-right">
-									<a href="<?php echo esc_url( $shop_url ); ?>" class="htoeau-btn-ghost">
-										&#8592; <?php esc_html_e( 'Continue shopping', 'hello-elementor-child' ); ?>
-									</a>
+									<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
 								</div>
-
-
-								<?php do_action( 'woocommerce_cart_actions' ); ?>
-								<?php wp_nonce_field( 'woocommerce-cart', 'woocommerce-cart-nonce' ); ?>
-
 							</td>
 						</tr>
 

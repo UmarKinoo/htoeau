@@ -5,11 +5,10 @@
  * The Cart Block renders via React / Store API — PHP template overrides are ignored.
  * We use render_block_woocommerce/cart to wrap the block output with our design chrome.
  *
- * Layout strategy:
- *   - Trust bar header sits above the block cart.
- *   - Help + testimonials are rendered as a hidden div and moved by cart-carousel.js
- *     into .wp-block-woocommerce-cart-totals-block so they sit below the order summary
- *     in the block cart's native right column.
+ * The help widget and testimonial carousel are rendered in a hidden
+ * .htoeau-cart-sidebar-inject div. cart-carousel.js moves those into
+ * .wp-block-woocommerce-cart-totals-block so they appear below the
+ * order summary in the block cart's native right column.
  *
  * @package Hello_Elementor_Child
  */
@@ -77,14 +76,8 @@ function htoeau_child_wrap_cart_block( string $content ): string {
 			</div>
 		</header>
 
-		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — WC block output ?>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
-		<?php /*
-		 * Sidebar injection source.
-		 * cart-carousel.js moves the children of this div into
-		 * .wp-block-woocommerce-cart-totals-block so they appear below
-		 * the order summary in the block cart's right column.
-		 */ ?>
 		<div class="htoeau-cart-sidebar-inject" hidden aria-hidden="true">
 
 			<div class="htoeau-cart-help">

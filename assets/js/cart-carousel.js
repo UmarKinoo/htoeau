@@ -1,9 +1,5 @@
 /**
- * Cart page JS — testimonial carousel + sidebar injection.
- *
- * The WooCommerce Cart Block handles qty updates natively via the Store API.
- * This file only manages the carousel and moves the help/testimonials panel
- * from its server-rendered holding div into the block cart's totals column.
+ * Cart page JS — testimonial carousel + block cart sidebar injection.
  */
 (function () {
 	'use strict';
@@ -65,15 +61,13 @@
 
 	/* ── Sidebar injection ──────────────────────────────────── */
 	// PHP renders help + testimonials in a hidden .htoeau-cart-sidebar-inject div.
-	// We move its children into the block cart's totals column so they sit below
-	// the order summary in the native right column.
+	// Move its children into the block cart's totals column so they appear below
+	// the order summary in the right sidebar.
 
 	function injectSidebar() {
 		var source = document.querySelector('.htoeau-cart-sidebar-inject');
-		// Prefer the WC block totals block; fall back to the sidebar wrapper.
 		var totals = document.querySelector('.wp-block-woocommerce-cart-totals-block') ||
 		             document.querySelector('.wc-block-components-sidebar');
-
 		if (!source || !totals) return;
 
 		while (source.firstChild) {
@@ -81,7 +75,6 @@
 		}
 		source.parentNode.removeChild(source);
 
-		// Init carousel now that the element is in the DOM and visible.
 		totals.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
 	}
 
