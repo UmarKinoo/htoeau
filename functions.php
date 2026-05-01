@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.6.2' );
+define( 'HTOEAU_CHILD_VERSION', '1.6.3' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -453,6 +453,19 @@ function htoeau_checkout_inline_coupon() {
 	<?php
 }
 add_action( 'woocommerce_checkout_order_review', 'htoeau_checkout_inline_coupon', 15 );
+
+/**
+ * Remove default WC checkout login + coupon info strips above the form.
+ * Guests use My Account to log in; coupons use the sidebar promo block.
+ */
+function htoeau_child_remove_checkout_login_coupon_toggles() {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() || is_order_received_page() ) {
+		return;
+	}
+	remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_login_form', 10 );
+	remove_action( 'woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10 );
+}
+add_action( 'wp', 'htoeau_child_remove_checkout_login_coupon_toggles', 99 );
 
 /**
  * Remove default single product layout hooks (custom templates replace them).
