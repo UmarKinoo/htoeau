@@ -1,5 +1,5 @@
 /**
- * Cart page JS — testimonial carousel + block cart sidebar injection.
+ * Cart page JS — testimonial carousel, block sidebar injection, qty stepper, auto-update cart.
  */
 (function () {
 	'use strict';
@@ -78,8 +78,109 @@
 		totals.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
 	}
 
+	/* ── Classic cart quantity stepper (− / +) ─────────────── */
+
+	function initCartQtySteppers() {
+		document.querySelectorAll('.woocommerce-cart-form .quantity').forEach(function (wrap) {
+			if (wrap.dataset.htoeauQtyStepper === '1') {
+				return;
+			}
+			var input = wrap.querySelector('input.qty');
+			var minus = wrap.querySelector('button.minus');
+			var plus  = wrap.querySelector('button.plus');
+			if (!input || !minus || !plus) {
+				return;
+			}
+			wrap.dataset.htoeauQtyStepper = '1';
+
+			function parseQty() {
+				var v = parseFloat(input.value);
+				return isNaN(v) ? 0 : v;
+			}
+			function getStep() {
+				var s = parseFloat(input.step);
+				return !isNaN(s) && s > 0 ? s : 1;
+			}
+			function getMin() {
+				var m = parseFloat(input.getAttribute('min'));
+				return isNaN(m) ? 0 : m;
+			}
+			function getMax() {
+				var attr = input.getAttribute('max');
+				if (attr === null || attr === '') {
+					return null;
+				}
+				var m = parseFloat(attr);
+				return isNaN(m) ? null : m;
+			}
+			function applyDelta(direction) {
+				var step = getStep();
+				var min = getMin();
+				var max = getMax();
+				var next = parseQty() + direction * step;
+				if (next < min) {
+					next = min;
+				}
+				if (max !== null && next > max) {
+					next = max;
+				}
+				input.value = next;
+				input.dispatchEvent(new Event('input', { bubbles: true }));
+				input.dispatchEvent(new Event('change', { bubbles: true }));
+			}
+
+			minus.addEventListener('click', function (e) {
+				e.preventDefault();
+				applyDelta(-1);
+			});
+			plus.addEventListener('click', function (e) {
+				e.preventDefault();
+				applyDelta(1);
+			});
+		});
+	}
+
+	/* ── Qty change → debounced Update cart (WC AJAX) ─────── */
+	function initQtyAutoUpdate() {
+		var form = document.querySelector('form.woocommerce-cart-form');
+		if (!form) return;
+
+		var timer = null;
+
+		form.querySelectorAll('input.qty').forEach(function (input) {
+			if (input.dataset.htoeauAutoQty === '1') return;
+			input.dataset.htoeauAutoQty = '1';
+
+			input.addEventListener('change', function () {
+				clearTimeout(timer);
+				timer = setTimeout(function () {
+					var btn = form.querySelector('button[name="update_cart"]');
+					if (btn) {
+						btn.disabled = false;
+						btn.click();
+					} else {
+						form.submit();
+					}
+				}, 500);
+			});
+		});
+	}
+
+	function refreshClassicCartUi() {
+		initCartQtySteppers();
+		initQtyAutoUpdate();
+	}
+
 	/* ── Init ───────────────────────────────────────────────── */
 
+	document.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
 	injectSidebar();
+	refreshClassicCartUi();
+
+	if (typeof window.jQuery !== 'undefined') {
+		window.jQuery(document.body).on('updated_wc_div', function () {
+			refreshClassicCartUi();
+		});
+	}
 
 })();
