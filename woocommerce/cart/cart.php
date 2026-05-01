@@ -161,11 +161,11 @@ do_action( 'woocommerce_before_cart' );
 						<tr>
 							<td colspan="6" class="actions">
 
+								<input type="hidden" name="update_cart" value="Update cart" />
 								<div class="actions-right">
 									<a href="<?php echo esc_url( $shop_url ); ?>" class="htoeau-btn-ghost">
 										&#8592; <?php esc_html_e( 'Continue shopping', 'hello-elementor-child' ); ?>
 									</a>
-									<button type="submit" class="button" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 								</div>
 
 

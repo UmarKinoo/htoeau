@@ -1,5 +1,5 @@
 /**
- * Cart page JS — testimonial carousel + quantity stepper.
+ * Cart page JS — testimonial carousel + qty auto-update.
  */
 (function () {
 	'use strict';
@@ -27,17 +27,14 @@
 
 		function update() {
 			track.style.transform = 'translateX(-' + i * 100 + '%)';
-
 			slides.forEach(function (el, k) {
 				el.setAttribute('aria-hidden', k === i ? 'false' : 'true');
 			});
-
 			getDots().forEach(function (d, k) {
 				var active = k === i;
 				d.setAttribute('aria-selected', active ? 'true' : 'false');
 				d.tabIndex = active ? 0 : -1;
 			});
-
 			if (prev) prev.disabled = (n <= 1 || i <= 0);
 			if (next) next.disabled = (n <= 1 || i >= n - 1);
 		}
@@ -62,53 +59,30 @@
 		update();
 	}
 
-	/* ── Quantity Stepper ───────────────────────────────────── */
+	/* ── Qty auto-update ────────────────────────────────────── */
+	// The form has a hidden <input name="update_cart"> so form.submit()
+	// tells WooCommerce to process qty changes — no button needed.
 
-	function initQuantitySteppers() {
-		document.querySelectorAll('td.product-quantity .quantity').forEach(function (wrap) {
-			if (wrap._htoeauStepperInit) return;
-			wrap._htoeauStepperInit = true;
+	function initQtyAutoUpdate() {
+		var form = document.querySelector('form.woocommerce-cart-form');
+		if (!form) return;
 
-			var input = wrap.querySelector('input.qty');
-			if (!input) return;
+		// Remove any WC-injected +/- buttons.
+		form.querySelectorAll('.quantity button.plus, .quantity button.minus, .quantity .qty_button').forEach(function (btn) {
+			btn.parentNode.removeChild(btn);
+		});
 
-			// Remove any WooCommerce-injected native +/- buttons to avoid duplicates.
-			wrap.querySelectorAll('button.plus, button.minus, .qty_button').forEach(function (btn) {
-				btn.parentNode.removeChild(btn);
-			});
+		var timer = null;
 
-			var dec = document.createElement('button');
-			dec.type = 'button';
-			dec.className = 'htoeau-qty-btn htoeau-qty-btn--dec';
-			dec.setAttribute('aria-label', 'Decrease quantity');
-			dec.textContent = '−';
+		form.querySelectorAll('input.qty').forEach(function (input) {
+			if (input._htoeauAutoUpdate) return;
+			input._htoeauAutoUpdate = true;
 
-			var inc = document.createElement('button');
-			inc.type = 'button';
-			inc.className = 'htoeau-qty-btn htoeau-qty-btn--inc';
-			inc.setAttribute('aria-label', 'Increase quantity');
-			inc.textContent = '+';
-
-			wrap.insertBefore(dec, input);
-			wrap.appendChild(inc);
-
-			dec.addEventListener('click', function () {
-				var v   = parseInt(input.value, 10) || 1;
-				var min = parseInt(input.getAttribute('min'), 10);
-				min = isNaN(min) ? 0 : min;
-				if (v - 1 >= min) {
-					input.value = v - 1;
-					input.dispatchEvent(new Event('change', { bubbles: true }));
-				}
-			});
-
-			inc.addEventListener('click', function () {
-				var v   = parseInt(input.value, 10) || 0;
-				var max = parseInt(input.getAttribute('max'), 10);
-				if (isNaN(max) || v + 1 <= max) {
-					input.value = v + 1;
-					input.dispatchEvent(new Event('change', { bubbles: true }));
-				}
+			input.addEventListener('change', function () {
+				clearTimeout(timer);
+				timer = setTimeout(function () {
+					form.submit();
+				}, 500);
 			});
 		});
 	}
@@ -116,10 +90,6 @@
 	/* ── Init ───────────────────────────────────────────────── */
 
 	document.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
-	initQuantitySteppers();
-
-	// Re-init after WC AJAX cart updates (e.g. Update cart button).
-	document.body.addEventListener('updated_cart_totals', initQuantitySteppers);
-	document.body.addEventListener('updated_wc_div', initQuantitySteppers);
+	initQtyAutoUpdate();
 
 })();

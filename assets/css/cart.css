@@ -249,7 +249,7 @@
 	color: var(--_teal);
 }
 
-/* ── Quantity stepper ────────────────────────────────────── */
+/* ── Quantity input ──────────────────────────────────────── */
 .htoeau-cart-form .product-quantity .quantity {
 	display: inline-flex;
 	align-items: center;
@@ -258,58 +258,32 @@
 	overflow: hidden;
 	background: var(--_surface);
 	height: 38px;
+	transition: border-color var(--_ease);
+}
+
+.htoeau-cart-form .product-quantity .quantity:focus-within {
+	border-color: var(--_teal);
 }
 
 .htoeau-cart-form .product-quantity .qty {
-	width: 44px;
+	width: 64px;
 	height: 38px;
 	border: 0 !important;
-	border-left: 1.5px solid var(--_border) !important;
-	border-right: 1.5px solid var(--_border) !important;
 	border-radius: 0 !important;
 	text-align: center;
-	padding: 0 4px;
+	padding: 0 8px;
 	font: 700 0.9rem/1 var(--_font);
 	color: var(--_dark);
 	background: transparent;
 	-moz-appearance: textfield;
 	box-shadow: none;
+	outline: none;
 }
 
 .htoeau-cart-form .product-quantity .qty::-webkit-outer-spin-button,
 .htoeau-cart-form .product-quantity .qty::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
-}
-
-/* Cover both our custom buttons and any WC-injected .plus/.minus buttons. */
-.htoeau-qty-btn,
-.htoeau-cart-form .product-quantity .quantity button.plus,
-.htoeau-cart-form .product-quantity .quantity button.minus {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 34px;
-	height: 38px;
-	flex-shrink: 0;
-	border: 0 !important;
-	border-radius: 0 !important;
-	background: transparent !important;
-	color: var(--_dark) !important;
-	font: 400 1.2rem/1 var(--_font);
-	cursor: pointer;
-	padding: 0;
-	box-shadow: none !important;
-	transform: none !important;
-	letter-spacing: 0 !important;
-	transition: background var(--_ease), color var(--_ease);
-}
-
-.htoeau-qty-btn:hover,
-.htoeau-cart-form .product-quantity .quantity button.plus:hover,
-.htoeau-cart-form .product-quantity .quantity button.minus:hover {
-	background: rgba(0, 143, 163, 0.07) !important;
-	color: var(--_teal) !important;
 }
 
 /* ── Cart actions row ─────────────────────────────────────── */
@@ -330,7 +304,7 @@
 }
 
 /* ── Shared button base ──────────────────────────────────── */
-.htoeau-cart-form .button:not(.htoeau-qty-btn),
+.htoeau-cart-form .button,
 .htoeau-cart-page .wc-proceed-to-checkout a.checkout-button {
 	display: inline-flex;
 	align-items: center;
@@ -349,14 +323,14 @@
 	transition: opacity var(--_ease), transform var(--_ease), box-shadow var(--_ease);
 }
 
-.htoeau-cart-form .button:not(.htoeau-qty-btn):hover,
+.htoeau-cart-form .button:hover,
 .htoeau-cart-page .wc-proceed-to-checkout a.checkout-button:hover {
 	opacity: 0.88;
 	box-shadow: 0 4px 18px rgba(0, 143, 163, 0.32);
 	transform: translateY(-1px);
 }
 
-.htoeau-cart-form .button:not(.htoeau-qty-btn):active,
+.htoeau-cart-form .button:active,
 .htoeau-cart-page .wc-proceed-to-checkout a.checkout-button:active {
 	transform: translateY(0);
 	box-shadow: none;
