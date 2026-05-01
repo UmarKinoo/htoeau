@@ -60,14 +60,16 @@
 	}
 
 	/* ── Qty auto-update ────────────────────────────────────── */
-	// The form has a hidden <input name="update_cart"> so form.submit()
-	// tells WooCommerce to process qty changes — no button needed.
+	// WooCommerce's own wc-cart.js intercepts clicks on button[name="update_cart"]
+	// and performs an AJAX update (no page reload). We keep that button hidden in
+	// the DOM and programmatically click it after a short debounce, so WC handles
+	// the AJAX call and fires updated_cart_totals to refresh the totals panel.
 
 	function initQtyAutoUpdate() {
 		var form = document.querySelector('form.woocommerce-cart-form');
 		if (!form) return;
 
-		// Remove any WC-injected +/- buttons.
+		// Strip any WC-injected +/- buttons — we only want the plain number input.
 		form.querySelectorAll('.quantity button.plus, .quantity button.minus, .quantity .qty_button').forEach(function (btn) {
 			btn.parentNode.removeChild(btn);
 		});
@@ -81,7 +83,15 @@
 			input.addEventListener('change', function () {
 				clearTimeout(timer);
 				timer = setTimeout(function () {
-					form.submit();
+					var btn = form.querySelector('button[name="update_cart"]');
+					if (btn) {
+						// WC marks the button disabled by default; enable it so WC's
+						// AJAX handler accepts the click.
+						btn.disabled = false;
+						btn.click();
+					} else {
+						form.submit();
+					}
 				}, 500);
 			});
 		});
