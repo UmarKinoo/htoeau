@@ -23,6 +23,7 @@ require_once HTOEAU_CHILD_DIR . '/inc/shop-hero-customizer.php';
 require_once HTOEAU_CHILD_DIR . '/inc/pdp-faq.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-classic-wc-cart.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-cart-template-include.php';
+require_once HTOEAU_CHILD_DIR . '/inc/cart-block-wrapper.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-classic-wc-checkout.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-checkout-template-include.php';
 

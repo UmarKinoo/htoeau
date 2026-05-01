@@ -59,132 +59,85 @@
 	color: var(--_teal);
 }
 
-/* ── Two-column grid ─────────────────────────────────────── */
-.htoeau-cart-page__grid {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) 368px;
-	gap: 28px;
-	align-items: start;
+/* ── Block cart — reset WC default padding/margin ────────── */
+.htoeau-cart-page .wp-block-woocommerce-cart {
+	max-width: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
 }
 
-/* ── Sidebar sticky ──────────────────────────────────────── */
-.htoeau-cart-page__side {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	position: sticky;
-	top: 20px;
+/* ── Filled-cart two-column layout ──────────────────────── */
+.htoeau-cart-page .wp-block-woocommerce-filled-cart-block {
+	display: flex !important;
+	align-items: flex-start !important;
+	gap: 28px !important;
+}
+
+.htoeau-cart-page .wp-block-woocommerce-cart-items-block {
+	flex: 1 1 0 !important;
+	min-width: 0 !important;
+}
+
+/* Totals column: fixed 368 px, sticky, flex so our injected
+   panels stack naturally below the order summary */
+.htoeau-cart-page .wp-block-woocommerce-cart-totals-block {
+	width: 368px !important;
+	min-width: 368px !important;
+	max-width: 368px !important;
+	position: sticky !important;
+	top: 20px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 16px !important;
 }
 
 /* ── Shared card surface ─────────────────────────────────── */
-.htoeau-cart-form .shop_table,
-.htoeau-cart-page .cart_totals,
+.htoeau-cart-page .wc-block-cart-items,
+.htoeau-cart-page .wc-block-components-order-summary,
+.htoeau-cart-page .wc-block-components-totals-wrapper,
 .htoeau-cart-help {
-	border: 0;
-	border-radius: var(--_radius);
 	background: var(--_surface);
+	border-radius: var(--_radius);
 	box-shadow: var(--_shadow);
 	overflow: hidden;
+	border: 0 !important;
 }
 
-.htoeau-cart-form .shop_table {
-	margin: 0;
+/* ── Items table ─────────────────────────────────────────── */
+.htoeau-cart-page .wc-block-cart-items {
 	width: 100%;
 	border-collapse: collapse;
-	table-layout: fixed;
+	table-layout: auto;
+	margin: 0 !important;
 }
 
-/* ── Hide column-header row (modern cart pattern) ────────── */
-.htoeau-cart-form .shop_table thead {
+.htoeau-cart-page .wc-block-cart-items thead {
 	display: none;
 }
 
-/* ── Fixed column widths (so qty / price / subtotal stay tight
-   and remove / thumbnail don't blow up) ──────────────────── */
-.htoeau-cart-form .product-remove    { width: 48px; }
-.htoeau-cart-form .product-thumbnail { width: 100px; }
-.htoeau-cart-form .product-price     { width: 110px; }
-.htoeau-cart-form .product-quantity  { width: 148px; }
-.htoeau-cart-form .product-subtotal  { width: 116px; }
-/* product-name takes the remaining space */
-
-/* ── Kill WooCommerce zebra striping (.shop_table_responsive
-   adds nth-child(2n) bg). Use !important — we're fighting
-   woocommerce.css which is enqueued after our file. ─────── */
-.htoeau-cart-form .shop_table tbody tr td,
-.htoeau-cart-form .shop_table.shop_table_responsive tbody tr td {
-	background-color: transparent !important;
-}
-
-/* ── Table cells ─────────────────────────────────────────── */
-.htoeau-cart-form .shop_table td {
+.htoeau-cart-page .wc-block-cart-items__row td {
 	padding: 16px 14px;
 	vertical-align: middle;
-	font: 500 0.9rem/1.4 var(--_font);
-	color: var(--_dark);
-	border: 0;
-	border-bottom: 1px solid var(--_border);
+	border: 0 !important;
+	border-bottom: 1px solid var(--_border) !important;
+	background: transparent !important;
 }
 
-/* Last data row (actions row) has its own top border — skip bottom */
-.htoeau-cart-form .shop_table tbody tr:last-child td {
-	border-bottom: 0;
+.htoeau-cart-page .wc-block-cart-items__row:last-child td {
+	border-bottom: 0 !important;
 }
 
-/* ── Row hover ───────────────────────────────────────────── */
-.htoeau-cart-form .shop_table tbody tr.cart_item td {
-	transition: background-color var(--_ease);
+.htoeau-cart-page .wc-block-cart-items__row:hover td {
+	background: rgba(0, 143, 163, 0.04) !important;
 }
 
-.htoeau-cart-form .shop_table tbody tr.cart_item:hover td {
-	background-color: rgba(0, 143, 163, 0.04) !important;
-}
-
-/* ── Variation / meta row (Subscribe & Save, Deliver…) ──── */
-.htoeau-cart-form .product-name dl.variation,
-.htoeau-cart-form .product-name .wc-item-meta {
-	margin: 8px 0 0;
-	padding: 0;
-	font: 500 0.78rem/1.5 var(--_font);
-	color: rgba(0, 44, 65, 0.62);
-}
-
-.htoeau-cart-form .product-name dl.variation dt,
-.htoeau-cart-form .product-name .wc-item-meta strong {
-	font-weight: 700;
-	color: var(--_dark);
-	margin-right: 4px;
-	display: inline;
-	float: none;
-}
-
-.htoeau-cart-form .product-name dl.variation dd {
-	margin: 0;
-	display: inline;
-}
-
-.htoeau-cart-form .product-name dl.variation dd p {
-	display: inline;
-	margin: 0;
-}
-
-.htoeau-cart-form .product-name dl.variation dd::after {
-	content: '';
-	display: block;
-}
-
-/* Tighten product-name padding so it sits closer to the thumbnail */
-.htoeau-cart-form .product-name {
-	padding-left: 4px;
-}
-
-/* ── Product thumbnail ───────────────────────────────────── */
-.htoeau-cart-form .product-thumbnail {
-	width: 94px;
+/* ── Item image ──────────────────────────────────────────── */
+.htoeau-cart-page .wc-block-cart-item__image {
+	width: 88px;
 	padding-right: 0;
 }
 
-.htoeau-cart-form .product-thumbnail img {
+.htoeau-cart-page .wc-block-cart-item__image img {
 	display: block;
 	width: 80px;
 	height: 80px;
@@ -193,411 +146,252 @@
 	transition: transform var(--_ease);
 }
 
-.htoeau-cart-form .product-thumbnail a:hover img {
+.htoeau-cart-page .wc-block-cart-item__image a:hover img {
 	transform: scale(1.04);
 }
 
-/* ── Remove button ───────────────────────────────────────── */
-.htoeau-cart-form .product-remove {
-	width: 36px;
-	padding-right: 0;
+/* ── Item product details ────────────────────────────────── */
+.htoeau-cart-page .wc-block-cart-item__product {
+	padding-left: 4px;
 }
 
-.htoeau-cart-form .product-remove a.remove {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	border-radius: 50%;
-	border: 1.5px solid transparent;
-	background: transparent;
-	color: rgba(0, 44, 65, 0.3) !important;
-	font-size: 1.2rem;
-	line-height: 1;
-	text-decoration: none;
-	transition: background var(--_ease), border-color var(--_ease), color var(--_ease);
-}
-
-.htoeau-cart-form .product-remove a.remove:hover {
-	background: rgba(230, 99, 99, 0.08);
-	border-color: rgba(230, 99, 99, 0.35);
-	color: var(--color-sale-red, #e66363) !important;
-}
-
-/* ── Product name ────────────────────────────────────────── */
-.htoeau-cart-form .product-name a {
+.htoeau-cart-page .wc-block-cart-item__product-name,
+.htoeau-cart-page .wc-block-cart-item__product-name a {
+	display: block;
 	color: var(--_dark) !important;
-	font: 600 0.95rem/1.35 var(--_font);
-	text-decoration: none;
+	font: 600 0.95rem/1.35 var(--_font) !important;
+	text-decoration: none !important;
+	margin: 0 0 4px !important;
 	transition: color var(--_ease);
 }
 
-.htoeau-cart-form .product-name a:hover {
+.htoeau-cart-page .wc-block-cart-item__product-name a:hover {
 	color: var(--_teal) !important;
 }
 
-/* ── Price ───────────────────────────────────────────────── */
-.htoeau-cart-form .product-price {
-	font: 500 0.9rem/1.2 var(--_font);
-	color: rgba(0, 44, 65, 0.65);
+/* Unit price */
+.htoeau-cart-page .wc-block-cart-item__product-price,
+.htoeau-cart-page .wc-block-cart-item__individual-prices {
+	font: 500 0.85rem/1.2 var(--_font) !important;
+	color: rgba(0, 44, 65, 0.6) !important;
+	margin: 0 0 10px !important;
 }
 
-/* ── Subtotal ────────────────────────────────────────────── */
-.htoeau-cart-form .product-subtotal {
-	font: 700 1rem/1.2 var(--_font);
-	color: var(--_teal);
+/* Variation meta */
+.htoeau-cart-page .wc-block-cart-item__product .wc-block-cart-item__product-metadata {
+	font: 400 0.78rem/1.5 var(--_font);
+	color: rgba(0, 44, 65, 0.55);
+	margin: 0 0 8px;
 }
 
-/* ── Quantity input ──────────────────────────────────────── */
-.htoeau-cart-form .product-quantity .quantity {
-	display: inline-flex;
-	align-items: center;
-	border: 1.5px solid var(--_border);
-	border-radius: var(--_radius);
-	overflow: hidden;
-	background: var(--_surface);
-	height: 38px;
-	transition: border-color var(--_ease);
+/* ── Quantity selector ───────────────────────────────────── */
+.htoeau-cart-page .wc-block-components-quantity-selector {
+	display: inline-flex !important;
+	align-items: center !important;
+	height: 38px !important;
+	border: 1.5px solid var(--_border) !important;
+	border-radius: var(--_radius) !important;
+	background: var(--_surface) !important;
+	overflow: hidden !important;
+	box-shadow: none !important;
+	transition: border-color var(--_ease) !important;
+	gap: 0 !important;
 }
 
-.htoeau-cart-form .product-quantity .quantity:focus-within {
-	border-color: var(--_teal);
+.htoeau-cart-page .wc-block-components-quantity-selector:focus-within {
+	border-color: var(--_teal) !important;
 }
 
-.htoeau-cart-form .product-quantity .qty {
-	width: 64px;
-	height: 38px;
+.htoeau-cart-page .wc-block-components-quantity-selector__button {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 32px !important;
+	height: 38px !important;
+	flex-shrink: 0 !important;
+	background: transparent !important;
 	border: 0 !important;
 	border-radius: 0 !important;
-	text-align: center;
-	padding: 0 8px;
-	font: 700 0.9rem/1 var(--_font);
-	color: var(--_dark);
-	background: transparent;
-	-moz-appearance: textfield;
-	box-shadow: none;
-	outline: none;
+	box-shadow: none !important;
+	color: var(--_dark) !important;
+	font-size: 1.1rem !important;
+	line-height: 1 !important;
+	cursor: pointer !important;
+	padding: 0 !important;
+	transition: background var(--_ease), color var(--_ease) !important;
 }
 
-.htoeau-cart-form .product-quantity .qty::-webkit-outer-spin-button,
-.htoeau-cart-form .product-quantity .qty::-webkit-inner-spin-button {
+.htoeau-cart-page .wc-block-components-quantity-selector__button:hover {
+	background: rgba(0, 143, 163, 0.07) !important;
+	color: var(--_teal) !important;
+}
+
+.htoeau-cart-page .wc-block-components-quantity-selector__input {
+	width: 48px !important;
+	height: 38px !important;
+	border: 0 !important;
+	border-left: 1px solid var(--_border) !important;
+	border-right: 1px solid var(--_border) !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	text-align: center !important;
+	font: 700 0.9rem/1 var(--_font) !important;
+	color: var(--_dark) !important;
+	padding: 0 !important;
+	box-shadow: none !important;
+	-moz-appearance: textfield !important;
+}
+
+.htoeau-cart-page .wc-block-components-quantity-selector__input::-webkit-outer-spin-button,
+.htoeau-cart-page .wc-block-components-quantity-selector__input::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
 
-/* ── Cart actions row ─────────────────────────────────────── */
-.htoeau-cart-form td.actions {
-	padding: 16px 18px;
-	background: var(--_surface-alt);
-	border-top: 1.5px solid var(--_border);
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 10px;
+/* ── Remove link ─────────────────────────────────────────── */
+.htoeau-cart-page .wc-block-cart-item__remove-link {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 4px !important;
+	margin-top: 10px !important;
+	font: 500 0.78rem/1.2 var(--_font) !important;
+	color: rgba(0, 44, 65, 0.4) !important;
+	text-decoration: none !important;
+	background: none !important;
+	border: 0 !important;
+	padding: 0 !important;
+	cursor: pointer !important;
+	transition: color var(--_ease) !important;
 }
 
-.htoeau-cart-form .actions-right {
-	display: flex;
-	align-items: center;
-	gap: 10px;
+.htoeau-cart-page .wc-block-cart-item__remove-link:hover {
+	color: var(--color-sale-red, #e66363) !important;
 }
 
-/* ── Shared button base ──────────────────────────────────── */
-.htoeau-cart-form .button,
-.htoeau-cart-page .wc-proceed-to-checkout a.checkout-button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border: none;
-	border-radius: var(--_pill);
-	background: var(--brand-gradient, linear-gradient(90deg, #008fa3 0%, #016b9f 100%));
-	color: #fff !important;
-	font: 700 0.875rem/1 var(--_font);
-	padding: 0 22px;
-	height: 40px;
-	cursor: pointer;
-	text-decoration: none;
-	letter-spacing: 0.01em;
+/* ── Item subtotal ───────────────────────────────────────── */
+.htoeau-cart-page .wc-block-cart-item__total {
+	text-align: right;
 	white-space: nowrap;
-	transition: opacity var(--_ease), transform var(--_ease), box-shadow var(--_ease);
 }
 
-.htoeau-cart-form .button:hover,
-.htoeau-cart-page .wc-proceed-to-checkout a.checkout-button:hover {
-	opacity: 0.88;
-	box-shadow: 0 4px 18px rgba(0, 143, 163, 0.32);
-	transform: translateY(-1px);
-}
-
-.htoeau-cart-form .button:active,
-.htoeau-cart-page .wc-proceed-to-checkout a.checkout-button:active {
-	transform: translateY(0);
-	box-shadow: none;
-}
-
-
-
-/* Ghost / outline button (Continue shopping) */
-.htoeau-btn-ghost {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	gap: 5px;
-	border: 1.5px solid var(--_border);
-	border-radius: var(--_pill);
-	background: transparent;
-	color: var(--_dark) !important;
-	font: 600 0.875rem/1 var(--_font);
-	padding: 0 18px;
-	height: 40px;
-	cursor: pointer;
-	text-decoration: none;
-	letter-spacing: 0.01em;
-	white-space: nowrap;
-	transition: border-color var(--_ease), color var(--_ease), background var(--_ease);
-}
-
-.htoeau-btn-ghost:hover {
-	border-color: var(--_teal);
+.htoeau-cart-page .wc-block-cart-item__prices,
+.htoeau-cart-page .wc-block-cart-item__subtotal-price {
+	font: 700 1rem/1.2 var(--_font) !important;
 	color: var(--_teal) !important;
-	background: rgba(0, 143, 163, 0.04);
 }
 
-/* ── Cart totals — order summary card ─────────────────────
-   Strategy: break out of <table> layout entirely.
-   Each <tr> becomes a flex row (label left, value right);
-   the shipping row overrides to flex-column so the label
-   stacks above the radio list which spans the full card. */
-
-.htoeau-cart-page .cart_totals h2 {
-	margin: 0;
-	padding: 18px 22px 4px;
-	font: 700 0.72rem/1 var(--_font);
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: rgba(0, 44, 65, 0.55);
-	background: transparent;
-	border: 0;
+/* ── Order summary (totals card) ─────────────────────────── */
+.htoeau-cart-page .wc-block-components-order-summary,
+.htoeau-cart-page .wc-block-components-totals-wrapper {
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
-.htoeau-cart-page .cart_totals table,
-.htoeau-cart-page .cart_totals tbody {
-	display: block;
-	width: 100%;
-	margin: 0;
-	border: 0;
-	border-collapse: collapse;
-}
-
-/* Reset every WC default border + background inside the totals card */
-.htoeau-cart-page .cart_totals tbody tr,
-.htoeau-cart-page .cart_totals tbody tr th,
-.htoeau-cart-page .cart_totals tbody tr td {
+/* "Order summary" heading */
+.htoeau-cart-page .wc-block-components-order-summary__toggle,
+.htoeau-cart-page .wc-block-cart__totals-title {
+	padding: 18px 22px 4px !important;
+	font: 700 0.72rem/1 var(--_font) !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.1em !important;
+	color: rgba(0, 44, 65, 0.55) !important;
 	border: 0 !important;
 	background: transparent !important;
 }
 
-/* Default row: horizontal flex (label left, value right) */
-.htoeau-cart-page .cart_totals tbody tr {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	gap: 16px;
-	padding: 10px 22px;
+/* Each totals row */
+.htoeau-cart-page .wc-block-components-totals-item {
+	display: flex !important;
+	justify-content: space-between !important;
+	align-items: baseline !important;
+	padding: 10px 22px !important;
+	border: 0 !important;
+	background: transparent !important;
 }
 
-.htoeau-cart-page .cart_totals tbody tr th,
-.htoeau-cart-page .cart_totals tbody tr td {
-	display: block;
-	width: auto;
-	padding: 0;
-	margin: 0;
-	font: 500 0.9rem/1.4 var(--_font);
-	vertical-align: baseline;
+.htoeau-cart-page .wc-block-components-totals-item__label {
+	font: 500 0.9rem/1.4 var(--_font) !important;
+	color: rgba(0, 44, 65, 0.62) !important;
 }
 
-.htoeau-cart-page .cart_totals tbody tr th {
-	color: rgba(0, 44, 65, 0.62);
-	font-weight: 500;
-	text-align: left;
-}
-
-.htoeau-cart-page .cart_totals tbody tr td {
-	color: var(--_dark);
-	font-weight: 700;
-	text-align: right;
-}
-
-.htoeau-cart-page .cart_totals tbody td .amount,
-.htoeau-cart-page .cart_totals tbody td bdi {
-	color: var(--_dark);
-	font-weight: 700;
-}
-
-/* ── Shipping row: stacked layout ──────────────────────── */
-.htoeau-cart-page .cart_totals .shipping {
-	flex-direction: column !important;
-	align-items: stretch !important;
-	gap: 8px !important;
-	padding: 14px 22px !important;
-}
-
-.htoeau-cart-page .cart_totals .shipping th {
-	font: 700 0.7rem/1 var(--_font) !important;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: rgba(0, 44, 65, 0.55) !important;
-	font-weight: 700 !important;
-}
-
-.htoeau-cart-page .cart_totals .shipping td {
-	font: 500 0.875rem/1.4 var(--_font) !important;
-	font-weight: 500 !important;
-	text-align: left !important;
+.htoeau-cart-page .wc-block-components-totals-item__value {
+	font: 700 0.9rem/1.4 var(--_font) !important;
 	color: var(--_dark) !important;
 }
 
-/* Shipping radio list */
-.htoeau-cart-page .cart_totals ul#shipping_method {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
+/* Coupon / shipping rows */
+.htoeau-cart-page .wc-block-components-totals-coupon,
+.htoeau-cart-page .wc-block-components-totals-shipping {
+	padding: 10px 22px !important;
+	border: 0 !important;
 }
 
-.htoeau-cart-page .cart_totals ul#shipping_method li {
-	display: grid;
-	grid-template-columns: 20px 1fr;
-	column-gap: 10px;
-	row-gap: 2px;
-	padding: 8px 0;
-	margin: 0;
-	align-items: baseline;
-	font-size: 0.875rem;
-}
-
-.htoeau-cart-page .cart_totals ul#shipping_method li + li {
-	border-top: 1px solid var(--_border);
-}
-
-.htoeau-cart-page .cart_totals ul#shipping_method input[type="radio"] {
-	grid-column: 1;
-	grid-row: 1;
-	margin: 0;
-	accent-color: var(--_teal);
-	cursor: pointer;
-	width: 16px;
-	height: 16px;
-	align-self: center;
-}
-
-.htoeau-cart-page .cart_totals ul#shipping_method label {
-	grid-column: 2;
-	grid-row: 1;
-	cursor: pointer;
-	color: var(--_dark);
-	font: 600 0.875rem/1.4 var(--_font);
-	margin: 0;
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	gap: 12px;
-}
-
-.htoeau-cart-page .cart_totals ul#shipping_method label .amount,
-.htoeau-cart-page .cart_totals ul#shipping_method label bdi {
-	font-weight: 700;
-	color: var(--_dark);
-	flex-shrink: 0;
-	white-space: nowrap;
-}
-
-/* Description row (any sibling element after label) */
-.htoeau-cart-page .cart_totals ul#shipping_method li > *:not(input):not(label) {
-	grid-column: 2;
-	grid-row: 2;
-	margin: 2px 0 0;
-	font: 400 0.78rem/1.4 var(--_font);
-	color: rgba(0, 44, 65, 0.55);
-}
-
-/* "Shipping options will be updated…" / address line */
-.htoeau-cart-page .cart_totals .woocommerce-shipping-destination {
-	margin: 4px 0 0;
-	font: 400 0.78rem/1.5 var(--_font);
-	color: rgba(0, 44, 65, 0.55);
-}
-
-/* Calculate shipping — subtle teal link, not red */
-.htoeau-cart-page .cart_totals .shipping-calculator-button,
-.htoeau-cart-page .cart_totals .woocommerce-shipping-destination a {
-	color: var(--_teal) !important;
-	text-decoration: none;
-	font: 600 0.78rem/1.4 var(--_font);
-	border-bottom: 1px solid currentColor;
-	padding-bottom: 1px;
-	display: inline-block;
-	margin-top: 4px;
-}
-
-.htoeau-cart-page .cart_totals .shipping-calculator-button:hover,
-.htoeau-cart-page .cart_totals .woocommerce-shipping-destination a:hover {
-	color: var(--_cyan) !important;
-}
-
-/* ── Total row: visually dominant ──────────────────────── */
-.htoeau-cart-page .cart_totals .order-total {
+/* Total row */
+.htoeau-cart-page .wc-block-components-totals-footer-item {
 	border-top: 1.5px solid var(--_dark) !important;
-	margin-top: 6px;
 	padding: 18px 22px !important;
 }
 
-.htoeau-cart-page .cart_totals .order-total th {
+.htoeau-cart-page .wc-block-components-totals-footer-item .wc-block-components-totals-item__label {
 	font: 800 0.95rem/1 var(--_font) !important;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
+	text-transform: uppercase !important;
+	letter-spacing: 0.05em !important;
 	color: var(--_dark) !important;
 }
 
-.htoeau-cart-page .cart_totals .order-total td,
-.htoeau-cart-page .cart_totals .order-total td .amount,
-.htoeau-cart-page .cart_totals .order-total td bdi {
+.htoeau-cart-page .wc-block-components-totals-footer-item .wc-block-components-totals-item__value {
 	font: 800 1.3rem/1 var(--_font) !important;
 	color: var(--_dark) !important;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.01em !important;
 }
 
-.htoeau-cart-page .cart_totals .order-total td small.includes_tax {
-	display: block;
-	margin-top: 4px;
-	font: 400 0.72rem/1.3 var(--_font) !important;
-	color: rgba(0, 44, 65, 0.55) !important;
-	letter-spacing: 0;
+/* ── Proceed to checkout button ──────────────────────────── */
+.htoeau-cart-page .wc-block-cart__proceed-to-checkout-button,
+.htoeau-cart-page .wp-block-woocommerce-proceed-to-checkout-block a {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100% !important;
+	height: 56px !important;
+	border-radius: var(--_pill) !important;
+	background: var(--brand-gradient, linear-gradient(90deg, #008fa3 0%, #016b9f 100%)) !important;
+	color: #fff !important;
+	font: 800 1rem/1 var(--_font) !important;
+	letter-spacing: 0.04em !important;
+	text-decoration: none !important;
+	border: 0 !important;
+	cursor: pointer !important;
+	transition: opacity var(--_ease), transform var(--_ease), box-shadow var(--_ease) !important;
 }
 
-/* ── Proceed to checkout ───────────────────────────────── */
-.htoeau-cart-page .cart_totals .wc-proceed-to-checkout {
-	padding: 4px 22px 22px;
-	background: transparent;
-	border-top: 0;
-	margin: 0;
+.htoeau-cart-page .wc-block-cart__proceed-to-checkout-button:hover,
+.htoeau-cart-page .wp-block-woocommerce-proceed-to-checkout-block a:hover {
+	opacity: 0.88 !important;
+	box-shadow: 0 4px 18px rgba(0, 143, 163, 0.32) !important;
+	transform: translateY(-1px) !important;
 }
 
-.htoeau-cart-page .cart_totals .wc-proceed-to-checkout .button.checkout-button {
-	width: 100%;
-	height: 56px;
-	margin: 0;
-	border-radius: var(--_pill);
-	font: 800 1rem/1 var(--_font);
-	letter-spacing: 0.04em;
-	text-transform: none;
+/* ── Return to shop link ─────────────────────────────────── */
+.htoeau-cart-page .wc-block-components-checkout-return-to-cart-button {
+	display: inline-flex !important;
+	align-items: center !important;
+	gap: 5px !important;
+	font: 600 0.875rem/1 var(--_font) !important;
+	color: var(--_dark) !important;
+	text-decoration: none !important;
+	transition: color var(--_ease) !important;
+}
+
+.htoeau-cart-page .wc-block-components-checkout-return-to-cart-button:hover {
+	color: var(--_teal) !important;
 }
 
 /* ── Help widget ─────────────────────────────────────────── */
 .htoeau-cart-help {
 	padding: 20px;
+	border-radius: var(--_radius);
+	background: var(--_surface);
+	box-shadow: var(--_shadow);
 }
 
 .htoeau-cart-help__title {
@@ -766,109 +560,28 @@
 	transform: scale(1.5);
 }
 
-/* ── FAQ ─────────────────────────────────────────────────── */
-.htoeau-cart-faq {
-	max-width: 840px;
-	margin: 72px auto 0;
-}
-
-.htoeau-cart-faq__title {
-	margin: 0 0 28px;
-	text-align: center;
-	font: 800 clamp(1.6rem, 2.5vw, 2.25rem)/1 var(--_font);
-	letter-spacing: -0.02em;
-	text-transform: uppercase;
-	color: var(--_dark);
-}
-
-.htoeau-cart-faq__item {
-	margin-bottom: 8px;
-	border-radius: var(--_radius);
-	overflow: hidden;
-	border: 1.5px solid var(--_border);
-	background: var(--_surface);
-	box-shadow: var(--_shadow-sm);
-}
-
-.htoeau-cart-faq__item summary {
-	list-style: none;
-	cursor: pointer;
-	padding: 16px 52px 16px 20px;
-	font: 700 0.875rem/1.35 var(--_font);
-	color: var(--_dark);
-	position: relative;
-	user-select: none;
-	transition: color var(--_ease), background var(--_ease);
-}
-
-.htoeau-cart-faq__item summary::-webkit-details-marker {
-	display: none;
-}
-
-.htoeau-cart-faq__item summary::after {
-	content: '+';
-	position: absolute;
-	right: 16px;
-	top: 50%;
-	transform: translateY(-50%);
-	width: 24px;
-	height: 24px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.15rem;
-	font-weight: 300;
-	border-radius: 50%;
-	border: 1.5px solid var(--_border);
-	color: var(--_teal);
-	line-height: 1;
-	transition: background var(--_ease), border-color var(--_ease), color var(--_ease);
-}
-
-.htoeau-cart-faq__item[open] > summary {
-	color: var(--_teal);
-	background: rgba(0, 143, 163, 0.04);
-	border-bottom: 1px solid var(--_border);
-}
-
-.htoeau-cart-faq__item[open] > summary::after {
-	content: '−';
-	background: var(--_teal);
-	border-color: var(--_teal);
-	color: #fff;
-}
-
-.htoeau-cart-faq__item p {
-	margin: 0;
-	padding: 16px 20px 18px;
-	font: 400 0.875rem/1.65 var(--_font);
-	color: rgba(0, 44, 65, 0.7);
-}
-
-/* ── Elementor below slot ────────────────────────────────── */
-.htoeau-cart-below-elementor {
-	margin: 56px auto 0;
-	max-width: 1200px;
-}
-
 /* ── WC notices ──────────────────────────────────────────── */
 .htoeau-cart-page .woocommerce-notices-wrapper {
 	margin-bottom: 20px;
 }
 
+/* ── Empty cart ──────────────────────────────────────────── */
+.htoeau-cart-page .wp-block-woocommerce-empty-cart-block {
+	text-align: center;
+	padding: 60px 20px;
+}
+
 /* ── Responsive: tablet ──────────────────────────────────── */
 @media (max-width: 1060px) {
-	.htoeau-cart-page__grid {
-		grid-template-columns: 1fr;
+	.htoeau-cart-page .wp-block-woocommerce-filled-cart-block {
+		flex-direction: column !important;
 	}
 
-	.htoeau-cart-page__side {
-		position: static;
-		max-width: 540px;
-	}
-
-	.htoeau-cart-testimonials {
-		max-width: 460px;
+	.htoeau-cart-page .wp-block-woocommerce-cart-totals-block {
+		width: 100% !important;
+		min-width: 0 !important;
+		max-width: 540px !important;
+		position: static !important;
 	}
 }
 
@@ -877,21 +590,5 @@
 	.htoeau-cart-page {
 		padding-top: 36px;
 		padding-bottom: 56px;
-	}
-
-	.htoeau-cart-form td.actions {
-		flex-wrap: wrap;
-		gap: 10px;
-	}
-
-	.htoeau-cart-form .actions-right {
-		flex: 1;
-		justify-content: flex-end;
-	}
-
-	.htoeau-cart-form .actions-right .button,
-	.htoeau-cart-form .actions-right .htoeau-btn-ghost {
-		flex: 1;
-		justify-content: center;
 	}
 }

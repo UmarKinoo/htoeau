@@ -1,5 +1,9 @@
 /**
- * Cart page JS — testimonial carousel + qty auto-update.
+ * Cart page JS — testimonial carousel + sidebar injection.
+ *
+ * The WooCommerce Cart Block handles qty updates natively via the Store API.
+ * This file only manages the carousel and moves the help/testimonials panel
+ * from its server-rendered holding div into the block cart's totals column.
  */
 (function () {
 	'use strict';
@@ -59,47 +63,28 @@
 		update();
 	}
 
-	/* ── Qty auto-update ────────────────────────────────────── */
-	// WooCommerce's own wc-cart.js intercepts clicks on button[name="update_cart"]
-	// and performs an AJAX update (no page reload). We keep that button hidden in
-	// the DOM and programmatically click it after a short debounce, so WC handles
-	// the AJAX call and fires updated_cart_totals to refresh the totals panel.
+	/* ── Sidebar injection ──────────────────────────────────── */
+	// PHP renders help + testimonials in a hidden .htoeau-cart-sidebar-inject div.
+	// We move its children into the block cart's totals column so they sit below
+	// the order summary in the native right column.
 
-	function initQtyAutoUpdate() {
-		var form = document.querySelector('form.woocommerce-cart-form');
-		if (!form) return;
+	function injectSidebar() {
+		var source  = document.querySelector('.htoeau-cart-sidebar-inject');
+		var totals  = document.querySelector('.wp-block-woocommerce-cart-totals-block');
 
-		// Strip any WC-injected +/- buttons — we only want the plain number input.
-		form.querySelectorAll('.quantity button.plus, .quantity button.minus, .quantity .qty_button').forEach(function (btn) {
-			btn.parentNode.removeChild(btn);
-		});
+		if (!source || !totals) return;
 
-		var timer = null;
+		while (source.firstChild) {
+			totals.appendChild(source.firstChild);
+		}
+		source.parentNode.removeChild(source);
 
-		form.querySelectorAll('input.qty').forEach(function (input) {
-			if (input._htoeauAutoUpdate) return;
-			input._htoeauAutoUpdate = true;
-
-			input.addEventListener('change', function () {
-				clearTimeout(timer);
-				timer = setTimeout(function () {
-					var btn = form.querySelector('button[name="update_cart"]');
-					if (btn) {
-						// WC marks the button disabled by default; enable it so WC's
-						// AJAX handler accepts the click.
-						btn.disabled = false;
-						btn.click();
-					} else {
-						form.submit();
-					}
-				}, 500);
-			});
-		});
+		// Init carousel now that the element is in the DOM and visible.
+		totals.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
 	}
 
 	/* ── Init ───────────────────────────────────────────────── */
 
-	document.querySelectorAll('[data-htoeau-cart-carousel]').forEach(initCarousel);
-	initQtyAutoUpdate();
+	injectSidebar();
 
 })();
