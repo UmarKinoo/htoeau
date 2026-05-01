@@ -7,11 +7,16 @@
 	function buildIcon() {
 		var span = document.createElement( 'span' );
 		span.className = 'htoeau-check-icon';
-		span.style.width = '30px';
-		span.style.height = '30px';
+		span.style.display = 'inline-flex';
+		span.style.alignItems = 'center';
+		span.style.justifyContent = 'center';
+		span.style.flexShrink = '0';
+		span.style.width = '24px';
+		span.style.height = '24px';
+		span.style.marginInlineEnd = '8px';
 		span.setAttribute( 'aria-hidden', 'true' );
 		span.innerHTML =
-			'<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+			'<svg width="24" height="24" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">' +
 			'<circle cx="15" cy="15" r="15" fill="#008fa3"></circle>' +
 			'<path d="M9 15 L14 19 L21 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>' +
 			'</svg>';
