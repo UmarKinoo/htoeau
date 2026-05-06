@@ -161,27 +161,23 @@ foreach ( $rows as $r ) {
 	);
 }
 
-$default_id = (int) apply_filters( 'htoeau_default_variation_id', 0, $pdp_variations );
-if ( ! $default_id && ! empty( $pdp_variations ) ) {
-	$default_attrs = $product->get_default_attributes();
-	if ( ! empty( $default_attrs ) ) {
-		foreach ( $rows as $row ) {
-			$matches = true;
-			foreach ( $default_attrs as $attr_name => $attr_value ) {
-				$variation_key = 'attribute_' . sanitize_title( $attr_name );
-				if ( ! isset( $row['attributes'][ $variation_key ] ) || (string) $row['attributes'][ $variation_key ] !== (string) $attr_value ) {
-					$matches = false;
-					break;
-				}
-			}
-			if ( $matches ) {
-				$default_id = (int) $row['variation_id'];
-				break;
-			}
+$default_id = 0;
+if ( ! empty( $pdp_variations ) ) {
+	$best = null;
+	foreach ( $pdp_variations as $pv ) {
+		$per_can = isset( $pv['perCan'] ) ? (float) $pv['perCan'] : 0;
+		if ( $per_can <= 0 ) {
+			continue;
+		}
+		if ( null === $best || $per_can < (float) $best['perCan'] ) {
+			$best = $pv;
 		}
 	}
+	if ( $best && ! empty( $best['variationId'] ) ) {
+		$default_id = (int) $best['variationId'];
+	}
 	if ( ! $default_id ) {
-		$default_id = (int) $rows[0]['variation_id'];
+		$default_id = (int) $pdp_variations[0]['variationId'];
 	}
 }
 
