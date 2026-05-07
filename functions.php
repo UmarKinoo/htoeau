@@ -1249,3 +1249,68 @@ function htoeau_child_get_can_count_from_variation_attrs( $variation_attrs ) {
 	}
 	return 0;
 }
+
+
+if ( ! defined( 'HTOEAU_PRICING_SYNC_VERSION' ) ) {
+	define( 'HTOEAU_PRICING_SYNC_VERSION', '2026-05-07-pricing-v1' );
+}
+
+/**
+ * One-time pricing sync (SKU-based) for HtoEAU products.
+ *
+ * Runs once per environment after deploy, then stores a version flag.
+ */
+function htoeau_child_sync_pricing_matrix_once() {
+	if ( ! function_exists( 'wc_get_product_id_by_sku' ) || ! function_exists( 'wc_get_product' ) ) {
+		return;
+	}
+
+	if ( get_option( 'htoeau_pricing_sync_version', '' ) === HTOEAU_PRICING_SYNC_VERSION ) {
+		return;
+	}
+
+	$prices = array(
+		'htoeau-h2-12'      => array( 'regular' => '29.88',  'sale' => '' ),
+		'htoeau-h2-48'      => array( 'regular' => '119.52', 'sale' => '107.57' ),
+		'htoeau-h2-96'      => array( 'regular' => '239.04', 'sale' => '191.23' ),
+		'htoeau-ddw-12'     => array( 'regular' => '47.40',  'sale' => '' ),
+		'htoeau-ddw-48'     => array( 'regular' => '189.60', 'sale' => '170.64' ),
+		'htoeau-ddw-96'     => array( 'regular' => '379.20', 'sale' => '303.36' ),
+		'htoeau-ddw-h2-12'  => array( 'regular' => '59.40',  'sale' => '' ),
+		'htoeau-ddw-h2-48'  => array( 'regular' => '237.60', 'sale' => '213.84' ),
+		'htoeau-ddw-h2-96'  => array( 'regular' => '475.20', 'sale' => '380.16' ),
+		'sample-box-3x-h2'  => array( 'regular' => '7.47',   'sale' => '' ),
+		'sample-box-3x-ddw' => array( 'regular' => '11.85',  'sale' => '' ),
+		'sample-box-3x-ddw-h2' => array( 'regular' => '14.85', 'sale' => '' ),
+		'sample-box-trio-mix'  => array( 'regular' => '11.85', 'sale' => '' ),
+	);
+
+	$updated = 0;
+	foreach ( $prices as $sku => $row ) {
+		$product_id = wc_get_product_id_by_sku( $sku );
+		if ( ! $product_id ) {
+			continue;
+		}
+		$product = wc_get_product( $product_id );
+		if ( ! $product ) {
+			continue;
+		}
+		$product->set_regular_price( (string) $row['regular'] );
+		$product->set_sale_price( (string) $row['sale'] );
+		$product->save();
+		$updated++;
+	}
+
+	foreach ( array( 'htoeau-h2', 'htoeau-ddw', 'htoeau-ddw-h2' ) as $parent_sku ) {
+		$parent_id = wc_get_product_id_by_sku( $parent_sku );
+		if ( $parent_id && class_exists( 'WC_Product_Variable' ) ) {
+			WC_Product_Variable::sync( $parent_id );
+			wc_delete_product_transients( $parent_id );
+		}
+	}
+
+	if ( $updated > 0 ) {
+		update_option( 'htoeau_pricing_sync_version', HTOEAU_PRICING_SYNC_VERSION, false );
+	}
+}
+add_action( 'init', 'htoeau_child_sync_pricing_matrix_once', 30 );
