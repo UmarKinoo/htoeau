@@ -456,7 +456,6 @@
 	align-items: center;
 	justify-content: center;
 	gap: 5px;
-	border: 1.5px solid var(--_border);
 	border-radius: var(--_pill);
 	background: transparent;
 	color: var(--_dark) !important;
