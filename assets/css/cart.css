@@ -1792,11 +1792,43 @@
 	.htoeau-cart-page .cart_totals .order-total td,
 	.htoeau-cart-page .cart_totals .order-total td .amount,
 	.htoeau-cart-page .cart_totals .order-total td bdi {
-		font-size: 1.9rem !important;
+		font-size: 1.05rem !important;
 	}
 
 	.htoeau-cart-page .cart_totals .wc-proceed-to-checkout {
 		padding: 4px 16px 16px;
+	}
+
+	/* Suppress WC responsive `data-title` pseudo-element labels on totals table.
+	   They were producing duplicated "Subtotal:", "Shipment:", "Total:" labels. */
+	.htoeau-cart-page .cart_totals tbody tr td::before,
+	.htoeau-cart-page .cart_totals tbody tr th::before,
+	.htoeau-cart-page .cart_totals tbody tr td::after,
+	.htoeau-cart-page .cart_totals tbody tr th::after {
+		content: none !important;
+		display: none !important;
+	}
+
+	/* Cart actions row: more breathing room and tidier sizes on phones */
+	.htoeau-cart-form .htoeau-cart-actions-bar {
+		gap: 10px;
+		padding: 12px 14px 16px;
+	}
+
+	.htoeau-cart-form .htoeau-cart-actions-lead {
+		gap: 8px;
+		width: 100%;
+	}
+
+	.htoeau-cart-form .htoeau-cart-actions-trail {
+		width: 100%;
+	}
+
+	.htoeau-cart-form .htoeau-cart-actions-lead .htoeau-btn-ghost,
+	.htoeau-cart-form .htoeau-cart-actions-trail .button.htoeau-cart-update {
+		height: 44px;
+		font-size: 0.875rem;
+		padding: 0 16px;
 	}
 
 	.htoeau-cart-page .wc-block-components-sidebar-layout {
