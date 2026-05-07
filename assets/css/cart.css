@@ -1810,13 +1810,17 @@
 	}
 
 	/* Cart actions row: more breathing room and tidier sizes on phones */
+	.htoeau-cart-form td.actions {
+		padding: 18px 16px 20px !important;
+	}
+
 	.htoeau-cart-form .htoeau-cart-actions-bar {
-		gap: 10px;
-		padding: 12px 14px 16px;
+		gap: 14px;
+		padding: 0;
 	}
 
 	.htoeau-cart-form .htoeau-cart-actions-lead {
-		gap: 8px;
+		gap: 12px;
 		width: 100%;
 	}
 
@@ -1826,9 +1830,10 @@
 
 	.htoeau-cart-form .htoeau-cart-actions-lead .htoeau-btn-ghost,
 	.htoeau-cart-form .htoeau-cart-actions-trail .button.htoeau-cart-update {
-		height: 44px;
-		font-size: 0.875rem;
-		padding: 0 16px;
+		height: 50px;
+		font-size: 0.95rem;
+		padding: 0 18px;
+		letter-spacing: 0.02em;
 	}
 
 	.htoeau-cart-page .wc-block-components-sidebar-layout {
