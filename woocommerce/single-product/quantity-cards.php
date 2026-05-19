@@ -163,18 +163,15 @@ foreach ( $rows as $r ) {
 
 $default_id = 0;
 if ( ! empty( $pdp_variations ) ) {
-	$best = null;
+	$twelve = null;
 	foreach ( $pdp_variations as $pv ) {
-		$per_can = isset( $pv['perCan'] ) ? (float) $pv['perCan'] : 0;
-		if ( $per_can <= 0 ) {
-			continue;
-		}
-		if ( null === $best || $per_can < (float) $best['perCan'] ) {
-			$best = $pv;
+		if ( isset( $pv['canCount'] ) && 12 === (int) $pv['canCount'] ) {
+			$twelve = $pv;
+			break;
 		}
 	}
-	if ( $best && ! empty( $best['variationId'] ) ) {
-		$default_id = (int) $best['variationId'];
+	if ( $twelve && ! empty( $twelve['variationId'] ) ) {
+		$default_id = (int) $twelve['variationId'];
 	}
 	if ( ! $default_id ) {
 		$default_id = (int) $pdp_variations[0]['variationId'];

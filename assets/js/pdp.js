@@ -61,7 +61,7 @@
 		var sym = (window.htoeauPdp && htoeauPdp.currencySymbol) || '£';
 		var dec = pdpData && typeof pdpData.decimals === 'number' ? pdpData.decimals : 2;
 		var legacySubscribeUi = !pdpData || pdpData.legacySubscribeUi !== false;
-		var subscribeMode = legacySubscribeUi;
+		var subscribeMode = false;
 
 		/* ---------- Gallery ---------- */
 		var $gal = $('[data-htoeau-gallery]');

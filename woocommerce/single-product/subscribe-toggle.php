@@ -40,9 +40,9 @@ if ( empty( $bullets ) ) {
 $discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 );
 ?>
 <div class="htoeau-subscribe" data-htoeau-subscribe>
-	<div class="htoeau-subscribe__option is-active" data-subscribe-panel="subscribe">
+	<div class="htoeau-subscribe__option" data-subscribe-panel="subscribe">
 		<label class="htoeau-subscribe__label">
-			<input type="radio" name="htoeau_purchase_type" value="subscribe" class="htoeau-subscribe__radio" checked="checked" />
+			<input type="radio" name="htoeau_purchase_type" value="subscribe" class="htoeau-subscribe__radio" />
 			<span class="htoeau-subscribe__radio-visual" aria-hidden="true"></span>
 			<span class="htoeau-subscribe__row">
 				<span class="htoeau-subscribe__title"><?php esc_html_e( 'Subscribe & Save', 'htoeau-child' ); ?></span>
@@ -88,9 +88,9 @@ $discount_pct = (float) apply_filters( 'htoeau_subscribe_discount_percent', 10 )
 		</ul>
 	</div>
 
-	<div class="htoeau-subscribe__option htoeau-subscribe__option--simple" data-subscribe-panel="once">
+	<div class="htoeau-subscribe__option htoeau-subscribe__option--simple is-active" data-subscribe-panel="once">
 		<label class="htoeau-subscribe__label htoeau-subscribe__label--simple">
-			<input type="radio" name="htoeau_purchase_type" value="once" class="htoeau-subscribe__radio" />
+			<input type="radio" name="htoeau_purchase_type" value="once" class="htoeau-subscribe__radio" checked="checked" />
 			<span class="htoeau-subscribe__radio-visual" aria-hidden="true"></span>
 			<span class="htoeau-subscribe__row">
 				<span class="htoeau-subscribe__title"><?php esc_html_e( 'One-Time Purchase', 'htoeau-child' ); ?></span>

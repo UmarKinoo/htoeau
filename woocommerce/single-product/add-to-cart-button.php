@@ -15,7 +15,7 @@ if ( ! function_exists( 'htoeau_child_product_is_variable_pdp' ) || ! htoeau_chi
 ?>
 <div class="htoeau-pdp__cta-wrap">
 	<?php if ( ! function_exists( 'htoeau_child_product_is_wcs_subscription' ) || ! htoeau_child_product_is_wcs_subscription( $product ) ) : ?>
-	<input type="hidden" name="htoeau_purchase_intent" value="subscribe" form="htoeau-variations-form" data-htoeau-purchase-intent />
+	<input type="hidden" name="htoeau_purchase_intent" value="once" form="htoeau-variations-form" data-htoeau-purchase-intent />
 	<?php endif; ?>
 	<button
 		type="submit"
