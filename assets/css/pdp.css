@@ -646,23 +646,23 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	text-align: left;
 }
 
-/* Subscribe panel — always gradient bg + cyan border + white text (per Figma). */
-.htoeau-subscribe__option[data-subscribe-panel='subscribe'] {
+/* Active option: brand gradient bg + cyan border + white text. */
+.htoeau-subscribe__option.is-active {
 	background: var(--brand-gradient);
 	border-color: var(--color-brand-cyan);
 	color: var(--color-white);
+}
+
+/* Inactive option: light teal tint bg + dark text. */
+.htoeau-subscribe__option:not(.is-active) {
+	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05));
+	color: var(--color-primary-dark);
 }
 
 /* Collapse dropdown + bullets only when subscribe is NOT the active choice. */
 .htoeau-subscribe__option[data-subscribe-panel='subscribe']:not(.is-active) .htoeau-subscribe__dropdown-wrap,
 .htoeau-subscribe__option[data-subscribe-panel='subscribe']:not(.is-active) .htoeau-subscribe__bullets {
 	display: none;
-}
-
-/* One-time panel — always light teal tint bg + dark text (per Figma). */
-.htoeau-subscribe__option[data-subscribe-panel='once'] {
-	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05));
-	color: var(--color-primary-dark);
 }
 
 .htoeau-subscribe__option--simple {
@@ -743,17 +743,17 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	border-radius: 50%;
 }
 
-/* Subscribe panel: white ring always, white dot when checked. */
-.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__radio-visual::before {
+/* Active option: white ring + white dot. */
+.htoeau-subscribe__option.is-active .htoeau-subscribe__radio-visual::before {
 	border-color: var(--color-white);
 }
 
-.htoeau-subscribe__option[data-subscribe-panel='subscribe'] input:checked + .htoeau-subscribe__radio-visual::after {
+.htoeau-subscribe__option.is-active input:checked + .htoeau-subscribe__radio-visual::after {
 	background: var(--color-white);
 }
 
-/* One-time panel: teal ring always, teal dot when checked. */
-.htoeau-subscribe__option[data-subscribe-panel='once'] input:checked + .htoeau-subscribe__radio-visual::after {
+/* Inactive option: teal ring + teal dot. */
+.htoeau-subscribe__option:not(.is-active) input:checked + .htoeau-subscribe__radio-visual::after {
 	background: var(--color-brand-dark-cyan);
 }
 
@@ -794,7 +794,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	letter-spacing: -0.14px;
 }
 
-.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__prices {
+.htoeau-subscribe__option.is-active .htoeau-subscribe__prices {
 	color: var(--color-white);
 }
 
@@ -868,7 +868,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	line-height: 1.4;
 }
 
-.htoeau-subscribe__option[data-subscribe-panel='subscribe'] .htoeau-subscribe__bullets li {
+.htoeau-subscribe__option.is-active .htoeau-subscribe__bullets li {
 	color: var(--color-white);
 }
 
