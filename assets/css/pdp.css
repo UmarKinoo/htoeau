@@ -451,11 +451,7 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	background: linear-gradient(
-		90deg,
-		rgba(0, 143, 163, 0.05) 0%,
-		rgba(0, 143, 163, 0.05) 100%
-	);
+	background: transparent;
 	border: 3px solid transparent;
 }
 
