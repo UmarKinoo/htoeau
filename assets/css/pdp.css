@@ -442,20 +442,13 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
  * Cans protrude above via negative margin, overlapping the top 40 px
  * of the panel exactly as in the Figma comp.
  */
-.htoeau-qty-card--pack-12::before,
-.htoeau-qty-card--pack-48::before,
-.htoeau-qty-card--pack-96::before,
-.htoeau-qty-card--pack-default::before {
+.htoeau-qty-card::before {
 	content: "";
 	position: absolute;
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	background: linear-gradient(
-		90deg,
-		rgba(0, 143, 163, 0.05) 0%,
-		rgba(0, 143, 163, 0.05) 100%
-	);
+	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05));
 	border: 3px solid transparent;
 }
 
@@ -469,8 +462,8 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 }
 
 .htoeau-qty-card.is-selected::before {
-	background: var(--brand-gradient);
-	border-color: var(--color-brand-cyan);
+	background: linear-gradient(90deg, #008fa3 0%, #016b9f 100%) !important;
+	border-color: #008fa3 !important;
 }
 
 .htoeau-qty-card:focus,
@@ -1609,13 +1602,19 @@ body.single-product .htoeau-pdp .htoeau-qty-card.is-selected {
 }
 
 body.single-product .htoeau-pdp .htoeau-qty-card::before {
+	content: "" !important;
 	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05)) !important;
 	border-color: transparent !important;
 }
 
 body.single-product .htoeau-pdp .htoeau-qty-card.is-selected::before {
-	background: var(--brand-gradient) !important;
-	border-color: var(--color-brand-cyan) !important;
+	background: linear-gradient(90deg, #008fa3 0%, #016b9f 100%) !important;
+	border-color: #008fa3 !important;
+}
+
+body.single-product .htoeau-pdp .htoeau-qty-card:not(.is-selected)::before {
+	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05)) !important;
+	border-color: transparent !important;
 }
 
 body.single-product .htoeau-pdp .htoeau-pdp__add-btn {
