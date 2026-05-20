@@ -451,7 +451,11 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	inset: 0;
 	z-index: 0;
 	pointer-events: none;
-	background: transparent;
+	background: linear-gradient(
+		90deg,
+		rgba(0, 143, 163, 0.05) 0%,
+		rgba(0, 143, 163, 0.05) 100%
+	);
 	border: 3px solid transparent;
 }
 
@@ -1602,6 +1606,16 @@ body.single-product .htoeau-pdp .htoeau-qty-card {
 
 body.single-product .htoeau-pdp .htoeau-qty-card.is-selected {
 	color: var(--color-white) !important;
+}
+
+body.single-product .htoeau-pdp .htoeau-qty-card::before {
+	background: linear-gradient(90deg, rgba(0, 143, 163, 0.05), rgba(0, 143, 163, 0.05)) !important;
+	border-color: transparent !important;
+}
+
+body.single-product .htoeau-pdp .htoeau-qty-card.is-selected::before {
+	background: var(--brand-gradient) !important;
+	border-color: var(--color-brand-cyan) !important;
 }
 
 body.single-product .htoeau-pdp .htoeau-pdp__add-btn {
