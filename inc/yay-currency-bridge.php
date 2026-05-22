@@ -88,6 +88,68 @@ function htoeau_child_yay_apply_geo_currency( $apply_currency ) {
 add_filter( 'yay_currency_apply_currency', 'htoeau_child_yay_apply_geo_currency', 15, 1 );
 
 /**
+ * GBP store + EUR browse: same numeric amount, different symbol/format (rate = 1).
+ *
+ * @param array $apply_currency Yay currency row.
+ * @return array
+ */
+function htoeau_child_yay_apply_parity_to_currency_row( $apply_currency ) {
+	if ( ! htoeau_child_yay_currency_is_active() || ! is_array( $apply_currency ) ) {
+		return $apply_currency;
+	}
+
+	$store = strtoupper( (string) get_woocommerce_currency() );
+	$code  = isset( $apply_currency['currency'] ) ? strtoupper( (string) $apply_currency['currency'] ) : '';
+
+	if ( ! $code || $code === $store || ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
+		return $apply_currency;
+	}
+
+	$apply_currency['rate'] = 1;
+
+	if ( isset( $apply_currency['fee'] ) && is_array( $apply_currency['fee'] ) ) {
+		$apply_currency['fee']['value'] = 0;
+		$apply_currency['fee']['type']  = 'fixed';
+	}
+
+	return $apply_currency;
+}
+add_filter( 'yay_currency_apply_currency', 'htoeau_child_yay_apply_parity_to_currency_row', 25, 1 );
+add_filter( 'yay_currency_detect_current_currency', 'htoeau_child_yay_apply_parity_to_currency_row', 25, 1 );
+
+/**
+ * Safety net: if Yay already converted with admin rate, revert to store amount.
+ *
+ * @param float $price          Converted price.
+ * @param array $apply_currency Yay currency row.
+ * @return float
+ */
+function htoeau_child_yay_enforce_parity_convert_price( $price, $apply_currency = array() ) {
+	if ( ! htoeau_child_yay_currency_is_active() ) {
+		return $price;
+	}
+
+	$store = strtoupper( (string) get_woocommerce_currency() );
+	if ( ! is_array( $apply_currency ) || empty( $apply_currency['currency'] ) ) {
+		if ( class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+			$apply_currency = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+		}
+	}
+
+	$code = is_array( $apply_currency ) && ! empty( $apply_currency['currency'] )
+		? strtoupper( (string) $apply_currency['currency'] )
+		: '';
+
+	if ( ! $code || $code === $store ) {
+		return $price;
+	}
+
+	$reverted = apply_filters( 'yay_currency_revert_price', $price, $apply_currency );
+	return is_numeric( $reverted ) ? (float) $reverted : (float) $price;
+}
+add_filter( 'yay_currency_convert_price', 'htoeau_child_yay_enforce_parity_convert_price', 11, 2 );
+
+/**
  * Sync ?htoeau_ccy= overrides into Yay’s switcher cookie.
  *
  * @param string $code GBP|EUR.

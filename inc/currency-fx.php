@@ -419,7 +419,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'With Yay Currency: geo rules (UK/Channel Islands/Isle of Man/MU → GBP, others → EUR) and real GBP→EUR conversion. Test override: ?htoeau_ccy=GBP or EUR. Without Yay: symbol/format swap only. Checkout currency follows Yay/Woo settings.', 'hello-elementor-child' ),
+			'description' => __( 'With Yay Currency: geo rules (UK/Channel Islands/Isle of Man/MU → GBP, others → EUR). GBP and EUR use the same numeric price (1:1); only symbol/format differs. Test override: ?htoeau_ccy=GBP or EUR.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);
