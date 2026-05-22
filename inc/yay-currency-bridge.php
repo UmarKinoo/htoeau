@@ -120,6 +120,33 @@ function htoeau_child_yay_prime_widget_cookie_from_htoeau() {
 add_action( 'init', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 3 );
 
 /**
+ * When store is EUR but we display GBP (cookie/geo), tell Woo/Yay the active code is GBP.
+ *
+ * @param string $currency WooCommerce currency code.
+ * @return string
+ */
+function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $currency;
+	}
+	if ( ! htoeau_child_yay_currency_is_active() ) {
+		return $currency;
+	}
+	$override = htoeau_child_yay_htoeau_cookie_currency_code();
+	if ( $override ) {
+		return $override;
+	}
+	if ( ! htoeau_child_yay_has_user_currency_cookie() ) {
+		$guessed = htoeau_child_fx_geo_guess_display_currency();
+		if ( $guessed && in_array( $guessed, htoeau_child_fx_supported_codes(), true ) ) {
+			return $guessed;
+		}
+	}
+	return $currency;
+}
+add_filter( 'woocommerce_currency', 'htoeau_child_yay_filter_woocommerce_currency', 99999 );
+
+/**
  * GBP store + EUR browse: same numeric amount, different symbol/format (rate = 1).
  *
  * Yay’s converted-currency list stores rate as an array; get_rate_fee expects a number.

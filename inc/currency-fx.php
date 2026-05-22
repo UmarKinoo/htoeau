@@ -120,12 +120,31 @@ function htoeau_child_fx_get_display_currency() {
 
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
 		$resolving = true;
-		$apply     = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+		$store     = get_woocommerce_currency();
+		$allowed   = htoeau_child_fx_supported_codes();
+
+		if ( function_exists( 'htoeau_child_yay_htoeau_cookie_currency_code' ) ) {
+			$cookie_code = htoeau_child_yay_htoeau_cookie_currency_code();
+			if ( $cookie_code ) {
+				$resolving = false;
+				return $cookie_code;
+			}
+		}
+
+		if ( ! function_exists( 'htoeau_child_yay_has_user_currency_cookie' ) || ! htoeau_child_yay_has_user_currency_cookie() ) {
+			$guessed = htoeau_child_fx_geo_guess_display_currency();
+			if ( $guessed && in_array( $guessed, $allowed, true ) ) {
+				$resolving = false;
+				return $guessed;
+			}
+		}
+
+		$apply = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
 		$resolving = false;
 		if ( is_array( $apply ) && ! empty( $apply['currency'] ) ) {
 			return strtoupper( (string) $apply['currency'] );
 		}
-		return get_woocommerce_currency();
+		return $store;
 	}
 
 	$store   = get_woocommerce_currency();
@@ -151,6 +170,11 @@ function htoeau_child_fx_convert_amount( $amount ) {
 
 	$amount = (float) $amount;
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		$store   = get_woocommerce_currency();
+		$display = htoeau_child_fx_get_display_currency();
+		if ( $display && $store && $display !== $store ) {
+			return $amount;
+		}
 		if ( $converting ) {
 			return $amount;
 		}
@@ -188,6 +212,22 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	}
 
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		$store   = get_woocommerce_currency();
+		$display = htoeau_child_fx_get_display_currency();
+		if ( $display && $store && $display !== $store ) {
+			$args['currency'] = $display;
+			$formatted        = wc_price( $amount, $args );
+			$symbol_map       = array(
+				'GBP' => html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ),
+				'EUR' => html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' ),
+			);
+			$target_symbol = isset( $symbol_map[ $display ] ) ? $symbol_map[ $display ] : '';
+			if ( $target_symbol ) {
+				$known_symbols = array_values( $symbol_map );
+				$formatted     = str_replace( $known_symbols, $target_symbol, $formatted );
+			}
+			return $formatted;
+		}
 		return wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
 	}
 
