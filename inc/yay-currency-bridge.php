@@ -235,6 +235,13 @@ function htoeau_child_yay_apply_parity_to_currency_row( $apply_currency ) {
 		$apply_currency['fee']['type']  = 'fixed';
 	}
 
+	// Yay admin may use comma for GBP; browse UX is EUR "," and GBP ".".
+	if ( 'GBP' === $code ) {
+		$apply_currency['decimalSeparator'] = '.';
+	} elseif ( 'EUR' === $code ) {
+		$apply_currency['decimalSeparator'] = ',';
+	}
+
 	return $apply_currency;
 }
 add_filter( 'yay_currency_apply_currency', 'htoeau_child_yay_apply_parity_to_currency_row', 25, 1 );

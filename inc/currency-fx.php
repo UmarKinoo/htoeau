@@ -348,50 +348,31 @@ function htoeau_child_fx_capture_query_currency() {
 add_action( 'init', 'htoeau_child_fx_capture_query_currency', 2 );
 
 /**
- * Rewrite: /htoeau-ccy-gbp/ or /htoeau-ccy-eur/ sets cookie (no query string; works with full-page cache).
+ * /htoeau-ccy-gbp/ or /ccy-gbp/ — set cookie server-side (no query string).
  */
-function htoeau_child_fx_register_ccy_rewrite() {
-	add_rewrite_rule( '^htoeau-ccy-(gbp|eur)/?$', 'index.php?htoeau_ccy_path=$matches[1]', 'top' );
-	add_rewrite_tag( '%htoeau_ccy_path%', '(gbp|eur)' );
-}
-add_action( 'init', 'htoeau_child_fx_register_ccy_rewrite', 5 );
-
-/**
- * Flush rewrites once after rule change.
- */
-function htoeau_child_fx_maybe_flush_rewrites() {
-	if ( get_option( 'htoeau_fx_rewrite_ver', '' ) === '1.6.8' ) {
+function htoeau_child_fx_capture_ccy_slug_request() {
+	if ( ! htoeau_child_fx_is_enabled() || headers_sent() ) {
 		return;
 	}
-	flush_rewrite_rules( false );
-	update_option( 'htoeau_fx_rewrite_ver', '1.6.8', false );
-}
-add_action( 'init', 'htoeau_child_fx_maybe_flush_rewrites', 99 );
-
-/**
- * Handle /htoeau-ccy-gbp|eur/ — set cookie and redirect back.
- */
-function htoeau_child_fx_handle_path_currency() {
-	if ( ! htoeau_child_fx_is_enabled() ) {
+	$uri  = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$path = strtok( $uri, '?' );
+	if ( ! $path || ! preg_match( '#/(?:htoeau-)?ccy-(gbp|eur)/?$#i', $path, $matches ) ) {
 		return;
 	}
-	$slug = get_query_var( 'htoeau_ccy_path' );
-	if ( ! $slug ) {
-		return;
-	}
-	$code = strtoupper( sanitize_text_field( (string) $slug ) );
+	$code = strtoupper( sanitize_text_field( $matches[1] ) );
 	if ( ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
 		return;
 	}
 	htoeau_child_fx_set_display_currency_cookie( $code );
 	$redirect = wp_get_referer();
 	if ( ! $redirect ) {
-		$redirect = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
+		$product = get_page_by_path( 'htoeau-hydrogen-water-2', OBJECT, 'product' );
+		$redirect = $product ? get_permalink( $product ) : home_url( '/' );
 	}
 	wp_safe_redirect( $redirect ? $redirect : home_url( '/' ) );
 	exit;
 }
-add_action( 'template_redirect', 'htoeau_child_fx_handle_path_currency', 1 );
+add_action( 'init', 'htoeau_child_fx_capture_ccy_slug_request', 1 );
 
 /**
  * Load hash currency override script (footer; works when page cache omits wp_enqueue output).
@@ -610,7 +591,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'Geo: UK/Channel Islands/Isle of Man/MU → GBP, others → EUR. Same numeric price (1:1); EUR uses comma (34,13), GBP uses dot (34.13). Test GBP: visit /htoeau-ccy-gbp/ then the PDP, or use #htoeau_ccy=GBP on the product URL.', 'hello-elementor-child' ),
+			'description' => __( 'Geo: UK/Channel Islands/Isle of Man/MU → GBP, others → EUR. Same numeric price (1:1); EUR uses comma (34,13), GBP uses dot (34.13). Test GBP: visit /ccy-gbp/ then the PDP, or use the Yay switcher → Pound sterling.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);
