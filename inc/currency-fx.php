@@ -267,7 +267,30 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 }
 
 /**
+ * URL to set the display-currency test cookie (hash; avoids hosts that 503 on query strings).
+ *
+ * @param string $code     GBP|EUR.
+ * @param string $base_url Page URL without hash; defaults to current request path.
+ * @return string
+ */
+function htoeau_child_fx_currency_override_url( $code, $base_url = '' ) {
+	$code = strtoupper( (string) $code );
+	if ( ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
+		return '';
+	}
+	if ( ! $base_url ) {
+		$path = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$path = strtok( $path, '?' );
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$base_url = ( is_ssl() ? 'https://' : 'http://' ) . $host . $path;
+	}
+	$base_url = remove_query_arg( 'htoeau_ccy', $base_url );
+	return $base_url . '#htoeau_ccy=' . rawurlencode( $code );
+}
+
+/**
  * Set display currency cookie from ?htoeau_ccy=GBP|EUR and redirect (strip query arg).
+ * Some hosts return 503 before PHP for any ?query=; use #htoeau_ccy= via htoeau_child_fx_currency_override_url().
  */
 function htoeau_child_fx_capture_query_currency() {
 	if ( ! isset( $_GET['htoeau_ccy'] ) || ! htoeau_child_fx_is_enabled() ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -481,7 +504,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'With Yay Currency: geo rules (UK/Channel Islands/Isle of Man/MU → GBP, others → EUR). GBP and EUR use the same numeric price (1:1); only symbol/format differs. Test override: ?htoeau_ccy=GBP or EUR.', 'hello-elementor-child' ),
+			'description' => __( 'With Yay Currency: geo rules (UK/Channel Islands/Isle of Man/MU → GBP, others → EUR). GBP and EUR use the same numeric price (1:1); only symbol/format differs. Test override: append #htoeau_ccy=GBP or #htoeau_ccy=EUR to any page URL (preferred on staging; ?htoeau_ccy= may be blocked by the host).', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);

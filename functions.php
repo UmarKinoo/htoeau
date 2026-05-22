@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.6.4' );
+define( 'HTOEAU_CHILD_VERSION', '1.6.6' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -173,6 +173,23 @@ function htoeau_child_enqueue_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_assets', 200 );
+
+/**
+ * Hash-based currency test override (#htoeau_ccy=GBP|EUR) when FX is enabled.
+ */
+function htoeau_child_enqueue_currency_override_script() {
+	if ( ! function_exists( 'htoeau_child_fx_is_enabled' ) || ! htoeau_child_fx_is_enabled() ) {
+		return;
+	}
+	wp_enqueue_script(
+		'htoeau-currency-override',
+		HTOEAU_CHILD_URI . '/assets/js/currency-override.js',
+		array(),
+		HTOEAU_CHILD_VERSION,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_currency_override_script', 5 );
 
 /**
  * PDP CSS after Elementor (kit / post / frontend) so gallery buttons beat global button styles.

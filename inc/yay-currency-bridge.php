@@ -42,6 +42,40 @@ function htoeau_child_yay_has_user_currency_cookie() {
 }
 
 /**
+ * Build a Yay apply-currency row when GBP/EUR is not configured in Yay (e.g. EUR-only store).
+ *
+ * @param string $code GBP|EUR.
+ * @return array|false
+ */
+function htoeau_child_yay_synthetic_apply_currency_row( $code ) {
+	if ( ! htoeau_child_yay_currency_is_active() || ! class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+		return false;
+	}
+	$code  = strtoupper( (string) $code );
+	$store = function_exists( 'htoeau_child_fx_store_currency_code' )
+		? htoeau_child_fx_store_currency_code()
+		: strtoupper( (string) get_option( 'woocommerce_currency', 'GBP' ) );
+	if ( ! $code || $code === $store || ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
+		return false;
+	}
+	$base = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $store );
+	if ( ! is_array( $base ) ) {
+		$base = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+	}
+	if ( ! is_array( $base ) ) {
+		return false;
+	}
+	$row              = $base;
+	$row['currency']  = $code;
+	$row['rate']      = 1;
+	$row['fee']       = array(
+		'value' => '0',
+		'type'  => 'fixed',
+	);
+	return htoeau_child_yay_apply_parity_to_currency_row( $row );
+}
+
+/**
  * Target currency code from htoeau test cookie or geo rules.
  *
  * @return string GBP|EUR|empty
@@ -90,6 +124,10 @@ function htoeau_child_yay_apply_geo_currency( $apply_currency ) {
 		if ( is_array( $custom ) && ! empty( $custom['currency'] ) ) {
 			return htoeau_child_yay_apply_parity_to_currency_row( $custom );
 		}
+		$synthetic = htoeau_child_yay_synthetic_apply_currency_row( $code );
+		if ( is_array( $synthetic ) && ! empty( $synthetic['currency'] ) ) {
+			return $synthetic;
+		}
 	}
 
 	// No HtoEAU override: keep visitor’s Yay switcher choice.
@@ -113,6 +151,9 @@ function htoeau_child_yay_prime_widget_cookie_from_htoeau() {
 		return;
 	}
 	$apply = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $code );
+	if ( ! is_array( $apply ) || empty( $apply['ID'] ) ) {
+		$apply = htoeau_child_yay_synthetic_apply_currency_row( $code );
+	}
 	if ( ! is_array( $apply ) || empty( $apply['ID'] ) ) {
 		return;
 	}
@@ -144,6 +185,13 @@ function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
 	if ( $override ) {
 		$in_filter = false;
 		return $override;
+	}
+	if ( function_exists( 'htoeau_child_fx_resolve_target_currency_code' ) ) {
+		$resolved = htoeau_child_fx_resolve_target_currency_code();
+		if ( $resolved && in_array( $resolved, htoeau_child_fx_supported_codes(), true ) ) {
+			$in_filter = false;
+			return $resolved;
+		}
 	}
 	if ( ! htoeau_child_yay_has_user_currency_cookie() ) {
 		$guessed = htoeau_child_fx_geo_guess_display_currency();
