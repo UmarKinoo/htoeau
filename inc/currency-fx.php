@@ -311,6 +311,22 @@ function htoeau_child_fx_capture_query_currency() {
 add_action( 'init', 'htoeau_child_fx_capture_query_currency', 2 );
 
 /**
+ * Load hash currency override script (footer; works when page cache omits wp_enqueue output).
+ */
+function htoeau_child_fx_print_hash_override_script() {
+	if ( ! htoeau_child_fx_is_enabled() ) {
+		return;
+	}
+	$src = trailingslashit( get_stylesheet_directory_uri() ) . 'assets/js/currency-override.js';
+	$ver = defined( 'HTOEAU_CHILD_VERSION' ) ? HTOEAU_CHILD_VERSION : '1.6.6';
+	printf(
+		'<script id="htoeau-currency-override-js" src="%s"></script>' . "\n",
+		esc_url( $src . '?ver=' . rawurlencode( $ver ) )
+	);
+}
+add_action( 'wp_footer', 'htoeau_child_fx_print_hash_override_script', 1 );
+
+/**
  * Rebuild price HTML in the visitor’s display currency.
  *
  * @param string     $html    Default HTML.
