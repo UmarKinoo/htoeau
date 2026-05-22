@@ -10,6 +10,45 @@ defined( 'ABSPATH' ) || exit;
 define( 'HTOEAU_FX_COOKIE', 'htoeau_display_ccy' );
 
 /**
+ * Tell LiteSpeed Cache to vary by our currency cookie so GBP/EUR get separate cached pages.
+ */
+function htoeau_child_fx_litespeed_vary_cookie( $cookies ) {
+	$cookies[] = HTOEAU_FX_COOKIE;
+	return $cookies;
+}
+add_filter( 'litespeed_vary_cookies', 'htoeau_child_fx_litespeed_vary_cookie' );
+
+/**
+ * Also set the Vary cookie via LiteSpeed's API if available.
+ */
+function htoeau_child_fx_litespeed_vary_init() {
+	if ( ! method_exists( 'LiteSpeed\Vary', 'add' ) ) {
+		return;
+	}
+	$code = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $code && in_array( $code, array( 'GBP', 'EUR' ), true ) ) {
+		\LiteSpeed\Vary::add( HTOEAU_FX_COOKIE, $code );
+	}
+}
+add_action( 'litespeed_vary', 'htoeau_child_fx_litespeed_vary_init' );
+
+/**
+ * Mark htoeau_display_ccy as a vary cookie in LiteSpeed via constant (fallback for older versions).
+ */
+function htoeau_child_fx_litespeed_conf_vary( $vary ) {
+	if ( is_string( $vary ) ) {
+		$cookies = array_filter( array_map( 'trim', explode( ',', $vary ) ) );
+	} else {
+		$cookies = is_array( $vary ) ? $vary : array();
+	}
+	if ( ! in_array( HTOEAU_FX_COOKIE, $cookies, true ) ) {
+		$cookies[] = HTOEAU_FX_COOKIE;
+	}
+	return implode( ',', $cookies );
+}
+add_filter( 'litespeed_conf_vary__cookies', 'htoeau_child_fx_litespeed_conf_vary' );
+
+/**
  * Currencies we can convert between (store must be one of these for FX UI to show).
  *
  * @return string[]
