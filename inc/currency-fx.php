@@ -47,6 +47,46 @@ function htoeau_child_fx_is_enabled() {
 }
 
 /**
+ * Decimal separator for a currency code (EUR → comma, GBP → dot).
+ *
+ * @param string $code GBP|EUR.
+ * @return string
+ */
+function htoeau_child_fx_decimal_separator_for_code( $code ) {
+	return 'EUR' === strtoupper( (string) $code ) ? ',' : '.';
+}
+
+/**
+ * Persist display-currency override cookie (readable by JS and PHP).
+ *
+ * @param string $code GBP|EUR.
+ */
+function htoeau_child_fx_set_display_currency_cookie( $code ) {
+	$code = strtoupper( (string) $code );
+	if ( ! in_array( $code, htoeau_child_fx_supported_codes(), true ) || headers_sent() ) {
+		return;
+	}
+	setcookie( HTOEAU_FX_COOKIE, $code, time() + YEAR_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), false );
+	$_COOKIE[ HTOEAU_FX_COOKIE ] = $code; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	if ( function_exists( 'htoeau_child_yay_sync_currency_cookie' ) ) {
+		htoeau_child_yay_sync_currency_cookie( $code );
+	}
+}
+
+/**
+ * Whether browse formatting (symbol + decimal separator) should follow display currency.
+ */
+function htoeau_child_fx_applies_display_formatting() {
+	if ( ! htoeau_child_fx_is_enabled() ) {
+		return false;
+	}
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		return true;
+	}
+	return htoeau_child_fx_legacy_symbol_swap_enabled();
+}
+
+/**
  * Two-letter country code for the visitor (Cloudflare header or WooCommerce geolocation).
  *
  * @return string Empty string if unknown.
@@ -112,56 +152,61 @@ function htoeau_child_fx_geo_guess_display_currency() {
  * Cookie override (e.g. ?htoeau_ccy=) or geo: which currency to show prices in.
  */
 function htoeau_child_fx_get_display_currency() {
+	static $cached   = null;
 	static $resolving = false;
 
+	if ( null !== $cached ) {
+		return $cached;
+	}
+
 	if ( ! htoeau_child_fx_is_enabled() ) {
-		return get_woocommerce_currency();
+		$cached = get_woocommerce_currency();
+		return $cached;
 	}
 
 	if ( $resolving ) {
-		return get_woocommerce_currency();
+		$cached = htoeau_child_fx_store_currency_code();
+		return $cached;
 	}
 
+	$allowed = htoeau_child_fx_supported_codes();
+	$cookie  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $cookie && in_array( $cookie, $allowed, true ) ) {
+		$cached = $cookie;
+		return $cached;
+	}
+
+	$resolving = true;
+	$store     = htoeau_child_fx_store_currency_code();
+
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
-		$resolving = true;
-		$store     = htoeau_child_fx_store_currency_code();
-		$allowed   = htoeau_child_fx_supported_codes();
-
-		if ( function_exists( 'htoeau_child_yay_htoeau_cookie_currency_code' ) ) {
-			$cookie_code = htoeau_child_yay_htoeau_cookie_currency_code();
-			if ( $cookie_code ) {
-				$resolving = false;
-				return $cookie_code;
-			}
-		}
-
 		if ( ! function_exists( 'htoeau_child_yay_has_user_currency_cookie' ) || ! htoeau_child_yay_has_user_currency_cookie() ) {
 			$guessed = htoeau_child_fx_geo_guess_display_currency();
 			if ( $guessed && in_array( $guessed, $allowed, true ) ) {
 				$resolving = false;
-				return $guessed;
+				$cached    = $guessed;
+				return $cached;
 			}
 		}
 
 		$apply = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
 		$resolving = false;
 		if ( is_array( $apply ) && ! empty( $apply['currency'] ) ) {
-			return strtoupper( (string) $apply['currency'] );
+			$cached = strtoupper( (string) $apply['currency'] );
+			return $cached;
 		}
-		return $store;
+		$cached = $store;
+		return $cached;
 	}
 
-	$store   = get_woocommerce_currency();
-	$allowed = htoeau_child_fx_supported_codes();
-	$cookie  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	if ( $cookie && in_array( $cookie, $allowed, true ) ) {
-		return $cookie;
-	}
 	$guessed = htoeau_child_fx_geo_guess_display_currency();
+	$resolving = false;
 	if ( $guessed && in_array( $guessed, $allowed, true ) ) {
-		return $guessed;
+		$cached = $guessed;
+		return $cached;
 	}
-	return $store;
+	$cached = $store;
+	return $cached;
 }
 
 /**
@@ -206,29 +251,25 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 		: ( function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '' );
 	$display_ccy = strtoupper( (string) $display_ccy );
 
-	// Enforce separators by display currency (frontend consistency regardless of Woo global decimal option).
-	if ( ! isset( $args['decimal_separator'] ) ) {
-		if ( 'EUR' === $display_ccy ) {
-			$args['decimal_separator'] = ',';
-		} elseif ( 'GBP' === $display_ccy ) {
-			$args['decimal_separator'] = '.';
-		}
+	if ( ! isset( $args['decimal_separator'] ) && $display_ccy ) {
+		$args['decimal_separator'] = htoeau_child_fx_decimal_separator_for_code( $display_ccy );
 	}
+
+	$symbol_map = array(
+		'GBP' => html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ),
+		'EUR' => html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' ),
+	);
 
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
 		$store   = htoeau_child_fx_store_currency_code();
 		$display = htoeau_child_fx_get_display_currency();
-		if ( $display && $store && $display !== $store ) {
+		if ( $display && in_array( $display, htoeau_child_fx_supported_codes(), true ) ) {
 			$args['currency'] = $display;
-			$formatted        = wc_price( $amount, $args );
-			$symbol_map       = array(
-				'GBP' => html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ),
-				'EUR' => html_entity_decode( '&euro;', ENT_QUOTES, 'UTF-8' ),
-			);
-			$target_symbol = isset( $symbol_map[ $display ] ) ? $symbol_map[ $display ] : '';
+			$converted        = ( $store !== $display ) ? $amount : htoeau_child_fx_convert_amount( $amount );
+			$formatted        = wc_price( $converted, $args );
+			$target_symbol    = isset( $symbol_map[ $display ] ) ? $symbol_map[ $display ] : '';
 			if ( $target_symbol ) {
-				$known_symbols = array_values( $symbol_map );
-				$formatted     = str_replace( $known_symbols, $target_symbol, $formatted );
+				$formatted = str_replace( array_values( $symbol_map ), $target_symbol, $formatted );
 			}
 			return $formatted;
 		}
@@ -300,15 +341,57 @@ function htoeau_child_fx_capture_query_currency() {
 	if ( ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
 		return;
 	}
-	if ( headers_sent() ) {
-		return;
-	}
-	setcookie( HTOEAU_FX_COOKIE, $code, time() + YEAR_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
-	$_COOKIE[ HTOEAU_FX_COOKIE ] = $code; // Current request; Yay sync runs on next request via prime_widget.
+	htoeau_child_fx_set_display_currency_cookie( $code );
 	wp_safe_redirect( remove_query_arg( 'htoeau_ccy' ) );
 	exit;
 }
 add_action( 'init', 'htoeau_child_fx_capture_query_currency', 2 );
+
+/**
+ * Rewrite: /htoeau-ccy-gbp/ or /htoeau-ccy-eur/ sets cookie (no query string; works with full-page cache).
+ */
+function htoeau_child_fx_register_ccy_rewrite() {
+	add_rewrite_rule( '^htoeau-ccy-(gbp|eur)/?$', 'index.php?htoeau_ccy_path=$matches[1]', 'top' );
+	add_rewrite_tag( '%htoeau_ccy_path%', '(gbp|eur)' );
+}
+add_action( 'init', 'htoeau_child_fx_register_ccy_rewrite', 5 );
+
+/**
+ * Flush rewrites once after rule change.
+ */
+function htoeau_child_fx_maybe_flush_rewrites() {
+	if ( get_option( 'htoeau_fx_rewrite_ver', '' ) === '1.6.8' ) {
+		return;
+	}
+	flush_rewrite_rules( false );
+	update_option( 'htoeau_fx_rewrite_ver', '1.6.8', false );
+}
+add_action( 'init', 'htoeau_child_fx_maybe_flush_rewrites', 99 );
+
+/**
+ * Handle /htoeau-ccy-gbp|eur/ — set cookie and redirect back.
+ */
+function htoeau_child_fx_handle_path_currency() {
+	if ( ! htoeau_child_fx_is_enabled() ) {
+		return;
+	}
+	$slug = get_query_var( 'htoeau_ccy_path' );
+	if ( ! $slug ) {
+		return;
+	}
+	$code = strtoupper( sanitize_text_field( (string) $slug ) );
+	if ( ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
+		return;
+	}
+	htoeau_child_fx_set_display_currency_cookie( $code );
+	$redirect = wp_get_referer();
+	if ( ! $redirect ) {
+		$redirect = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
+	}
+	wp_safe_redirect( $redirect ? $redirect : home_url( '/' ) );
+	exit;
+}
+add_action( 'template_redirect', 'htoeau_child_fx_handle_path_currency', 1 );
 
 /**
  * Load hash currency override script (footer; works when page cache omits wp_enqueue output).
@@ -318,13 +401,28 @@ function htoeau_child_fx_print_hash_override_script() {
 		return;
 	}
 	$src = trailingslashit( get_stylesheet_directory_uri() ) . 'assets/js/currency-override.js';
-	$ver = defined( 'HTOEAU_CHILD_VERSION' ) ? HTOEAU_CHILD_VERSION : '1.6.6';
+	$ver = defined( 'HTOEAU_CHILD_VERSION' ) ? HTOEAU_CHILD_VERSION : '1.6.8';
 	printf(
 		'<script id="htoeau-currency-override-js" src="%s"></script>' . "\n",
 		esc_url( $src . '?ver=' . rawurlencode( $ver ) )
 	);
 }
 add_action( 'wp_footer', 'htoeau_child_fx_print_hash_override_script', 1 );
+
+/**
+ * Inline hash handler on PDP (loads even when footer assets are cached out of date).
+ */
+function htoeau_child_fx_print_inline_hash_override_script() {
+	if ( ! htoeau_child_fx_is_enabled() || ! function_exists( 'is_product' ) || ! is_product() ) {
+		return;
+	}
+	?>
+	<script id="htoeau-currency-override-inline">
+	(function(){var m=(location.hash||'').match(/^#htoeau_ccy=(GBP|EUR)$/i);if(!m)return;var c=m[1].toUpperCase(),n='htoeau_display_ccy',s=document.cookie.split(';').map(function(p){return p.trim()}).filter(function(p){return p.indexOf(n+'=')===0})[0];if(s&&s.split('=')[1]===c&&history.replaceState){history.replaceState(null,'',location.pathname+location.search);return;}var x='; path=/; max-age=0; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');document.cookie='yay_currency_widget='+x;document.cookie='yay_currency='+x;document.cookie=n+'='+c+'; path=/; max-age=31536000; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');if(history.replaceState){history.replaceState(null,'',location.pathname+location.search);}location.reload();})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'htoeau_child_fx_print_inline_hash_override_script', 0 );
 
 /**
  * Rebuild price HTML in the visitor’s display currency.
@@ -406,7 +504,7 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 	if ( is_admin() && ! wp_doing_ajax() ) {
 		return $separator;
 	}
-	if ( ! htoeau_child_fx_legacy_symbol_swap_enabled() ) {
+	if ( ! htoeau_child_fx_applies_display_formatting() ) {
 		return $separator;
 	}
 
@@ -415,15 +513,7 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 		: ( function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '' );
 
 	$currency = strtoupper( (string) $currency );
-	if ( 'EUR' === $currency ) {
-		return ',';
-	}
-
-	if ( 'GBP' === $currency ) {
-		return '.';
-	}
-
-	return $separator;
+	return htoeau_child_fx_decimal_separator_for_code( $currency );
 }
 add_filter( 'wc_get_price_decimal_separator', 'htoeau_child_fx_price_decimal_separator', 50, 1 );
 
@@ -438,7 +528,7 @@ function htoeau_child_fx_currency_symbol( $currency_symbol, $currency ) {
 	if ( is_admin() && ! wp_doing_ajax() ) {
 		return $currency_symbol;
 	}
-	if ( ! htoeau_child_fx_legacy_symbol_swap_enabled() ) {
+	if ( ! htoeau_child_fx_applies_display_formatting() ) {
 		return $currency_symbol;
 	}
 
@@ -520,7 +610,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'With Yay Currency: geo rules (UK/Channel Islands/Isle of Man/MU → GBP, others → EUR). GBP and EUR use the same numeric price (1:1); only symbol/format differs. Test override: append #htoeau_ccy=GBP or #htoeau_ccy=EUR to any page URL (preferred on staging; ?htoeau_ccy= may be blocked by the host).', 'hello-elementor-child' ),
+			'description' => __( 'Geo: UK/Channel Islands/Isle of Man/MU → GBP, others → EUR. Same numeric price (1:1); EUR uses comma (34,13), GBP uses dot (34.13). Test GBP: visit /htoeau-ccy-gbp/ then the PDP, or use #htoeau_ccy=GBP on the product URL.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);

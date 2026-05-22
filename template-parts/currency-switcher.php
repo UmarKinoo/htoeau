@@ -28,11 +28,7 @@ if ( ! $base_url ) {
 	<span class="htoeau-currency-switcher__label"><?php esc_html_e( 'Prices in', 'htoeau-child' ); ?></span>
 	<?php foreach ( $codes as $code ) : ?>
 		<?php
-		$url   = esc_url(
-			function_exists( 'htoeau_child_fx_currency_override_url' )
-				? htoeau_child_fx_currency_override_url( $code, $base_url )
-				: add_query_arg( 'htoeau_ccy', $code, $base_url )
-		);
+		$url   = esc_url( home_url( '/htoeau-ccy-' . strtolower( $code ) . '/' ) );
 		$is_on = ( $code === $current );
 		?>
 		<a

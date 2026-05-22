@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.6.7' );
+define( 'HTOEAU_CHILD_VERSION', '1.6.8' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -158,6 +158,9 @@ function htoeau_child_enqueue_assets() {
 			: ( function_exists( 'get_woocommerce_currency_symbol' )
 				? html_entity_decode( get_woocommerce_currency_symbol( $sym_ccy ), ENT_QUOTES, 'UTF-8' )
 				: html_entity_decode( '&pound;', ENT_QUOTES, 'UTF-8' ) );
+		$dec_sep = function_exists( 'htoeau_child_fx_decimal_separator_for_code' ) && $fx_display
+			? htoeau_child_fx_decimal_separator_for_code( $fx_display )
+			: wc_get_price_decimal_separator();
 		wp_localize_script(
 			'htoeau-pdp',
 			'htoeauPdp',
@@ -165,9 +168,10 @@ function htoeau_child_enqueue_assets() {
 				'i18n' => array(
 					'addToCart' => __( 'Add to Cart', 'hello-elementor-child' ),
 				),
-				'currencySymbol' => $sym_value,
-				'storeCurrency'   => $fx_store,
-				'displayCurrency' => $fx_display,
+				'currencySymbol'    => $sym_value,
+				'decimalSeparator'  => $dec_sep,
+				'storeCurrency'     => $fx_store,
+				'displayCurrency'   => $fx_display,
 			)
 		);
 	}

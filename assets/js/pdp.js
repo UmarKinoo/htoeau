@@ -16,13 +16,14 @@
 		}
 	}
 
-	function formatMoney(amount, symbol, decimals) {
+	function formatMoney(amount, symbol, decimals, decimalSep) {
 		var n = Number(amount);
 		if (isNaN(n)) {
 			n = 0;
 		}
-		var fixed = n.toFixed(decimals);
-		return symbol + fixed;
+		var sep = decimalSep || (window.htoeauPdp && htoeauPdp.decimalSeparator) || '.';
+		var parts = n.toFixed(decimals).split('.');
+		return symbol + parts[0] + sep + parts[1];
 	}
 
 	function getPdpVariation(data, variationId) {
@@ -58,8 +59,12 @@
 	$(function () {
 		var pdpData = parseJsonScript('htoeau-pdp-data');
 		var $form = $('form.variations_form');
-		var sym = (window.htoeauPdp && htoeauPdp.currencySymbol) || '£';
+		var sym = (pdpData && pdpData.currencySymbol) || (window.htoeauPdp && htoeauPdp.currencySymbol) || '£';
 		var dec = pdpData && typeof pdpData.decimals === 'number' ? pdpData.decimals : 2;
+		var decSep =
+			(pdpData && pdpData.decimalSeparator) ||
+			(window.htoeauPdp && htoeauPdp.decimalSeparator) ||
+			'.';
 		var legacySubscribeUi = !pdpData || pdpData.legacySubscribeUi !== false;
 		var subscribeMode = false;
 
@@ -128,9 +133,9 @@
 			var one = parseFloat(v.oneTime);
 			var reg = parseFloat(v.oneTimeRegular);
 			var sub = parseFloat(v.subscribe);
-			$subStrike.text(reg > one ? formatMoney(reg, sym, dec) : '');
-			$subAmt.text(formatMoney(sub, sym, dec));
-			$onceAmt.text(formatMoney(one, sym, dec));
+			$subStrike.text(reg > one ? formatMoney(reg, sym, dec, decSep) : '');
+			$subAmt.text(formatMoney(sub, sym, dec, decSep));
+			$onceAmt.text(formatMoney(one, sym, dec, decSep));
 		}
 
 		function updateCta(v) {
@@ -139,7 +144,7 @@
 			}
 			var amt = legacySubscribeUi && subscribeMode ? parseFloat(v.subscribe) : parseFloat(v.oneTime);
 			var label = (window.htoeauPdp && htoeauPdp.i18n && htoeauPdp.i18n.addToCart) || 'Add to Cart';
-			$btnLabel.text(label + ' – ' + formatMoney(amt, sym, dec));
+			$btnLabel.text(label + ' – ' + formatMoney(amt, sym, dec, decSep));
 			$btn.prop('disabled', false);
 		}
 
@@ -151,7 +156,7 @@
 			if (!isFinite(per) || per <= 0) {
 				return;
 			}
-			$perCan.text(formatMoney(per, sym, dec) + ' per can');
+			$perCan.text(formatMoney(per, sym, dec, decSep) + ' per can');
 		}
 
 		function selectCardByVariationId(vid) {

@@ -187,6 +187,9 @@ $currency_symbol = isset( $symbol_map[ $fx_display_ccy ] )
 	? $symbol_map[ $fx_display_ccy ]
 	: html_entity_decode( get_woocommerce_currency_symbol( $fx_display_ccy ), ENT_QUOTES, 'UTF-8' );
 $decimals        = wc_get_price_decimals();
+$decimal_sep     = function_exists( 'htoeau_child_fx_decimal_separator_for_code' )
+	? htoeau_child_fx_decimal_separator_for_code( $fx_display_ccy )
+	: wc_get_price_decimal_separator();
 ?>
 <div class="htoeau-qty-cards" data-htoeau-qty-cards>
 	<?php foreach ( $rows as $r ) : ?>
@@ -236,6 +239,8 @@ $decimals        = wc_get_price_decimals();
 		'subscribeDiscount'   => $discount_pct,
 		'legacySubscribeUi'   => $legacy_subscribe_ui,
 		'currencySymbol'      => html_entity_decode( $currency_symbol, ENT_QUOTES, 'UTF-8' ),
+		'displayCurrency'     => $fx_display_ccy,
+		'decimalSeparator'    => $decimal_sep,
 		'decimals'            => $decimals,
 		'variations'          => $pdp_variations,
 	),
