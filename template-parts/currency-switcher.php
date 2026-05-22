@@ -11,6 +11,10 @@ if ( ! function_exists( 'htoeau_child_fx_is_enabled' ) || ! htoeau_child_fx_is_e
 	return;
 }
 
+if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+	return;
+}
+
 $store   = get_woocommerce_currency();
 $current = htoeau_child_fx_get_display_currency();
 $codes   = htoeau_child_fx_supported_codes();

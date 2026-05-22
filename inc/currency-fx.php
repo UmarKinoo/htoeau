@@ -19,14 +19,31 @@ function htoeau_child_fx_supported_codes() {
 }
 
 /**
- * Whether FX module applies (Woo active, store currency is GBP or EUR).
+ * Store currency is GBP or EUR (required for browse FX).
  */
-function htoeau_child_fx_is_enabled() {
+function htoeau_child_fx_store_supports_display_fx() {
 	if ( ! function_exists( 'get_woocommerce_currency' ) ) {
 		return false;
 	}
 	$store = get_woocommerce_currency();
 	return in_array( $store, htoeau_child_fx_supported_codes(), true );
+}
+
+/**
+ * Legacy symbol-swap FX (disabled when Yay Currency handles conversion).
+ */
+function htoeau_child_fx_legacy_symbol_swap_enabled() {
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		return false;
+	}
+	return htoeau_child_fx_store_supports_display_fx();
+}
+
+/**
+ * Whether FX module applies (Woo active, store currency is GBP or EUR).
+ */
+function htoeau_child_fx_is_enabled() {
+	return htoeau_child_fx_store_supports_display_fx();
 }
 
 /**
@@ -88,6 +105,15 @@ function htoeau_child_fx_get_display_currency() {
 	if ( ! htoeau_child_fx_is_enabled() ) {
 		return get_woocommerce_currency();
 	}
+
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		$apply = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+		if ( is_array( $apply ) && ! empty( $apply['currency'] ) ) {
+			return strtoupper( (string) $apply['currency'] );
+		}
+		return get_woocommerce_currency();
+	}
+
 	$store   = get_woocommerce_currency();
 	$allowed = htoeau_child_fx_supported_codes();
 	$cookie  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -103,12 +129,14 @@ function htoeau_child_fx_get_display_currency() {
 
 /**
  * Convert a store-currency amount to the current display currency.
- * For GBP/EUR mode we keep the same numeric amount and only swap symbol/format.
  *
  * @param float $amount Amount in shop (store) currency.
  */
 function htoeau_child_fx_convert_amount( $amount ) {
 	$amount = (float) $amount;
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		return (float) apply_filters( 'yay_currency_convert_price', $amount );
+	}
 	return $amount;
 }
 
@@ -138,7 +166,11 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 		}
 	}
 
-	if ( ! htoeau_child_fx_is_enabled() ) {
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		return wc_price( htoeau_child_fx_convert_amount( $amount ), $args );
+	}
+
+	if ( ! htoeau_child_fx_legacy_symbol_swap_enabled() ) {
 		return wc_price( $amount, $args );
 	}
 	$store   = get_woocommerce_currency();
@@ -185,6 +217,9 @@ function htoeau_child_fx_capture_query_currency() {
 	}
 	setcookie( HTOEAU_FX_COOKIE, $code, time() + YEAR_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
 	$_COOKIE[ HTOEAU_FX_COOKIE ] = $code; // Current request.
+	if ( function_exists( 'htoeau_child_yay_sync_currency_cookie' ) ) {
+		htoeau_child_yay_sync_currency_cookie( $code );
+	}
 	wp_safe_redirect( remove_query_arg( 'htoeau_ccy' ) );
 	exit;
 }
@@ -197,7 +232,7 @@ add_action( 'init', 'htoeau_child_fx_capture_query_currency', 2 );
  * @param WC_Product $product Product.
  */
 function htoeau_child_fx_filter_price_html( $html, $product ) {
-	if ( ! htoeau_child_fx_is_enabled() ) {
+	if ( ! htoeau_child_fx_legacy_symbol_swap_enabled() ) {
 		return $html;
 	}
 	if ( is_admin() && ! wp_doing_ajax() ) {
@@ -270,6 +305,9 @@ function htoeau_child_fx_price_decimal_separator( $separator ) {
 	if ( is_admin() && ! wp_doing_ajax() ) {
 		return $separator;
 	}
+	if ( ! htoeau_child_fx_legacy_symbol_swap_enabled() ) {
+		return $separator;
+	}
 
 	$currency = function_exists( 'htoeau_child_fx_get_display_currency' )
 		? htoeau_child_fx_get_display_currency()
@@ -297,6 +335,9 @@ add_filter( 'wc_get_price_decimal_separator', 'htoeau_child_fx_price_decimal_sep
  */
 function htoeau_child_fx_currency_symbol( $currency_symbol, $currency ) {
 	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $currency_symbol;
+	}
+	if ( ! htoeau_child_fx_legacy_symbol_swap_enabled() ) {
 		return $currency_symbol;
 	}
 
@@ -331,11 +372,15 @@ function htoeau_child_fx_debug_console_output() {
 	$cf_country       = isset( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended
 	$decimal_sep      = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '';
 	$enabled          = function_exists( 'htoeau_child_fx_is_enabled' ) ? htoeau_child_fx_is_enabled() : false;
+	$yay_active       = function_exists( 'htoeau_child_yay_currency_is_active' ) ? htoeau_child_yay_currency_is_active() : false;
+	$yay_rate         = $yay_active ? (float) apply_filters( 'yay_currency_rate', 1 ) : null;
 	$gbp_countries    = apply_filters( 'htoeau_fx_gbp_display_countries', array( 'GB', 'GG', 'JE', 'IM', 'MU' ) );
 	$eur_countries    = apply_filters( 'htoeau_fx_eur_display_countries', array() );
 
 	$payload = array(
 		'fx_enabled'                 => (bool) $enabled,
+		'yay_currency_active'        => (bool) $yay_active,
+		'yay_currency_rate'          => $yay_rate,
 		'detected_country'           => (string) $country,
 		'cloudflare_country_header'  => (string) $cf_country,
 		'cookie_currency'            => (string) $cookie_currency,
@@ -374,7 +419,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'Browsing prices follow visitor location (UK/Channel Islands/Isle of Man → GBP, all other countries → EUR). Optional override: add ?htoeau_ccy=GBP or EUR to set a cookie. Numeric price stays the same; symbol/format changes only. Checkout still uses your store currency.', 'hello-elementor-child' ),
+			'description' => __( 'With Yay Currency: geo rules (UK/Channel Islands/Isle of Man/MU → GBP, others → EUR) and real GBP→EUR conversion. Test override: ?htoeau_ccy=GBP or EUR. Without Yay: symbol/format swap only. Checkout currency follows Yay/Woo settings.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);

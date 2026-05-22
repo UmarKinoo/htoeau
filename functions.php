@@ -9,11 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.6.3' );
+define( 'HTOEAU_CHILD_VERSION', '1.6.4' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
 require_once HTOEAU_CHILD_DIR . '/inc/currency-fx.php';
+require_once HTOEAU_CHILD_DIR . '/inc/yay-currency-bridge.php';
 require_once HTOEAU_CHILD_DIR . '/inc/wc-subscriptions-bridge.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-pdp-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-cart-template.php';
