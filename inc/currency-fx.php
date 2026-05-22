@@ -58,6 +58,12 @@ function htoeau_child_fx_detect_country_code() {
 			return $c;
 		}
 	}
+
+	// Avoid blocking external geolocation API calls on every request (can cause 503/timeouts).
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
+		return '';
+	}
+
 	if ( class_exists( 'WC_Geolocation' ) ) {
 		$geo = WC_Geolocation::geolocate_ip( '', true );
 		if ( ! empty( $geo['country'] ) ) {
@@ -102,12 +108,20 @@ function htoeau_child_fx_geo_guess_display_currency() {
  * Cookie override (e.g. ?htoeau_ccy=) or geo: which currency to show prices in.
  */
 function htoeau_child_fx_get_display_currency() {
+	static $resolving = false;
+
 	if ( ! htoeau_child_fx_is_enabled() ) {
 		return get_woocommerce_currency();
 	}
 
+	if ( $resolving ) {
+		return get_woocommerce_currency();
+	}
+
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
-		$apply = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+		$resolving = true;
+		$apply     = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+		$resolving = false;
 		if ( is_array( $apply ) && ! empty( $apply['currency'] ) ) {
 			return strtoupper( (string) $apply['currency'] );
 		}
@@ -133,9 +147,16 @@ function htoeau_child_fx_get_display_currency() {
  * @param float $amount Amount in shop (store) currency.
  */
 function htoeau_child_fx_convert_amount( $amount ) {
+	static $converting = false;
+
 	$amount = (float) $amount;
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
-		return (float) apply_filters( 'yay_currency_convert_price', $amount );
+		if ( $converting ) {
+			return $amount;
+		}
+		$converting = true;
+		$amount     = (float) apply_filters( 'yay_currency_convert_price', $amount );
+		$converting = false;
 	}
 	return $amount;
 }
@@ -361,7 +382,7 @@ add_filter( 'woocommerce_currency_symbol', 'htoeau_child_fx_currency_symbol', 99
  * Temporary frontend debug output for FX/country detection.
  */
 function htoeau_child_fx_debug_console_output() {
-	if ( is_admin() ) {
+	if ( is_admin() || ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) ) {
 		return;
 	}
 

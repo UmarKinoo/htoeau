@@ -80,7 +80,7 @@ function htoeau_child_yay_apply_geo_currency( $apply_currency ) {
 
 	$custom = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $code );
 	if ( is_array( $custom ) && ! empty( $custom['currency'] ) ) {
-		return $custom;
+		return htoeau_child_yay_apply_parity_to_currency_row( $custom );
 	}
 
 	return $apply_currency;
@@ -89,6 +89,9 @@ add_filter( 'yay_currency_apply_currency', 'htoeau_child_yay_apply_geo_currency'
 
 /**
  * GBP store + EUR browse: same numeric amount, different symbol/format (rate = 1).
+ *
+ * Yay’s converted-currency list stores rate as an array; get_rate_fee expects a number.
+ * Force a numeric rate of 1 for non-store currencies to avoid PHP fatals and keep 1:1 prices.
  *
  * @param array $apply_currency Yay currency row.
  * @return array
@@ -115,39 +118,6 @@ function htoeau_child_yay_apply_parity_to_currency_row( $apply_currency ) {
 	return $apply_currency;
 }
 add_filter( 'yay_currency_apply_currency', 'htoeau_child_yay_apply_parity_to_currency_row', 25, 1 );
-add_filter( 'yay_currency_detect_current_currency', 'htoeau_child_yay_apply_parity_to_currency_row', 25, 1 );
-
-/**
- * Safety net: if Yay already converted with admin rate, revert to store amount.
- *
- * @param float $price          Converted price.
- * @param array $apply_currency Yay currency row.
- * @return float
- */
-function htoeau_child_yay_enforce_parity_convert_price( $price, $apply_currency = array() ) {
-	if ( ! htoeau_child_yay_currency_is_active() ) {
-		return $price;
-	}
-
-	$store = strtoupper( (string) get_woocommerce_currency() );
-	if ( ! is_array( $apply_currency ) || empty( $apply_currency['currency'] ) ) {
-		if ( class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
-			$apply_currency = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
-		}
-	}
-
-	$code = is_array( $apply_currency ) && ! empty( $apply_currency['currency'] )
-		? strtoupper( (string) $apply_currency['currency'] )
-		: '';
-
-	if ( ! $code || $code === $store ) {
-		return $price;
-	}
-
-	$reverted = apply_filters( 'yay_currency_revert_price', $price, $apply_currency );
-	return is_numeric( $reverted ) ? (float) $reverted : (float) $price;
-}
-add_filter( 'yay_currency_convert_price', 'htoeau_child_yay_enforce_parity_convert_price', 11, 2 );
 
 /**
  * Sync ?htoeau_ccy= overrides into Yay’s switcher cookie.
