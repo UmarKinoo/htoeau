@@ -21,6 +21,20 @@ function htoeau_child_yay_currency_is_active() {
 }
 
 /**
+ * htoeau_display_ccy cookie override (?htoeau_ccy=GBP|EUR).
+ *
+ * @return string GBP|EUR or empty.
+ */
+function htoeau_child_yay_htoeau_cookie_currency_code() {
+	if ( ! defined( 'HTOEAU_FX_COOKIE' ) || ! function_exists( 'htoeau_child_fx_supported_codes' ) ) {
+		return '';
+	}
+	$cookie  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$allowed = htoeau_child_fx_supported_codes();
+	return ( $cookie && in_array( $cookie, $allowed, true ) ) ? $cookie : '';
+}
+
+/**
  * Visitor chose a currency in Yay’s switcher (persisted cookie).
  */
 function htoeau_child_yay_has_user_currency_cookie() {
@@ -64,28 +78,46 @@ function htoeau_child_yay_apply_geo_currency( $apply_currency ) {
 		return $apply_currency;
 	}
 
-	// Respect explicit Yay switcher or ?yay-currency= selection.
-	if ( htoeau_child_yay_has_user_currency_cookie() ) {
-		return $apply_currency;
-	}
 	$param = apply_filters( 'yay_currency_param_name', 'yay-currency' );
 	if ( isset( $_REQUEST[ $param ] ) && '' !== sanitize_text_field( wp_unslash( $_REQUEST[ $param ] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return $apply_currency;
 	}
 
+	// ?htoeau_ccy= or geo — must beat a stale yay_currency_widget (e.g. EUR) cookie.
 	$code = htoeau_child_fx_resolve_target_currency_code();
-	if ( ! $code || ! class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
-		return $apply_currency;
+	if ( $code && class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+		$custom = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $code );
+		if ( is_array( $custom ) && ! empty( $custom['currency'] ) ) {
+			return htoeau_child_yay_apply_parity_to_currency_row( $custom );
+		}
 	}
 
-	$custom = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $code );
-	if ( is_array( $custom ) && ! empty( $custom['currency'] ) ) {
-		return htoeau_child_yay_apply_parity_to_currency_row( $custom );
+	// No HtoEAU override: keep visitor’s Yay switcher choice.
+	if ( htoeau_child_yay_has_user_currency_cookie() ) {
+		return $apply_currency;
 	}
 
 	return $apply_currency;
 }
 add_filter( 'yay_currency_apply_currency', 'htoeau_child_yay_apply_geo_currency', 15, 1 );
+
+/**
+ * Align Yay’s widget cookie with htoeau_display_ccy (Yay reads this before apply_currency filters).
+ */
+function htoeau_child_yay_prime_widget_cookie_from_htoeau() {
+	if ( ! htoeau_child_yay_currency_is_active() || headers_sent() ) {
+		return;
+	}
+	$code = htoeau_child_yay_htoeau_cookie_currency_code();
+	if ( ! $code || ! class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+		return;
+	}
+	$apply = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $code );
+	if ( is_array( $apply ) && ! empty( $apply['ID'] ) ) {
+		$_COOKIE['yay_currency_widget'] = (string) (int) $apply['ID']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	}
+}
+add_action( 'init', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 3 );
 
 /**
  * GBP store + EUR browse: same numeric amount, different symbol/format (rate = 1).
@@ -130,6 +162,9 @@ function htoeau_child_yay_sync_currency_cookie( $code ) {
 	}
 	$apply = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( strtoupper( $code ) );
 	if ( is_array( $apply ) && ! empty( $apply['ID'] ) ) {
+		$apply = htoeau_child_yay_apply_parity_to_currency_row( $apply );
 		\Yay_Currency\Helpers\YayCurrencyHelper::set_cookie_currency_switcher( (int) $apply['ID'], true );
+		\Yay_Currency\Helpers\YayCurrencyHelper::set_cookies( $apply );
+		$_COOKIE['yay_currency_widget'] = (string) (int) $apply['ID']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 }
