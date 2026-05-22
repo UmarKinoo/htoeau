@@ -64,7 +64,7 @@ function htoeau_child_fx_geo_guess_display_currency() {
 	);
 	$gbp     = apply_filters(
 		'htoeau_fx_gbp_display_countries',
-		array( 'GB', 'GG', 'JE', 'IM' )
+		array( 'GB', 'GG', 'JE', 'IM', 'MU' )
 	);
 	if ( 'GBP' === $store ) {
 		if ( $country && in_array( $country, $gbp, true ) ) {
@@ -331,7 +331,7 @@ function htoeau_child_fx_debug_console_output() {
 	$cf_country       = isset( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended
 	$decimal_sep      = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '';
 	$enabled          = function_exists( 'htoeau_child_fx_is_enabled' ) ? htoeau_child_fx_is_enabled() : false;
-	$gbp_countries    = apply_filters( 'htoeau_fx_gbp_display_countries', array( 'GB', 'GG', 'JE', 'IM' ) );
+	$gbp_countries    = apply_filters( 'htoeau_fx_gbp_display_countries', array( 'GB', 'GG', 'JE', 'IM', 'MU' ) );
 	$eur_countries    = apply_filters( 'htoeau_fx_eur_display_countries', array() );
 
 	$payload = array(
