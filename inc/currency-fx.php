@@ -20,12 +20,13 @@ function htoeau_child_fx_supported_codes() {
 
 /**
  * Store currency is GBP or EUR (required for browse FX).
+ * Uses get_option directly to avoid triggering woocommerce_currency filter (recursion risk).
  */
 function htoeau_child_fx_store_supports_display_fx() {
 	if ( ! function_exists( 'get_woocommerce_currency' ) ) {
 		return false;
 	}
-	$store = get_woocommerce_currency();
+	$store = strtoupper( (string) get_option( 'woocommerce_currency', '' ) );
 	return in_array( $store, htoeau_child_fx_supported_codes(), true );
 }
 
@@ -149,62 +150,53 @@ function htoeau_child_fx_geo_guess_display_currency() {
 }
 
 /**
- * Cookie override (e.g. ?htoeau_ccy=) or geo: which currency to show prices in.
+ * Cookie override or geo: which currency to show prices in.
+ * Priority: htoeau_display_ccy cookie → geo → Yay detect → store default.
  */
 function htoeau_child_fx_get_display_currency() {
-	static $cached   = null;
-	static $resolving = false;
+	static $cached = null;
 
 	if ( null !== $cached ) {
 		return $cached;
 	}
 
-	if ( ! htoeau_child_fx_is_enabled() ) {
-		$cached = get_woocommerce_currency();
-		return $cached;
-	}
+	$store = htoeau_child_fx_store_currency_code();
 
-	if ( $resolving ) {
-		$cached = htoeau_child_fx_store_currency_code();
+	if ( ! htoeau_child_fx_is_enabled() ) {
+		$cached = $store;
 		return $cached;
 	}
 
 	$allowed = htoeau_child_fx_supported_codes();
-	$cookie  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+	// 1. Our cookie wins (set via hash override or Yay switcher sync).
+	$cookie = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( $cookie && in_array( $cookie, $allowed, true ) ) {
 		$cached = $cookie;
 		return $cached;
 	}
 
-	$resolving = true;
-	$store     = htoeau_child_fx_store_currency_code();
+	// 2. Geo (only when user hasn't manually chosen via Yay switcher).
+	$yay_active = function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active();
+	$user_chose = function_exists( 'htoeau_child_yay_has_user_currency_cookie' ) && htoeau_child_yay_has_user_currency_cookie();
 
-	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
-		if ( ! function_exists( 'htoeau_child_yay_has_user_currency_cookie' ) || ! htoeau_child_yay_has_user_currency_cookie() ) {
-			$guessed = htoeau_child_fx_geo_guess_display_currency();
-			if ( $guessed && in_array( $guessed, $allowed, true ) ) {
-				$resolving = false;
-				$cached    = $guessed;
-				return $cached;
-			}
+	if ( ! $user_chose ) {
+		$guessed = htoeau_child_fx_geo_guess_display_currency();
+		if ( $guessed && in_array( $guessed, $allowed, true ) ) {
+			$cached = $guessed;
+			return $cached;
 		}
+	}
 
+	// 3. Yay's current selection.
+	if ( $yay_active && class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
 		$apply = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
-		$resolving = false;
 		if ( is_array( $apply ) && ! empty( $apply['currency'] ) ) {
 			$cached = strtoupper( (string) $apply['currency'] );
 			return $cached;
 		}
-		$cached = $store;
-		return $cached;
 	}
 
-	$guessed = htoeau_child_fx_geo_guess_display_currency();
-	$resolving = false;
-	if ( $guessed && in_array( $guessed, $allowed, true ) ) {
-		$cached = $guessed;
-		return $cached;
-	}
 	$cached = $store;
 	return $cached;
 }
@@ -348,15 +340,13 @@ function htoeau_child_fx_capture_query_currency() {
 add_action( 'init', 'htoeau_child_fx_capture_query_currency', 2 );
 
 /**
- * /htoeau-ccy-gbp/ or /ccy-gbp/ — set cookie server-side (no query string).
+ * /ccy-gbp/ or /ccy-eur/ — set cookie server-side (no query string needed).
+ * Runs late (template_redirect) so WooCommerce is fully loaded.
  */
 function htoeau_child_fx_capture_ccy_slug_request() {
-	if ( ! htoeau_child_fx_is_enabled() || headers_sent() ) {
-		return;
-	}
 	$uri  = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	$path = strtok( $uri, '?' );
-	if ( ! $path || ! preg_match( '#/(?:htoeau-)?ccy-(gbp|eur)/?$#i', $path, $matches ) ) {
+	if ( ! $path || ! preg_match( '#^/ccy-(gbp|eur)/?$#i', $path, $matches ) ) {
 		return;
 	}
 	$code = strtoupper( sanitize_text_field( $matches[1] ) );
@@ -366,13 +356,12 @@ function htoeau_child_fx_capture_ccy_slug_request() {
 	htoeau_child_fx_set_display_currency_cookie( $code );
 	$redirect = wp_get_referer();
 	if ( ! $redirect ) {
-		$product = get_page_by_path( 'htoeau-hydrogen-water-2', OBJECT, 'product' );
-		$redirect = $product ? get_permalink( $product ) : home_url( '/' );
+		$redirect = home_url( '/product/htoeau-hydrogen-water-2/' );
 	}
-	wp_safe_redirect( $redirect ? $redirect : home_url( '/' ) );
+	wp_safe_redirect( $redirect );
 	exit;
 }
-add_action( 'init', 'htoeau_child_fx_capture_ccy_slug_request', 1 );
+add_action( 'template_redirect', 'htoeau_child_fx_capture_ccy_slug_request', 1 );
 
 /**
  * Load hash currency override script (footer; works when page cache omits wp_enqueue output).

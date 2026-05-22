@@ -170,36 +170,37 @@ add_action( 'wp_loaded', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 5 )
  * @param string $currency WooCommerce currency code.
  * @return string
  */
+/**
+ * Override woocommerce_currency so Woo/Yay knows our display currency.
+ * Safe: uses only cookie reads and get_option (no filter recursion).
+ */
 function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
 	static $in_filter = false;
 
 	if ( $in_filter || ( is_admin() && ! wp_doing_ajax() ) ) {
 		return $currency;
 	}
-	if ( ! htoeau_child_yay_currency_is_active() ) {
+
+	if ( ! class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+		return $currency;
+	}
+
+	$store = strtoupper( (string) get_option( 'woocommerce_currency', '' ) );
+	if ( ! in_array( $store, array( 'GBP', 'EUR' ), true ) ) {
 		return $currency;
 	}
 
 	$in_filter = true;
-	$override  = htoeau_child_yay_htoeau_cookie_currency_code();
-	if ( $override ) {
+
+	$allowed  = array( 'GBP', 'EUR' );
+	$override = defined( 'HTOEAU_FX_COOKIE' ) && isset( $_COOKIE[ HTOEAU_FX_COOKIE ] )
+		? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) )
+		: ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( $override && in_array( $override, $allowed, true ) ) {
 		$in_filter = false;
 		return $override;
 	}
-	if ( function_exists( 'htoeau_child_fx_resolve_target_currency_code' ) ) {
-		$resolved = htoeau_child_fx_resolve_target_currency_code();
-		if ( $resolved && in_array( $resolved, htoeau_child_fx_supported_codes(), true ) ) {
-			$in_filter = false;
-			return $resolved;
-		}
-	}
-	if ( ! htoeau_child_yay_has_user_currency_cookie() ) {
-		$guessed = htoeau_child_fx_geo_guess_display_currency();
-		if ( $guessed && in_array( $guessed, htoeau_child_fx_supported_codes(), true ) ) {
-			$in_filter = false;
-			return $guessed;
-		}
-	}
+
 	$in_filter = false;
 	return $currency;
 }
