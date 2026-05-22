@@ -113,11 +113,15 @@ function htoeau_child_yay_prime_widget_cookie_from_htoeau() {
 		return;
 	}
 	$apply = \Yay_Currency\Helpers\YayCurrencyHelper::get_currency_by_currency_code( $code );
-	if ( is_array( $apply ) && ! empty( $apply['ID'] ) ) {
-		$_COOKIE['yay_currency_widget'] = (string) (int) $apply['ID']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	if ( ! is_array( $apply ) || empty( $apply['ID'] ) ) {
+		return;
+	}
+	$_COOKIE['yay_currency_widget'] = (string) (int) $apply['ID']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	if ( ! headers_sent() ) {
+		\Yay_Currency\Helpers\YayCurrencyHelper::set_cookies( $apply );
 	}
 }
-add_action( 'init', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 3 );
+add_action( 'wp_loaded', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 5 );
 
 /**
  * When store is EUR but we display GBP (cookie/geo), tell Woo/Yay the active code is GBP.

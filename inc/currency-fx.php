@@ -281,10 +281,7 @@ function htoeau_child_fx_capture_query_currency() {
 		return;
 	}
 	setcookie( HTOEAU_FX_COOKIE, $code, time() + YEAR_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), true );
-	$_COOKIE[ HTOEAU_FX_COOKIE ] = $code; // Current request.
-	if ( function_exists( 'htoeau_child_yay_sync_currency_cookie' ) ) {
-		htoeau_child_yay_sync_currency_cookie( $code );
-	}
+	$_COOKIE[ HTOEAU_FX_COOKIE ] = $code; // Current request; Yay sync runs on next request via prime_widget.
 	wp_safe_redirect( remove_query_arg( 'htoeau_ccy' ) );
 	exit;
 }
