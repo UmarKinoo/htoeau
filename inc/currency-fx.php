@@ -78,8 +78,12 @@ function htoeau_child_fx_detect_country_code() {
  *
  * @return string
  */
+function htoeau_child_fx_store_currency_code() {
+	return strtoupper( (string) get_option( 'woocommerce_currency', 'GBP' ) );
+}
+
 function htoeau_child_fx_geo_guess_display_currency() {
-	$store   = get_woocommerce_currency();
+	$store   = htoeau_child_fx_store_currency_code();
 	$country = htoeau_child_fx_detect_country_code();
 	$eur     = apply_filters(
 		'htoeau_fx_eur_display_countries',
@@ -120,7 +124,7 @@ function htoeau_child_fx_get_display_currency() {
 
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
 		$resolving = true;
-		$store     = get_woocommerce_currency();
+		$store     = htoeau_child_fx_store_currency_code();
 		$allowed   = htoeau_child_fx_supported_codes();
 
 		if ( function_exists( 'htoeau_child_yay_htoeau_cookie_currency_code' ) ) {
@@ -170,7 +174,7 @@ function htoeau_child_fx_convert_amount( $amount ) {
 
 	$amount = (float) $amount;
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
-		$store   = get_woocommerce_currency();
+		$store   = htoeau_child_fx_store_currency_code();
 		$display = htoeau_child_fx_get_display_currency();
 		if ( $display && $store && $display !== $store ) {
 			return $amount;
@@ -212,7 +216,7 @@ function htoeau_child_fx_wc_price( $amount, $args = array() ) {
 	}
 
 	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) {
-		$store   = get_woocommerce_currency();
+		$store   = htoeau_child_fx_store_currency_code();
 		$display = htoeau_child_fx_get_display_currency();
 		if ( $display && $store && $display !== $store ) {
 			$args['currency'] = $display;

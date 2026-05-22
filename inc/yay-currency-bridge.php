@@ -126,22 +126,29 @@ add_action( 'init', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 3 );
  * @return string
  */
 function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
-	if ( is_admin() && ! wp_doing_ajax() ) {
+	static $in_filter = false;
+
+	if ( $in_filter || ( is_admin() && ! wp_doing_ajax() ) ) {
 		return $currency;
 	}
 	if ( ! htoeau_child_yay_currency_is_active() ) {
 		return $currency;
 	}
-	$override = htoeau_child_yay_htoeau_cookie_currency_code();
+
+	$in_filter = true;
+	$override  = htoeau_child_yay_htoeau_cookie_currency_code();
 	if ( $override ) {
+		$in_filter = false;
 		return $override;
 	}
 	if ( ! htoeau_child_yay_has_user_currency_cookie() ) {
 		$guessed = htoeau_child_fx_geo_guess_display_currency();
 		if ( $guessed && in_array( $guessed, htoeau_child_fx_supported_codes(), true ) ) {
+			$in_filter = false;
 			return $guessed;
 		}
 	}
+	$in_filter = false;
 	return $currency;
 }
 add_filter( 'woocommerce_currency', 'htoeau_child_yay_filter_woocommerce_currency', 99999 );
@@ -160,7 +167,9 @@ function htoeau_child_yay_apply_parity_to_currency_row( $apply_currency ) {
 		return $apply_currency;
 	}
 
-	$store = strtoupper( (string) get_woocommerce_currency() );
+	$store = function_exists( 'htoeau_child_fx_store_currency_code' )
+		? htoeau_child_fx_store_currency_code()
+		: strtoupper( (string) get_option( 'woocommerce_currency', 'GBP' ) );
 	$code  = isset( $apply_currency['currency'] ) ? strtoupper( (string) $apply_currency['currency'] ) : '';
 
 	if ( ! $code || $code === $store || ! in_array( $code, htoeau_child_fx_supported_codes(), true ) ) {
