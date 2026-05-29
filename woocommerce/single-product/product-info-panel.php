@@ -23,17 +23,28 @@ if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_p
 	}
 }
 
+$show_oos   = htoeau_child_product_is_out_of_stock_for_display( $product );
+$has_price  = null !== $lowest_per_can
+	|| ( $product->is_type( 'simple' ) && '' !== (string) $product->get_price() );
+
 ?>
 <div class="htoeau-info-panel">
 	<h1 class="htoeau-product-title"><?php echo wp_kses_post( $product->get_name() ); ?></h1>
 
-	<?php if ( null !== $lowest_per_can ) : ?>
-		<p class="htoeau-from-per-can">
-			<?php esc_html_e( 'From', 'hello-elementor-child' ); ?>
-			<strong data-htoeau-per-can><?php echo wp_kses_post( htoeau_child_fx_wc_price( $lowest_per_can ) ); ?> <?php esc_html_e( 'per can', 'hello-elementor-child' ); ?></strong>
-		</p>
-	<?php elseif ( $product->is_type( 'simple' ) && '' !== (string) $product->get_price() ) : ?>
-		<p class="htoeau-simple-product-price woocommerce"><?php echo wp_kses_post( $product->get_price_html() ); ?></p>
+	<?php if ( $has_price || $show_oos ) : ?>
+		<div class="htoeau-product-price-block">
+			<?php if ( null !== $lowest_per_can ) : ?>
+				<p class="htoeau-from-per-can">
+					<?php esc_html_e( 'From', 'hello-elementor-child' ); ?>
+					<strong data-htoeau-per-can><?php echo wp_kses_post( htoeau_child_fx_wc_price( $lowest_per_can ) ); ?> <?php esc_html_e( 'per can', 'hello-elementor-child' ); ?></strong>
+				</p>
+			<?php elseif ( $product->is_type( 'simple' ) && '' !== (string) $product->get_price() ) : ?>
+				<p class="htoeau-simple-product-price woocommerce"><?php echo wp_kses_post( $product->get_price_html() ); ?></p>
+			<?php endif; ?>
+			<?php if ( $show_oos ) : ?>
+				<?php echo wp_kses_post( htoeau_child_get_out_of_stock_badge_html() ); ?>
+			<?php endif; ?>
+		</div>
 	<?php endif; ?>
 
 	<?php if ( $product->get_short_description() ) : ?>

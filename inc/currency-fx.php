@@ -215,20 +215,16 @@ function htoeau_child_fx_get_display_currency() {
 		return $cached;
 	}
 
-	// 2. Geo (only when user hasn't manually chosen via Yay switcher).
-	$yay_active = function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active();
-	$user_chose = function_exists( 'htoeau_child_yay_has_user_currency_cookie' ) && htoeau_child_yay_has_user_currency_cookie();
-
-	if ( ! $user_chose ) {
-		$guessed = htoeau_child_fx_geo_guess_display_currency();
-		if ( $guessed && in_array( $guessed, $allowed, true ) ) {
-			$cached = $guessed;
-			return $cached;
-		}
+	// 2. Geo (automatic; no on-page currency switcher — see htoeau_child_yay_hide_switcher_ui).
+	$guessed = htoeau_child_fx_geo_guess_display_currency();
+	if ( $guessed && in_array( $guessed, $allowed, true ) ) {
+		$cached = $guessed;
+		return $cached;
 	}
 
-	// 3. Yay's current selection.
-	if ( $yay_active && class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+	// 3. Yay fallback (internal default row, not a visitor switcher choice).
+	if ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active()
+		&& class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
 		$apply = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
 		if ( is_array( $apply ) && ! empty( $apply['currency'] ) ) {
 			$cached = strtoupper( (string) $apply['currency'] );
@@ -619,7 +615,7 @@ function htoeau_child_fx_customize_register( $wp_customize ) {
 		'htoeau_fx',
 		array(
 			'title'       => __( 'HtoEAU currency (GBP ↔ EUR)', 'hello-elementor-child' ),
-			'description' => __( 'Geo: UK/Channel Islands/Isle of Man/MU → GBP, others → EUR. Same numeric price (1:1); EUR uses comma (34,13), GBP uses dot (34.13). Test GBP: visit /ccy-gbp/ then the PDP, or use the Yay switcher → Pound sterling.', 'hello-elementor-child' ),
+			'description' => __( 'Geo only (no currency switcher on site): UK/Channel Islands/Isle of Man/MU → GBP, others → EUR. 1:1 prices; EUR comma, GBP dot. Test: /ccy-gbp/ or #htoeau_ccy=GBP on PDP.', 'hello-elementor-child' ),
 			'priority'    => 200,
 		)
 	);

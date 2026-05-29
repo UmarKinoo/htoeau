@@ -14,8 +14,9 @@ if ( ! is_a( $product, WC_Product::class ) || ! $product->is_visible() ) {
 	return;
 }
 
-$excerpt   = htoeau_child_shop_get_card_excerpt( $product );
+$excerpt    = htoeau_child_shop_get_card_excerpt( $product );
 $price_line = htoeau_child_shop_get_per_can_line_html( $product );
+$show_oos   = htoeau_child_product_is_out_of_stock_for_display( $product );
 
 $link = $product->get_permalink();
 ?>
@@ -35,6 +36,9 @@ $link = $product->get_permalink();
 			</h2>
 			<?php if ( '' !== $excerpt ) : ?>
 				<p class="htoeau-shop-card__excerpt"><?php echo esc_html( $excerpt ); ?></p>
+			<?php endif; ?>
+			<?php if ( $show_oos ) : ?>
+				<p class="htoeau-shop-card__stock-badge"><?php echo wp_kses_post( htoeau_child_get_out_of_stock_badge_html() ); ?></p>
 			<?php endif; ?>
 			<?php if ( '' !== $price_line ) : ?>
 				<p class="htoeau-shop-card__price-line"><?php echo wp_kses_post( $price_line ); ?></p>

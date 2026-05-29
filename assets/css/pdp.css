@@ -368,6 +368,26 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	color: var(--color-primary-dark);
 }
 
+.htoeau-product-price-block {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.htoeau-stock-badge {
+	display: inline-block;
+	width: fit-content;
+	padding: 4px 10px;
+	border-radius: 1000px;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: var(--color-primary-dark);
+	background: rgba(0, 44, 65, 0.1);
+}
+
 .htoeau-from-per-can {
 	margin: 0;
 	font-size: 18px;

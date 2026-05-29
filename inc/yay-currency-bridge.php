@@ -35,11 +35,43 @@ function htoeau_child_yay_htoeau_cookie_currency_code() {
 }
 
 /**
- * Visitor chose a currency in Yay’s switcher (persisted cookie).
+ * Whether Yay recorded a manual switcher change (we hide the switcher UI; usually false).
  */
 function htoeau_child_yay_has_user_currency_cookie() {
-	return isset( $_COOKIE['yay_currency_widget'] ) && '' !== (string) $_COOKIE['yay_currency_widget']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	return isset( $_COOKIE['yay_currency_do_change_switcher'] ) && '' !== (string) $_COOKIE['yay_currency_do_change_switcher']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 }
+
+/**
+ * No on-page currency switcher — prices follow geo + htoeau_display_ccy test cookie only.
+ */
+function htoeau_child_yay_hide_switcher_ui() {
+	if ( ! htoeau_child_yay_currency_is_active() ) {
+		return;
+	}
+
+	// Shortcodes / blocks (Elementor may embed these).
+	add_filter(
+		'pre_do_shortcode_tag',
+		function ( $return, $tag ) {
+			if ( in_array( $tag, array( 'yaycurrency-switcher', 'yaycurrency-menu-item-switcher' ), true ) ) {
+				return '';
+			}
+			return $return;
+		},
+		10,
+		2
+	);
+
+	// PDP auto-injected switcher + widget markup.
+	add_action(
+		'wp_head',
+		function () {
+			echo "<style id=\"htoeau-hide-yay-switcher\">.yay-currency-single-page-switcher,.yay-currency-widget-switcher,.yay-currency-block-switcher,.yay-currency-custom-select-wrapper{display:none!important;visibility:hidden!important;}</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		},
+		99
+	);
+}
+add_action( 'init', 'htoeau_child_yay_hide_switcher_ui', 20 );
 
 /**
  * Build a Yay apply-currency row when GBP/EUR is not configured in Yay (e.g. EUR-only store).
@@ -128,11 +160,6 @@ function htoeau_child_yay_apply_geo_currency( $apply_currency ) {
 		if ( is_array( $synthetic ) && ! empty( $synthetic['currency'] ) ) {
 			return $synthetic;
 		}
-	}
-
-	// No HtoEAU override: keep visitor’s Yay switcher choice.
-	if ( htoeau_child_yay_has_user_currency_cookie() ) {
-		return $apply_currency;
 	}
 
 	return $apply_currency;

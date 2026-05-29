@@ -8,6 +8,28 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Whether the product should show the out-of-stock badge (archive + PDP).
+ *
+ * @param WC_Product $product Product.
+ * @return bool
+ */
+function htoeau_child_product_is_out_of_stock_for_display( WC_Product $product ): bool {
+	return ! $product->is_in_stock();
+}
+
+/**
+ * Small out-of-stock badge markup.
+ *
+ * @return string HTML.
+ */
+function htoeau_child_get_out_of_stock_badge_html(): string {
+	return sprintf(
+		'<span class="htoeau-stock-badge">%s</span>',
+		esc_html__( 'Out of stock', 'hello-elementor-child' )
+	);
+}
+
+/**
  * URL for shop filter links (shop page or current taxonomy archive).
  *
  * @return string

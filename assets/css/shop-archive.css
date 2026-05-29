@@ -612,6 +612,24 @@ body.htoeau-shop-archive .htoeau-shop-card__media-link img {
 	color: #002c41;
 }
 
+.htoeau-shop-card__stock-badge {
+	margin: 0;
+}
+
+.htoeau-stock-badge {
+	display: inline-block;
+	width: fit-content;
+	padding: 4px 10px;
+	border-radius: 1000px;
+	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	color: #002c41;
+	background: rgba(0, 44, 65, 0.1);
+}
+
 .htoeau-shop-card__price-line {
 	margin: 0;
 	font-family: var(--font-primary, "Figtree", system-ui, sans-serif);
