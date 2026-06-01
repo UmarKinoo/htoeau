@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.7.7' );
+define( 'HTOEAU_CHILD_VERSION', '1.7.8' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 

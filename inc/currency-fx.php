@@ -169,9 +169,122 @@ function htoeau_child_fx_applies_display_formatting() {
 }
 
 /**
- * Resolve visitor country once (Cloudflare header, then WooCommerce GeoIP).
+ * Staging / local host (GeoIP API fallback enabled by default).
  *
- * @return array{code: string, source: string} code = ISO country; source = cloudflare|woocommerce|none.
+ * @return bool
+ */
+function htoeau_child_fx_is_staging_or_local_host() {
+	$host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( (string) $_SERVER['HTTP_HOST'] ) : '';
+	if ( false !== strpos( $host, 'staging.' ) || false !== strpos( $host, '.local' ) ) {
+		return true;
+	}
+	return defined( 'WP_ENVIRONMENT_TYPE' ) && in_array( WP_ENVIRONMENT_TYPE, array( 'staging', 'local', 'development' ), true );
+}
+
+/**
+ * Use WooCommerce ip-api.com fallback when MaxMind DB is missing (default on staging only).
+ *
+ * @return bool
+ */
+function htoeau_child_fx_geolocation_api_fallback_enabled() {
+	return (bool) apply_filters( 'htoeau_fx_geolocation_api_fallback', htoeau_child_fx_is_staging_or_local_host() );
+}
+
+/**
+ * Allow ?htoeau_country=MU test override (default on staging/local).
+ *
+ * @return bool
+ */
+function htoeau_child_fx_allow_test_country_override() {
+	return (bool) apply_filters( 'htoeau_fx_allow_test_country_override', htoeau_child_fx_is_staging_or_local_host() );
+}
+
+/**
+ * Test country from ?htoeau_country= or htoeau_test_country cookie (staging).
+ *
+ * @return string ISO code or empty.
+ */
+function htoeau_child_fx_get_test_country_override() {
+	if ( ! htoeau_child_fx_allow_test_country_override() ) {
+		return '';
+	}
+	if ( isset( $_GET['htoeau_country'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$c = strtoupper( sanitize_text_field( wp_unslash( $_GET['htoeau_country'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( preg_match( '/^[A-Z]{2}$/', $c ) ) {
+			return $c;
+		}
+	}
+	if ( isset( $_COOKIE['htoeau_test_country'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$c = strtoupper( sanitize_text_field( wp_unslash( $_COOKIE['htoeau_test_country'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( preg_match( '/^[A-Z]{2}$/', $c ) ) {
+			return $c;
+		}
+	}
+	return '';
+}
+
+/**
+ * Persist ?htoeau_country= for geo testing on staging.
+ */
+function htoeau_child_fx_capture_test_country_query() {
+	if ( ! htoeau_child_fx_allow_test_country_override() || ! isset( $_GET['htoeau_country'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return;
+	}
+	$c = strtoupper( sanitize_text_field( wp_unslash( $_GET['htoeau_country'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! preg_match( '/^[A-Z]{2}$/', $c ) || headers_sent() ) {
+		return;
+	}
+	setcookie( 'htoeau_test_country', $c, time() + YEAR_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), false );
+	$_COOKIE['htoeau_test_country'] = $c; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+}
+add_action( 'init', 'htoeau_child_fx_capture_test_country_query', 1 );
+
+/**
+ * WooCommerce GeoIP lookup (MaxMind DB, then optional cached API on staging).
+ *
+ * @return string Country code or empty.
+ */
+function htoeau_child_fx_wc_geolocate_country_code() {
+	if ( ! class_exists( 'WC_Geolocation' ) ) {
+		return '';
+	}
+
+	$ip = WC_Geolocation::get_ip_address();
+	if ( ! $ip ) {
+		return '';
+	}
+
+	$api     = htoeau_child_fx_geolocation_api_fallback_enabled();
+	$use_api = $api;
+	$cache_key = 'htoeau_wc_geo_' . md5( $ip . ( $use_api ? 'api' : 'db' ) );
+
+	if ( $use_api ) {
+		$cached = get_transient( $cache_key );
+		if ( is_string( $cached ) && preg_match( '/^[A-Z]{2}$/', $cached ) ) {
+			return $cached;
+		}
+	}
+
+	$geo = WC_Geolocation::geolocate_ip( $ip, true, $use_api );
+	$code = '';
+	if ( ! empty( $geo['country'] ) ) {
+		$c = strtoupper( (string) $geo['country'] );
+		if ( preg_match( '/^[A-Z]{2}$/', $c ) && 'XX' !== $c ) {
+			$code = $c;
+		}
+	}
+
+	if ( $use_api ) {
+		set_transient( $cache_key, $code, DAY_IN_SECONDS );
+	}
+
+	return $code;
+}
+
+/**
+ * Resolve visitor country once (Cloudflare → test override → WooCommerce GeoIP).
+ *
+ * @return array{code: string, source: string} source = cloudflare|test_override|woocommerce|woocommerce_api|none.
  */
 function htoeau_child_fx_resolve_visitor_country() {
 	static $resolved = null;
@@ -194,20 +307,18 @@ function htoeau_child_fx_resolve_visitor_country() {
 		}
 	}
 
-	if ( class_exists( 'WC_Geolocation' ) ) {
-		// Local MaxMind database only (no external API — avoids 503 on shared hosting).
-		$geo = WC_Geolocation::geolocate_ip( '', false, false );
-		if ( empty( $geo['country'] ) && (bool) apply_filters( 'htoeau_fx_geolocation_api_fallback', false ) ) {
-			$geo = WC_Geolocation::geolocate_ip( '', true, true );
-		}
-		if ( ! empty( $geo['country'] ) ) {
-			$c = strtoupper( (string) $geo['country'] );
-			if ( preg_match( '/^[A-Z]{2}$/', $c ) ) {
-				$resolved['code']   = $c;
-				$resolved['source'] = 'woocommerce';
-				return $resolved;
-			}
-		}
+	$test = htoeau_child_fx_get_test_country_override();
+	if ( $test ) {
+		$resolved['code']   = $test;
+		$resolved['source'] = 'test_override';
+		return $resolved;
+	}
+
+	$wc_code = htoeau_child_fx_wc_geolocate_country_code();
+	if ( $wc_code ) {
+		$resolved['code']   = $wc_code;
+		$resolved['source'] = htoeau_child_fx_geolocation_api_fallback_enabled() ? 'woocommerce_api' : 'woocommerce';
+		return $resolved;
 	}
 
 	return $resolved;
@@ -734,10 +845,13 @@ function htoeau_child_fx_get_console_debug_payload() {
 
 	$hints = array();
 	if ( ! $cf_country && ! $country ) {
-		$hints[] = 'No country detected: enable Cloudflare proxy on this host, or install WooCommerce MaxMind GeoIP (Woo → Settings → General).';
+		$hints[] = 'No country: use Cloudflare proxy on prod, or on staging try ?htoeau_country=MU or install Woo MaxMind GeoIP.';
 	}
-	if ( ! $cf_country && $country && 'woocommerce' === $country_source ) {
-		$hints[] = 'CF-IPCountry missing — using WooCommerce GeoIP for country ' . $country . '.';
+	if ( ! $cf_country && $country && in_array( $country_source, array( 'woocommerce', 'woocommerce_api' ), true ) ) {
+		$hints[] = 'CF-IPCountry missing — country ' . $country . ' from WooCommerce (' . $country_source . ').';
+	}
+	if ( 'test_override' === $country_source ) {
+		$hints[] = 'Country from test override (?htoeau_country= or htoeau_test_country cookie).';
 	}
 	if ( $cookie_currency && $geo_guess && $cookie_currency !== $geo_guess ) {
 		$hints[] = sprintf(
@@ -787,6 +901,10 @@ function htoeau_child_fx_get_console_debug_payload() {
 		'sample_fx_price_34_13'     => function_exists( 'htoeau_child_fx_wc_price' ) ? wp_strip_all_tags( htoeau_child_fx_wc_price( 34.13 ) ) : '',
 		'selling'                   => $selling,
 		'litespeed_vary_value'      => isset( $_SERVER['LSCACHE_VARY_VALUE'] ) ? (string) $_SERVER['LSCACHE_VARY_VALUE'] : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		'visitor_ip'                => class_exists( 'WC_Geolocation' ) ? (string) WC_Geolocation::get_ip_address() : '',
+		'geolocation_api_fallback'  => function_exists( 'htoeau_child_fx_geolocation_api_fallback_enabled' ) && htoeau_child_fx_geolocation_api_fallback_enabled(),
+		'is_staging_host'           => function_exists( 'htoeau_child_fx_is_staging_or_local_host' ) && htoeau_child_fx_is_staging_or_local_host(),
+		'test_country_override'     => function_exists( 'htoeau_child_fx_get_test_country_override' ) ? htoeau_child_fx_get_test_country_override() : '',
 		'hints'                     => $hints,
 		'priority_order'            => '1) manual/cookie htoeau_display_ccy → 2) geo (CF country + GBP list) → 3) Yay detect → 4) store',
 		'request_uri'               => isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
