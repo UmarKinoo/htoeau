@@ -20,29 +20,14 @@ function htoeau_child_get_sellable_country_codes() {
 }
 
 /**
- * Visitor country (Cloudflare header when present; Woo geolocation as fallback).
+ * Visitor country — same resolver as currency (Cloudflare, then Woo GeoIP).
  *
  * @return string Empty when unknown.
  */
 function htoeau_child_get_visitor_country_code() {
-	if ( function_exists( 'htoeau_child_fx_detect_country_code' ) ) {
-		$code = htoeau_child_fx_detect_country_code();
-		if ( $code ) {
-			return $code;
-		}
-	}
-
-	if ( class_exists( 'WC_Geolocation' ) ) {
-		$geo = WC_Geolocation::geolocate_ip( '', true );
-		if ( ! empty( $geo['country'] ) ) {
-			$c = strtoupper( (string) $geo['country'] );
-			if ( preg_match( '/^[A-Z]{2}$/', $c ) ) {
-				return $c;
-			}
-		}
-	}
-
-	return '';
+	return function_exists( 'htoeau_child_fx_detect_country_code' )
+		? htoeau_child_fx_detect_country_code()
+		: '';
 }
 
 /**
