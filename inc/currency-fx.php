@@ -8,6 +8,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'HTOEAU_FX_COOKIE', 'htoeau_display_ccy' );
+define( 'HTOEAU_FX_MANUAL_COOKIE', 'htoeau_display_ccy_manual' );
 
 /**
  * Tell LiteSpeed Cache to vary by our currency cookie so GBP/EUR get separate cached pages.
@@ -31,6 +32,23 @@ function htoeau_child_fx_litespeed_vary_init() {
 	}
 }
 add_action( 'litespeed_vary', 'htoeau_child_fx_litespeed_vary_init' );
+
+/**
+ * Separate LiteSpeed cache entries per Cloudflare country (geo currency without a prior cookie).
+ */
+function htoeau_child_fx_litespeed_vary_cf_country() {
+	if ( ! method_exists( 'LiteSpeed\Vary', 'add' ) ) {
+		return;
+	}
+	if ( empty( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		return;
+	}
+	$c = strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( preg_match( '/^[A-Z]{2}$/', $c ) && 'XX' !== $c && 'T1' !== $c ) {
+		\LiteSpeed\Vary::add( 'cf_ipcountry', $c );
+	}
+}
+add_action( 'litespeed_vary', 'htoeau_child_fx_litespeed_vary_cf_country', 5 );
 
 /**
  * Mark htoeau_display_ccy as a vary cookie in LiteSpeed via constant (fallback for older versions).
@@ -99,18 +117,42 @@ function htoeau_child_fx_decimal_separator_for_code( $code ) {
 /**
  * Persist display-currency override cookie (readable by JS and PHP).
  *
- * @param string $code GBP|EUR.
+ * @param string $code   GBP|EUR.
+ * @param bool   $manual True when set via /ccy-gbp/, hash, or ?htoeau_ccy= (testing).
  */
-function htoeau_child_fx_set_display_currency_cookie( $code ) {
+function htoeau_child_fx_set_display_currency_cookie( $code, $manual = false ) {
 	$code = strtoupper( (string) $code );
 	if ( ! in_array( $code, htoeau_child_fx_supported_codes(), true ) || headers_sent() ) {
 		return;
 	}
-	setcookie( HTOEAU_FX_COOKIE, $code, time() + YEAR_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, is_ssl(), false );
+	$path   = COOKIEPATH ? COOKIEPATH : '/';
+	$domain = COOKIE_DOMAIN;
+	$secure = is_ssl();
+	$expiry = time() + YEAR_IN_SECONDS;
+
+	setcookie( HTOEAU_FX_COOKIE, $code, $expiry, $path, $domain, $secure, false );
 	$_COOKIE[ HTOEAU_FX_COOKIE ] = $code; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+	if ( $manual ) {
+		setcookie( HTOEAU_FX_MANUAL_COOKIE, '1', $expiry, $path, $domain, $secure, false );
+		$_COOKIE[ HTOEAU_FX_MANUAL_COOKIE ] = '1'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	} else {
+		setcookie( HTOEAU_FX_MANUAL_COOKIE, '', time() - HOUR_IN_SECONDS, $path, $domain, $secure, false );
+		unset( $_COOKIE[ HTOEAU_FX_MANUAL_COOKIE ] );
+	}
+
 	if ( function_exists( 'htoeau_child_yay_sync_currency_cookie' ) ) {
 		htoeau_child_yay_sync_currency_cookie( $code );
 	}
+}
+
+/**
+ * Whether the visitor explicitly chose a test currency (not geo-derived).
+ *
+ * @return bool
+ */
+function htoeau_child_fx_is_manual_currency_override() {
+	return isset( $_COOKIE[ HTOEAU_FX_MANUAL_COOKIE ] ) && '1' === (string) $_COOKIE[ HTOEAU_FX_MANUAL_COOKIE ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 }
 
 /**
@@ -554,56 +596,187 @@ function htoeau_child_fx_currency_symbol( $currency_symbol, $currency ) {
 add_filter( 'woocommerce_currency_symbol', 'htoeau_child_fx_currency_symbol', 999, 2 );
 
 /**
- * Temporary frontend debug output for FX/country detection.
+ * Whether to print FX / geo debug info in the browser console (frontend only).
+ *
+ * Disable in production: add_filter( 'htoeau_fx_console_debug_enabled', '__return_false' );
+ *
+ * @return bool
  */
-function htoeau_child_fx_debug_console_output() {
-	if ( is_admin() || ( function_exists( 'htoeau_child_yay_currency_is_active' ) && htoeau_child_yay_currency_is_active() ) ) {
+function htoeau_child_fx_console_debug_enabled() {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return false;
+	}
+	// ?htoeau_fx_debug=1 on any URL forces the panel on.
+	if ( isset( $_GET['htoeau_fx_debug'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return true;
+	}
+	return (bool) apply_filters( 'htoeau_fx_console_debug_enabled', true );
+}
+
+/**
+ * Avoid serving a cached page without the debug payload (LiteSpeed full-page cache).
+ */
+function htoeau_child_fx_bypass_page_cache_for_console_debug() {
+	if ( ! htoeau_child_fx_console_debug_enabled() ) {
 		return;
 	}
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+}
+add_action( 'init', 'htoeau_child_fx_bypass_page_cache_for_console_debug', 0 );
 
-	$store_currency   = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '';
-	$display_currency = function_exists( 'htoeau_child_fx_get_display_currency' ) ? htoeau_child_fx_get_display_currency() : $store_currency;
+/**
+ * Enqueue standalone debug script (cache-busted by theme version).
+ */
+function htoeau_child_fx_enqueue_console_debug_script() {
+	if ( ! htoeau_child_fx_console_debug_enabled() ) {
+		return;
+	}
+	wp_enqueue_script(
+		'htoeau-fx-console-debug',
+		trailingslashit( get_stylesheet_directory_uri() ) . 'assets/js/fx-console-debug.js',
+		array(),
+		defined( 'HTOEAU_CHILD_VERSION' ) ? HTOEAU_CHILD_VERSION : '1.7.5',
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'htoeau_child_fx_enqueue_console_debug_script', 9999 );
+
+/**
+ * Debug payload for console (currency + geo + selling).
+ *
+ * @return array<string, mixed>
+ */
+function htoeau_child_fx_get_console_debug_payload() {
+	$store_currency = function_exists( 'htoeau_child_fx_store_currency_code' )
+		? htoeau_child_fx_store_currency_code()
+		: strtoupper( (string) get_option( 'woocommerce_currency', '' ) );
+	$display_currency = function_exists( 'htoeau_child_fx_get_display_currency' )
+		? htoeau_child_fx_get_display_currency()
+		: $store_currency;
 	$country          = function_exists( 'htoeau_child_fx_detect_country_code' ) ? htoeau_child_fx_detect_country_code() : '';
-	$cookie_currency  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$cf_country       = isset( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Recommended
-	$decimal_sep      = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '';
+	$cookie_currency  = isset( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$manual_override  = function_exists( 'htoeau_child_fx_is_manual_currency_override' ) && htoeau_child_fx_is_manual_currency_override();
+	$geo_guess        = function_exists( 'htoeau_child_fx_geo_guess_display_currency' ) ? htoeau_child_fx_geo_guess_display_currency() : '';
+	$resolve_target   = function_exists( 'htoeau_child_fx_resolve_target_currency_code' ) ? htoeau_child_fx_resolve_target_currency_code() : '';
+	$gbp_countries    = apply_filters( 'htoeau_fx_gbp_display_countries', array( 'GB', 'GG', 'JE', 'IM', 'GI', 'MU', 'CA' ) );
 	$enabled          = function_exists( 'htoeau_child_fx_is_enabled' ) ? htoeau_child_fx_is_enabled() : false;
 	$yay_active       = function_exists( 'htoeau_child_yay_currency_is_active' ) ? htoeau_child_yay_currency_is_active() : false;
 	$yay_rate         = $yay_active ? (float) apply_filters( 'yay_currency_rate', 1 ) : null;
-	$gbp_countries    = apply_filters( 'htoeau_fx_gbp_display_countries', array( 'GB', 'GG', 'JE', 'IM', 'MU' ) );
-	$eur_countries    = apply_filters( 'htoeau_fx_eur_display_countries', array() );
+	$yay_widget_id    = isset( $_COOKIE['yay_currency_widget'] ) ? (string) $_COOKIE['yay_currency_widget'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$yay_detect_code  = '';
+	$yay_apply_code   = '';
 
-	$payload = array(
-		'fx_enabled'                 => (bool) $enabled,
-		'yay_currency_active'        => (bool) $yay_active,
-		'yay_currency_rate'          => $yay_rate,
-		'detected_country'           => (string) $country,
-		'cloudflare_country_header'  => (string) $cf_country,
-		'cookie_currency'            => (string) $cookie_currency,
-		'store_currency'             => (string) $store_currency,
-		'display_currency'           => (string) $display_currency,
-		'wc_decimal_separator'       => (string) $decimal_sep,
-		'gbp_display_countries'      => array_values( (array) $gbp_countries ),
-		'eur_display_countries'      => array_values( (array) $eur_countries ),
-		'request_uri'                => isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		'sample_wc_price_store'      => function_exists( 'wc_price' ) ? wp_strip_all_tags( wc_price( 2.36 ) ) : '',
-		'sample_fx_wc_price'         => function_exists( 'htoeau_child_fx_wc_price' ) ? wp_strip_all_tags( htoeau_child_fx_wc_price( 2.36 ) ) : '',
-		'symbol_for_gbp'             => function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( 'GBP' ), ENT_QUOTES, 'UTF-8' ) : '',
-		'symbol_for_eur'             => function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol( 'EUR' ), ENT_QUOTES, 'UTF-8' ) : '',
+	if ( $yay_active && class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
+		$detect_row = \Yay_Currency\Helpers\YayCurrencyHelper::detect_current_currency();
+		if ( is_array( $detect_row ) && ! empty( $detect_row['currency'] ) ) {
+			$yay_detect_code = strtoupper( (string) $detect_row['currency'] );
+		}
+		$apply_row = apply_filters( 'yay_currency_apply_currency', $detect_row );
+		if ( is_array( $apply_row ) && ! empty( $apply_row['currency'] ) ) {
+			$yay_apply_code = strtoupper( (string) $apply_row['currency'] );
+		}
+	}
+
+	$country_in_gbp_list = $country && in_array( $country, (array) $gbp_countries, true );
+	$cf_in_gbp_list      = $cf_country && in_array( $cf_country, (array) $gbp_countries, true );
+
+	$display_source = 'store_default';
+	$allowed        = function_exists( 'htoeau_child_fx_supported_codes' ) ? htoeau_child_fx_supported_codes() : array();
+	if ( $cookie_currency && in_array( $cookie_currency, $allowed, true ) ) {
+		$display_source = $manual_override ? 'manual_test_cookie' : 'htoeau_display_ccy_cookie';
+	} elseif ( $geo_guess && in_array( $geo_guess, $allowed, true ) ) {
+		$display_source = 'geo_rules';
+	} elseif ( $yay_detect_code ) {
+		$display_source = 'yay_detect_fallback';
+	}
+
+	$hints = array();
+	if ( ! $cf_country && ! $country ) {
+		$hints[] = 'No country: CF-IPCountry missing on this request; Woo geolocation is skipped while Yay is active.';
+	}
+	if ( $cookie_currency && $geo_guess && $cookie_currency !== $geo_guess ) {
+		$hints[] = sprintf(
+			'Cookie %s=%s overrides geo guess %s (clear cookies or use /ccy-gbp/ to test).',
+			HTOEAU_FX_COOKIE,
+			$cookie_currency,
+			$geo_guess
+		);
+	}
+	if ( 'MU' === $country && 'EUR' === $display_currency && ! $cookie_currency ) {
+		$hints[] = 'MU should get GBP via geo list — check LiteSpeed serving a cached EUR page (purge cache).';
+	}
+	if ( 'MU' === $cf_country && ! $country ) {
+		$hints[] = 'CF says MU but detect_country_code is empty — unexpected; report this.';
+	}
+
+	$selling = array(
+		'sellable_countries'       => function_exists( 'htoeau_child_get_sellable_country_codes' ) ? htoeau_child_get_sellable_country_codes() : array(),
+		'visitor_can_buy_online'   => function_exists( 'htoeau_child_visitor_can_purchase_online' ) ? htoeau_child_visitor_can_purchase_online() : null,
+		'pdp_show_enquire'         => function_exists( 'is_product' ) && is_product() && function_exists( 'htoeau_child_product_should_show_enquire' ) && htoeau_child_product_should_show_enquire(),
 	);
-	$json = wp_json_encode( $payload );
+
+	return array(
+		'display_currency'          => (string) $display_currency,
+		'display_currency_source'   => $display_source,
+		'store_currency'            => (string) $store_currency,
+		'geo_guess_from_country'    => (string) $geo_guess,
+		'resolve_target_for_yay'    => (string) $resolve_target,
+		'cloudflare_CF_IPCOUNTRY'   => (string) $cf_country,
+		'detected_country_code'     => (string) $country,
+		'country_in_gbp_list'       => (bool) $country_in_gbp_list,
+		'cf_country_in_gbp_list'    => (bool) $cf_in_gbp_list,
+		'gbp_display_countries'     => array_values( (array) $gbp_countries ),
+		'cookies'                   => array(
+			HTOEAU_FX_COOKIE           => (string) $cookie_currency,
+			HTOEAU_FX_MANUAL_COOKIE    => $manual_override ? '1' : '',
+			'yay_currency_widget'      => $yay_widget_id,
+			'yay_currency_do_change_switcher' => isset( $_COOKIE['yay_currency_do_change_switcher'] ) ? (string) $_COOKIE['yay_currency_do_change_switcher'] : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		),
+		'yay_currency_active'       => (bool) $yay_active,
+		'yay_detect_currency'       => (string) $yay_detect_code,
+		'yay_apply_currency'        => (string) $yay_apply_code,
+		'yay_currency_rate'         => $yay_rate,
+		'fx_module_enabled'         => (bool) $enabled,
+		'wc_decimal_separator'      => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '',
+		'sample_fx_price_34_13'     => function_exists( 'htoeau_child_fx_wc_price' ) ? wp_strip_all_tags( htoeau_child_fx_wc_price( 34.13 ) ) : '',
+		'selling'                   => $selling,
+		'litespeed_vary_value'      => isset( $_SERVER['LSCACHE_VARY_VALUE'] ) ? (string) $_SERVER['LSCACHE_VARY_VALUE'] : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		'hints'                     => $hints,
+		'priority_order'            => '1) manual/cookie htoeau_display_ccy → 2) geo (CF country + GBP list) → 3) Yay detect → 4) store',
+		'request_uri'               => isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	);
+}
+
+/**
+ * Print JSON payload for fx-console-debug.js (footer + head so Elementor/cache miss one hook).
+ */
+function htoeau_child_fx_print_console_debug_data() {
+	if ( ! htoeau_child_fx_console_debug_enabled() ) {
+		return;
+	}
+
+	static $printed = false;
+	if ( $printed ) {
+		return;
+	}
+	$printed = true;
+
+	$payload = htoeau_child_fx_get_console_debug_payload();
+	$json    = wp_json_encode( $payload, JSON_UNESCAPED_UNICODE );
 	if ( ! $json ) {
 		return;
 	}
-	?>
-	<script>
-		console.groupCollapsed('HtoEAU FX Debug');
-		console.log(<?php echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>);
-		console.groupEnd();
-	</script>
-	<?php
+
+	printf(
+		'<script type="application/json" id="htoeau-fx-debug-data">%s</script>' . "\n",
+		$json // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode
+	);
 }
-add_action( 'wp_footer', 'htoeau_child_fx_debug_console_output', 999 );
+add_action( 'wp_footer', 'htoeau_child_fx_print_console_debug_data', 99999 );
+add_action( 'wp_body_open', 'htoeau_child_fx_print_console_debug_data', 99999 );
 
 /**
  * Customizer section for FX behavior notes.
