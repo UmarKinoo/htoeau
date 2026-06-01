@@ -182,12 +182,30 @@ function htoeau_child_fx_is_staging_or_local_host() {
 }
 
 /**
- * Use WooCommerce ip-api.com fallback when MaxMind DB is missing (default on staging only).
+ * Valid Cloudflare CF-IPCountry from the current request, if any.
+ *
+ * @return string ISO code or empty.
+ */
+function htoeau_child_fx_cloudflare_country_from_request() {
+	if ( empty( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		return '';
+	}
+	$c = strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( preg_match( '/^[A-Z]{2}$/', $c ) && 'XX' !== $c && 'T1' !== $c ) {
+		return $c;
+	}
+	return '';
+}
+
+/**
+ * Use WooCommerce ip-api.com when MaxMind DB is missing.
+ * Default: on whenever Cloudflare did not send a country (staging and production).
  *
  * @return bool
  */
 function htoeau_child_fx_geolocation_api_fallback_enabled() {
-	return (bool) apply_filters( 'htoeau_fx_geolocation_api_fallback', htoeau_child_fx_is_staging_or_local_host() );
+	$default = '' === htoeau_child_fx_cloudflare_country_from_request();
+	return (bool) apply_filters( 'htoeau_fx_geolocation_api_fallback', $default );
 }
 
 /**
@@ -298,13 +316,11 @@ function htoeau_child_fx_resolve_visitor_country() {
 		'source' => 'none',
 	);
 
-	if ( ! empty( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$c = strtoupper( sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_IPCOUNTRY'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( preg_match( '/^[A-Z]{2}$/', $c ) && 'XX' !== $c && 'T1' !== $c ) {
-			$resolved['code']   = $c;
-			$resolved['source'] = 'cloudflare';
-			return $resolved;
-		}
+	$cf = htoeau_child_fx_cloudflare_country_from_request();
+	if ( $cf ) {
+		$resolved['code']   = $cf;
+		$resolved['source'] = 'cloudflare';
+		return $resolved;
 	}
 
 	$test = htoeau_child_fx_get_test_country_override();
@@ -759,7 +775,9 @@ function htoeau_child_fx_console_debug_enabled() {
 	if ( isset( $_GET['htoeau_fx_debug'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return true;
 	}
-	return (bool) apply_filters( 'htoeau_fx_console_debug_enabled', true );
+	// Off on production by default; on for staging/local unless filtered.
+	$default = htoeau_child_fx_is_staging_or_local_host();
+	return (bool) apply_filters( 'htoeau_fx_console_debug_enabled', $default );
 }
 
 /**
