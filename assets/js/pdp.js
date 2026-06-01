@@ -110,6 +110,10 @@
 			}
 		});
 
+		if (document.body.classList.contains('htoeau-pdp-restricted')) {
+			return;
+		}
+
 		if (!$form.length || !pdpData) {
 			return;
 		}

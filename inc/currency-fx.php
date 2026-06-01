@@ -171,7 +171,7 @@ function htoeau_child_fx_geo_guess_display_currency() {
 	);
 	$gbp     = apply_filters(
 		'htoeau_fx_gbp_display_countries',
-		array( 'GB', 'GG', 'JE', 'IM', 'MU' )
+		array( 'GB', 'GG', 'JE', 'IM', 'GI', 'MU', 'CA' )
 	);
 	if ( 'GBP' === $store ) {
 		if ( $country && in_array( $country, $gbp, true ) ) {

@@ -146,6 +146,10 @@ $copyright_text    = apply_filters(
 				</p>
 				<p class="htoeau-site-footer__contact-line"><?php esc_html_e( 'KvK: 92794076', 'htoeau-child' ); ?></p>
 				<p class="htoeau-site-footer__contact-line"><?php esc_html_e( 'VAT: NL862936330B01', 'htoeau-child' ); ?></p>
+				<div class="htoeau-site-footer__social" aria-label="<?php esc_attr_e( 'Social media', 'htoeau-child' ); ?>">
+					<a class="htoeau-site-footer__social-link" href="https://www.instagram.com/htoeau_official?utm_source=qr" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Instagram', 'htoeau-child' ); ?></a>
+					<a class="htoeau-site-footer__social-link" href="https://www.facebook.com/share/1BBYeraWaP/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Facebook', 'htoeau-child' ); ?></a>
+				</div>
 			</div>
 			<nav class="htoeau-site-footer__nav" aria-label="<?php esc_attr_e( 'Footer', 'htoeau-child' ); ?>">
 				<ul class="htoeau-site-footer__nav-list">

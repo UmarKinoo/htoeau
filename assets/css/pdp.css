@@ -988,6 +988,38 @@ body.single-product .htoeau-pdp .htoeau-gallery__thumb {
 	cursor: not-allowed;
 }
 
+.htoeau-pdp__enquire-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	text-decoration: none;
+}
+
+.htoeau-pdp__cta-wrap--enquire {
+	margin-top: 8px;
+}
+
+.htoeau-stock-badge--enquire {
+	color: var(--color-white);
+	background: var(--brand-gradient);
+}
+
+/* Restricted region: hide any buy UI that might leak from WooCommerce / Elementor. */
+body.htoeau-pdp-restricted .htoeau-qty-cards,
+body.htoeau-pdp-restricted .htoeau-subscribe,
+body.htoeau-pdp-restricted .htoeau-simple-cart,
+body.htoeau-pdp-restricted .htoeau-variations-form,
+body.htoeau-pdp-restricted .htoeau-pdp__wc-form:not(.htoeau-pdp__wc-form--enquire),
+body.htoeau-pdp-restricted .single_add_to_cart_button,
+body.htoeau-pdp-restricted form.cart {
+	display: none !important;
+}
+
+body.htoeau-pdp-restricted .htoeau-pdp__wc-form--enquire {
+	display: block;
+}
+
 /* Features */
 .htoeau-features {
 	display: flex;

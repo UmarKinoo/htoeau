@@ -21,6 +21,8 @@ if ( $product && function_exists( 'htoeau_child_product_is_variable_pdp' ) && ht
 	}
 }
 
+$show_enquire = function_exists( 'htoeau_child_product_should_show_enquire' ) && htoeau_child_product_should_show_enquire( $product );
+
 do_action( 'woocommerce_before_single_product' );
 
 if ( post_password_required() ) {
@@ -38,7 +40,11 @@ if ( post_password_required() ) {
 		<div class="htoeau-pdp__info-col">
 			<?php wc_get_template( 'single-product/product-info-panel.php' ); ?>
 
-			<?php if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) && $use_custom_variable_ui ) : ?>
+			<?php if ( $show_enquire ) : ?>
+				<div class="htoeau-pdp__wc-form htoeau-pdp__wc-form--enquire" id="htoeau-pdp-purchase">
+					<?php echo wp_kses_post( htoeau_child_get_enquire_cta_html() ); ?>
+				</div>
+			<?php elseif ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_product_is_variable_pdp( $product ) && $use_custom_variable_ui ) : ?>
 				<?php wc_get_template( 'single-product/quantity-cards.php' ); ?>
 				<?php wc_get_template( 'single-product/subscribe-toggle.php' ); ?>
 				<div class="htoeau-pdp__wc-form" id="htoeau-pdp-purchase">

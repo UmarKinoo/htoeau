@@ -23,15 +23,16 @@ if ( function_exists( 'htoeau_child_product_is_variable_pdp' ) && htoeau_child_p
 	}
 }
 
-$show_oos   = htoeau_child_product_is_out_of_stock_for_display( $product );
-$has_price  = null !== $lowest_per_can
+$show_oos    = htoeau_child_product_is_out_of_stock_for_display( $product );
+$show_enquire = function_exists( 'htoeau_child_product_should_show_enquire' ) && htoeau_child_product_should_show_enquire( $product );
+$has_price   = null !== $lowest_per_can
 	|| ( $product->is_type( 'simple' ) && '' !== (string) $product->get_price() );
 
 ?>
 <div class="htoeau-info-panel">
 	<h1 class="htoeau-product-title"><?php echo wp_kses_post( $product->get_name() ); ?></h1>
 
-	<?php if ( $has_price || $show_oos ) : ?>
+	<?php if ( $has_price || $show_oos || $show_enquire ) : ?>
 		<div class="htoeau-product-price-block">
 			<?php if ( null !== $lowest_per_can ) : ?>
 				<p class="htoeau-from-per-can">
