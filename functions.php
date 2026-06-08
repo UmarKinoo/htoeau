@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.7.9' );
+define( 'HTOEAU_CHILD_VERSION', '1.8.1' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -19,7 +19,7 @@ require_once HTOEAU_CHILD_DIR . '/inc/wc-subscriptions-bridge.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-pdp-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-cart-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-helpers.php';
-require_once HTOEAU_CHILD_DIR . '/inc/selling-restrictions.php';
+require_once HTOEAU_CHILD_DIR . '/inc/shipping-display.php';
 require_once HTOEAU_CHILD_DIR . '/inc/elementor-shop-template.php';
 require_once HTOEAU_CHILD_DIR . '/inc/shop-hero-customizer.php';
 require_once HTOEAU_CHILD_DIR . '/inc/pdp-faq.php';

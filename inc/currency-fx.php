@@ -811,7 +811,7 @@ function htoeau_child_fx_enqueue_console_debug_script() {
 add_action( 'wp_enqueue_scripts', 'htoeau_child_fx_enqueue_console_debug_script', 9999 );
 
 /**
- * Debug payload for console (currency + geo + selling).
+ * Debug payload for console (currency + geo).
  *
  * @return array<string, mixed>
  */
@@ -886,12 +886,6 @@ function htoeau_child_fx_get_console_debug_payload() {
 		$hints[] = 'CF says MU but detect_country_code is empty — unexpected; report this.';
 	}
 
-	$selling = array(
-		'sellable_countries'       => function_exists( 'htoeau_child_get_sellable_country_codes' ) ? htoeau_child_get_sellable_country_codes() : array(),
-		'visitor_can_buy_online'   => function_exists( 'htoeau_child_visitor_can_purchase_online' ) ? htoeau_child_visitor_can_purchase_online() : null,
-		'pdp_show_enquire'         => function_exists( 'is_product' ) && is_product() && function_exists( 'htoeau_child_product_should_show_enquire' ) && htoeau_child_product_should_show_enquire(),
-	);
-
 	return array(
 		'display_currency'          => (string) $display_currency,
 		'display_currency_source'   => $display_source,
@@ -917,7 +911,6 @@ function htoeau_child_fx_get_console_debug_payload() {
 		'fx_module_enabled'         => (bool) $enabled,
 		'wc_decimal_separator'      => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '',
 		'sample_fx_price_34_13'     => function_exists( 'htoeau_child_fx_wc_price' ) ? wp_strip_all_tags( htoeau_child_fx_wc_price( 34.13 ) ) : '',
-		'selling'                   => $selling,
 		'litespeed_vary_value'      => isset( $_SERVER['LSCACHE_VARY_VALUE'] ) ? (string) $_SERVER['LSCACHE_VARY_VALUE'] : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		'visitor_ip'                => class_exists( 'WC_Geolocation' ) ? (string) WC_Geolocation::get_ip_address() : '',
 		'geolocation_api_fallback'  => function_exists( 'htoeau_child_fx_geolocation_api_fallback_enabled' ) && htoeau_child_fx_geolocation_api_fallback_enabled(),

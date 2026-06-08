@@ -51,9 +51,7 @@
 		cookie: data.cookies && data.cookies[cookieKey],
 		manual_test: data.cookies && data.cookies[manualKey],
 		yay_widget: data.cookies && data.cookies.yay_currency_widget,
-		yay_apply: data.yay_apply_currency,
-		can_buy: data.selling && data.selling.visitor_can_buy_online,
-		enquire_only: data.selling && data.selling.pdp_show_enquire
+		yay_apply: data.yay_apply_currency
 	});
 	console.log('Full payload:', data);
 	console.groupEnd();
