@@ -217,6 +217,13 @@ function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
 		return $currency;
 	}
 
+	// Checkout charges in store currency — browse/display EUR must not break Mollie.
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		if ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url() ) {
+			return $store;
+		}
+	}
+
 	$in_filter = true;
 
 	$allowed  = array( 'GBP', 'EUR' );
