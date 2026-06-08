@@ -174,6 +174,9 @@ function htoeau_child_yay_prime_widget_cookie_from_htoeau() {
 		return;
 	}
 	$code = htoeau_child_yay_htoeau_cookie_currency_code();
+	if ( ! $code && function_exists( 'htoeau_child_fx_resolve_target_currency_code' ) ) {
+		$code = htoeau_child_fx_resolve_target_currency_code();
+	}
 	if ( ! $code || ! class_exists( 'Yay_Currency\Helpers\YayCurrencyHelper' ) ) {
 		return;
 	}
@@ -192,19 +195,44 @@ function htoeau_child_yay_prime_widget_cookie_from_htoeau() {
 add_action( 'wp_loaded', 'htoeau_child_yay_prime_widget_cookie_from_htoeau', 5 );
 
 /**
- * When store is EUR but we display GBP (cookie/geo), tell Woo/Yay the active code is GBP.
+ * On cart/checkout, persist geo display currency so totals match PDP (1:1 EUR/GBP).
+ * Skips manual test overrides (?htoeau_ccy=, /ccy-eur/).
+ */
+function htoeau_child_yay_sync_checkout_currency_session() {
+	if ( ! htoeau_child_yay_currency_is_active() || headers_sent() ) {
+		return;
+	}
+	if ( ! function_exists( 'is_cart' ) || ( ! is_cart() && ! is_checkout() ) ) {
+		return;
+	}
+	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url() ) {
+		return;
+	}
+	if ( function_exists( 'htoeau_child_fx_is_manual_currency_override' ) && htoeau_child_fx_is_manual_currency_override() ) {
+		return;
+	}
+	$code = htoeau_child_fx_resolve_target_currency_code();
+	if ( ! $code || ! function_exists( 'htoeau_child_fx_store_currency_code' ) ) {
+		return;
+	}
+	if ( $code === htoeau_child_fx_store_currency_code() ) {
+		return;
+	}
+	if ( function_exists( 'htoeau_child_fx_set_display_currency_cookie' ) ) {
+		htoeau_child_fx_set_display_currency_cookie( $code, false );
+	}
+}
+add_action( 'wp_loaded', 'htoeau_child_yay_sync_checkout_currency_session', 6 );
+
+/**
+ * Browse + cart + checkout use the same GBP/EUR (cookie → geo). Store remains GBP in admin.
+ * Uses resolve_target only (no Yay detect) to avoid woocommerce_currency filter recursion.
  *
  * @param string $currency WooCommerce currency code.
  * @return string
  */
-/**
- * Override woocommerce_currency so Woo/Yay knows our display currency.
- * Safe: uses only cookie reads and get_option (no filter recursion).
- */
 function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
-	static $in_filter = false;
-
-	if ( $in_filter || ( is_admin() && ! wp_doing_ajax() ) ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
 		return $currency;
 	}
 
@@ -217,26 +245,12 @@ function htoeau_child_yay_filter_woocommerce_currency( $currency ) {
 		return $currency;
 	}
 
-	// Checkout charges in store currency — browse/display EUR must not break Mollie.
-	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-		if ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url() ) {
-			return $store;
-		}
+	$code = htoeau_child_fx_resolve_target_currency_code();
+	if ( $code && in_array( $code, array( 'GBP', 'EUR' ), true ) ) {
+		return $code;
 	}
 
-	$in_filter = true;
-
-	$allowed  = array( 'GBP', 'EUR' );
-	$override = defined( 'HTOEAU_FX_COOKIE' ) && isset( $_COOKIE[ HTOEAU_FX_COOKIE ] )
-		? strtoupper( sanitize_text_field( wp_unslash( $_COOKIE[ HTOEAU_FX_COOKIE ] ) ) )
-		: ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	if ( $override && in_array( $override, $allowed, true ) ) {
-		$in_filter = false;
-		return $override;
-	}
-
-	$in_filter = false;
-	return $currency;
+	return $store;
 }
 add_filter( 'woocommerce_currency', 'htoeau_child_yay_filter_woocommerce_currency', 99999 );
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * GBP ↔ EUR display conversion (store currency stays the WooCommerce setting; checkout unchanged).
+ * GBP ↔ EUR display + checkout currency (store/admin base stays WooCommerce setting; 1:1 parity).
  *
  * @package HtoEAU_Child
  */
