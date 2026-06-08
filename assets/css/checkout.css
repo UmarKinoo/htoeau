@@ -719,6 +719,16 @@ details[open].htoeau-checkout-coupon .htoeau-checkout-coupon__chevron {
 	outline-offset: 2px;
 }
 
+/* Apple Pay express (Mollie) — above payment method radios */
+.htoeau-checkout-apple-pay-express {
+	margin: 0 0 12px;
+	width: 100%;
+}
+
+.htoeau-checkout-apple-pay-express:empty {
+	display: none;
+}
+
 /* ── Payment methods ─────────────────────────────────────── */
 .htoeau-checkout-review #payment {
 	background: var(--_surface);
@@ -738,12 +748,15 @@ details[open].htoeau-checkout-coupon .htoeau-checkout-coupon__chevron {
 }
 
 .htoeau-checkout-review #payment .wc_payment_methods li.wc_payment_method {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
 	margin: 0;
 	padding: 0;
 	background: var(--_surface);
 	border: 1.5px solid var(--_border);
 	border-radius: var(--_radius);
-	overflow: hidden;
+	overflow: visible;
 	width: 100%;
 	box-sizing: border-box;
 	transition: border-color var(--_ease), box-shadow var(--_ease);
@@ -775,10 +788,21 @@ details[open].htoeau-checkout-coupon .htoeau-checkout-coupon__chevron {
 	color: var(--_dark);
 	text-transform: none;
 	letter-spacing: 0;
-	flex: 1;
+	flex: 1 1 auto;
 	min-width: 0;
-	width: calc(100% - 44px);
+	width: auto;
 	box-sizing: border-box;
+}
+
+/* Card / Mollie fields sit on their own row below the radio + label */
+.htoeau-checkout-review #payment .wc_payment_methods li.wc_payment_method .payment_box {
+	flex: 0 0 100%;
+	width: 100% !important;
+	order: 3;
+}
+
+.htoeau-checkout-review #payment .wc_payment_methods li.wc_payment_method:has(> input[type="radio"]:checked) .payment_box {
+	display: block !important;
 }
 
 .htoeau-checkout-review #payment .wc_payment_methods > li > label img {

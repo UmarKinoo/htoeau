@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.8.2' );
+define( 'HTOEAU_CHILD_VERSION', '1.8.3' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -434,6 +434,14 @@ function htoeau_child_enqueue_checkout_css_after_elementor() {
 		HTOEAU_CHILD_URI . '/assets/css/checkout.css',
 		$deps,
 		HTOEAU_CHILD_VERSION
+	);
+
+	wp_enqueue_script(
+		'htoeau-checkout',
+		HTOEAU_CHILD_URI . '/assets/js/checkout.js',
+		array( 'jquery', 'wc-checkout' ),
+		HTOEAU_CHILD_VERSION,
+		true
 	);
 }
 add_action( 'wp_enqueue_scripts', 'htoeau_child_enqueue_checkout_css_after_elementor', 999 );
