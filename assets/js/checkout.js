@@ -20,4 +20,12 @@
 
 	$(document.body).on('updated_checkout payment_method_selected init_checkout', syncPaymentBoxes);
 	$(syncPaymentBoxes);
+
+	// WooCommerce checkout.js hides all .checkout_coupon forms on init; keep sidebar promo visible.
+	function showCheckoutCouponForm() {
+		$('.htoeau-checkout-coupon form.checkout_coupon').show();
+	}
+
+	$(document.body).on('init_checkout updated_checkout', showCheckoutCouponForm);
+	$(showCheckoutCouponForm);
 })(jQuery);

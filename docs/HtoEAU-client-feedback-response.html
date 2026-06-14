@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HtoEAU — Client feedback response</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; line-height: 1.5; color: #000; max-width: 720px; margin: 2em auto; }
+h1 { font-size: 18pt; margin-top: 0; }
+h2 { font-size: 14pt; margin-top: 1.5em; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+h3 { font-size: 12pt; margin-top: 1.2em; }
+p { margin: 0.6em 0; }
+ul, ol { margin: 0.5em 0 0.5em 1.5em; }
+li { margin: 0.3em 0; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+th, td { border: 1px solid #999; padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: #f3f3f3; font-weight: bold; }
+.meta { color: #444; margin-bottom: 1.5em; }
+.note { font-style: italic; color: #333; }
+hr { border: none; border-top: 1px solid #ccc; margin: 2em 0; }
+.checkbox { list-style: none; margin-left: 0; padding-left: 0; }
+.checkbox li { margin: 0.4em 0; }
+</style>
+</head>
+<body>
+
+<h1>HtoEAU — Client feedback response</h1>
+<p class="meta"><strong>Date:</strong> June 2026<br>
+<strong>Theme version:</strong> 1.8.6 (pending deploy)</p>
+
+<h2>Message to client</h2>
+
+<p>Hi,</p>
+
+<p>Thanks for the feedback — here’s how we’re handling each point.</p>
+
+<h3>Customer account</h3>
+
+<p><strong>Downloads</strong> — Agreed. You don’t sell digital products, so the Downloads tab has no purpose. We’re <strong>removing it</strong> from My Account.</p>
+
+<p><strong>Delete account</strong> — We’re adding a <strong>“Delete my account”</strong> section on <strong>Account details</strong>, with a confirmation step. This removes the login and personal details. <strong>Order history is kept</strong> for legal/accounting reasons (standard for e‑commerce).</p>
+
+<h3>Promo codes</h3>
+
+<p>Promo codes weren’t applying because of a technical clash with our checkout layout (WooCommerce expected a specific field ID and was hiding the promo form). <strong>This is fixed</strong> — “Have a promo code?” → Apply should work again.</p>
+
+<p>Please confirm:</p>
+<ul>
+<li>Which promo codes should be live (code name, % or fixed discount, expiry)?</li>
+<li>Any restrictions (first order only, minimum spend, one use per customer)?</li>
+</ul>
+<p>We can create/test them in WooCommerce once you confirm.</p>
+
+<h3>Social links</h3>
+
+<p>Updated as requested:</p>
+
+<table>
+<tr><th>Platform</th><th>Link</th></tr>
+<tr><td>Instagram</td><td>https://www.instagram.com/htoeau_official/</td></tr>
+<tr><td>LinkedIn</td><td>https://www.linkedin.com/company/the-hydrogen-innovation-company</td></tr>
+<tr><td>Facebook</td><td>unchanged</td></tr>
+</table>
+
+<h3>Mollie — all payment options via API</h3>
+
+<p>The site <strong>already uses the Mollie API</strong> through the official <strong>Mollie Payments for WooCommerce</strong> plugin. The theme does <strong>not</strong> remove payment methods.</p>
+
+<p>What often confuses people: <strong>“Enabled in WooCommerce admin” ≠ “shown to every customer.”</strong></p>
+
+<p>Mollie’s API only shows methods that are valid for that specific checkout:</p>
+<ul>
+<li><strong>Billing country</strong> (e.g. UK vs Netherlands vs Belgium)</li>
+<li><strong>Currency</strong> (GBP vs EUR)</li>
+<li><strong>Order amount</strong></li>
+<li><strong>What’s activated on your Mollie merchant account</strong></li>
+</ul>
+
+<p><strong>Typical behaviour:</strong></p>
+
+<table>
+<tr><th>Customer</th><th>Currency</th><th>What they usually see</th></tr>
+<tr><td>UK</td><td>GBP</td><td><strong>Card</strong> (+ <strong>Apple Pay</strong> in Safari if enabled)</td></tr>
+<tr><td>Netherlands</td><td>EUR</td><td><strong>Card</strong>, <strong>iDEAL</strong></td></tr>
+<tr><td>Belgium</td><td>EUR</td><td><strong>Card</strong>, <strong>Bancontact</strong></td></tr>
+</table>
+
+<p><strong>iDEAL and Bancontact are not meant for UK/GBP checkout</strong> — they’re EU/EUR methods. Showing them to UK customers would cause payment failures (we saw this when we briefly forced all methods on).</p>
+
+<p><strong>Apple Pay</strong> is separate from the Card/iDEAL list — it appears as an express button when enabled in Mollie and the customer uses Safari.</p>
+
+<p><strong>To get “all Mollie options” working as you expect, we need from you:</strong></p>
+<ol>
+<li><strong>Mollie dashboard access</strong> (or screenshots of <strong>Settings → Payment methods</strong>) — confirm iDEAL, Bancontact, bank transfer, and Apple Pay are <strong>live</strong>, not pending.</li>
+<li>Confirmation the Mollie account supports <strong>both GBP and EUR</strong> (if you want UK and EU checkout in local currency).</li>
+<li>A <strong>test matrix</strong> — who should see what?
+<ul>
+<li>UK + GBP: Card only, or also bank transfer?</li>
+<li>NL + EUR: Card + iDEAL?</li>
+<li>BE + EUR: Card + Bancontact?</li>
+</ul>
+</li>
+<li>Someone to test <strong>Netherlands billing + EUR</strong> and confirm iDEAL appears (if it doesn’t, it’s Mollie/account config, not the website theme).</li>
+<li><strong>Apple Pay</strong>: enable “Express on checkout” in Mollie; test on <strong>iPhone/Mac Safari</strong>.</li>
+</ol>
+
+<p>We cannot safely show every method to every customer in every currency — Mollie will reject invalid combinations and customers get <em>“There was an error processing your order.”</em> The correct setup is <strong>API-driven methods per country + currency</strong>, which is what the plugin does when Mollie and Woo settings are aligned.</p>
+
+<hr>
+
+<h2>Implementation summary (our side)</h2>
+
+<table>
+<tr><th>Item</th><th>Status</th><th>Notes</th></tr>
+<tr><td>Remove Downloads from My Account</td><td>Done</td><td>inc/my-account.php</td></tr>
+<tr><td>Delete account on Account details</td><td>Done</td><td>Confirmation + nonce; orders retained</td></tr>
+<tr><td>Fix promo code at checkout</td><td>Done</td><td>coupon field + show form after WC hide</td></tr>
+<tr><td>Instagram @htoeau_official</td><td>Done</td><td>inc/social-links.php</td></tr>
+<tr><td>LinkedIn company page</td><td>Done</td><td>Footer + Elementor newsletter widget</td></tr>
+<tr><td>Mollie all methods</td><td>Config / account</td><td>Theme does not filter; Mollie API rules apply</td></tr>
+</table>
+
+<p><strong>Deploy:</strong> not yet pushed — say <strong>push</strong> (staging) or <strong>push prod</strong> when ready.</p>
+
+<hr>
+
+<h2>Mollie — technical note (internal)</h2>
+
+<ul>
+<li>Theme only reorders <strong>Card</strong> first and provides an Apple Pay express slot (inc/mollie-checkout-gateways.php).</li>
+<li>Forcing all gateways visible (v1.8.2) caused order errors; reverted in v1.8.4+.</li>
+<li>Live test (htoeau.com): UK + GBP and NL + EUR both showed <strong>Card only</strong> — suggests Mollie account or per-gateway Woo settings, not theme.</li>
+<li>Multi-currency (v1.8.5): checkout currency follows display (geo/cookie) — EU EUR, UK GBP.</li>
+</ul>
+
+<hr>
+
+<h2>Open questions for client</h2>
+
+<h3>Account</h3>
+<ul class="checkbox">
+<li>☐ OK to keep order history when account is deleted?</li>
+</ul>
+
+<h3>Promo codes</h3>
+<ul class="checkbox">
+<li>☐ List of codes, discount type, expiry, restrictions</li>
+</ul>
+
+<h3>Mollie</h3>
+<ul class="checkbox">
+<li>☐ Mollie dashboard access or payment-methods screenshots</li>
+<li>☐ GBP + EUR both enabled on Mollie account?</li>
+<li>☐ Desired payment matrix per country/currency</li>
+<li>☐ Apple Pay express enabled in Mollie?</li>
+<li>☐ Who will test NL/EUR (iDEAL) and BE/EUR (Bancontact)?</li>
+</ul>
+
+</body>
+</html>

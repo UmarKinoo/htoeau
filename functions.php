@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.8.5' );
+define( 'HTOEAU_CHILD_VERSION', '1.8.6' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -30,6 +30,8 @@ require_once HTOEAU_CHILD_DIR . '/inc/force-classic-wc-checkout.php';
 require_once HTOEAU_CHILD_DIR . '/inc/force-checkout-template-include.php';
 require_once HTOEAU_CHILD_DIR . '/inc/mollie-components-checkout-styles.php';
 require_once HTOEAU_CHILD_DIR . '/inc/mollie-checkout-gateways.php';
+require_once HTOEAU_CHILD_DIR . '/inc/social-links.php';
+require_once HTOEAU_CHILD_DIR . '/inc/my-account.php';
 
 /**
  * Bump this string to re-copy `/assets/images/*` into `wp-content/uploads/htoeau-brand-assets/`.
@@ -468,7 +470,7 @@ function htoeau_checkout_inline_coupon() {
 						type="text"
 						name="coupon_code"
 						class="input-text htoeau-checkout-coupon__input"
-						id="coupon_code_checkout"
+						id="coupon_code"
 						value=""
 						placeholder="<?php esc_attr_e( 'Promo code', 'hello-elementor-child' ); ?>"
 					/>
