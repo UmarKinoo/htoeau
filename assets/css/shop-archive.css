@@ -294,6 +294,15 @@ body.tax-product_tag #content {
 		align-items: center;
 		padding-top: 0.25rem;
 	}
+
+	/* Match homepage product showcase mobile card spacing */
+	.htoeau-shop-card {
+		padding: 24px 10px 20px;
+	}
+
+	.htoeau-shop-card__body {
+		margin-top: 16px;
+	}
 }
 
 /* --- Toolbar + grid: Figma 1:2729 — full-width white, px-[104px] pt-[40px] pb-[96px] gap-[40px], inner w-[1232px] --- */
@@ -500,10 +509,11 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2rem;
+	gap: 0;
 	height: 100%;
 	min-height: 0;
-	padding: 0 0.625rem 2.5rem;
+	/* Match homepage .htoeau-product-showcase__card padding */
+	padding: 20px 10px 40px;
 	background: #f8f8f8;
 	border-radius: 10px;
 	box-sizing: border-box;
@@ -513,29 +523,25 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 .htoeau-shop-card__media-link {
 	display: block;
 	width: 100%;
-	max-width: 361px;
+	max-width: 391px;
 	margin: 0 auto;
 	text-decoration: none;
 }
 
+/* Same as homepage .htoeau-product-showcase__card-image */
 .htoeau-shop-card__thumb {
-	display: block;
-	position: relative;
 	width: 100%;
-	max-width: 361px;
-	margin: 0 auto;
+	max-width: 391px;
 	aspect-ratio: 1 / 1;
-	padding: 1.5rem 1.25rem 1rem;
 	border-radius: 16px;
 	overflow: hidden;
-	box-sizing: border-box;
 	flex-shrink: 0;
 	min-height: 0;
-	/* Same as card — no white “plate” (overrides WC/theme img wrappers) */
-	background-color: #f8f8f8 !important;
+	margin: 0 auto;
+	box-sizing: border-box;
 }
 
-/* Match homepage product showcase: fill square box with contain (Safari iOS breaks on width/height:auto). */
+/* Same as homepage .htoeau-product-showcase__card-image img */
 body.htoeau-shop-archive .htoeau-shop-card__thumb img,
 body.htoeau-shop-archive .htoeau-shop-card__thumb .htoeau-shop-card__img,
 body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product .htoeau-shop-card__thumb img {
@@ -553,7 +559,7 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product .htoeau-shop-ca
 .htoeau-shop-card__body {
 	width: 100%;
 	max-width: 346px;
-	margin-top: 0;
+	margin-top: 23px;
 	display: flex;
 	flex-direction: column;
 	gap: 1.25rem;
