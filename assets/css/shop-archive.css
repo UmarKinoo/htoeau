@@ -525,6 +525,7 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	max-width: 361px;
 	margin: 0 auto;
 	aspect-ratio: 1 / 1;
+	padding: 1.5rem 1.25rem 1rem;
 	border-radius: 16px;
 	overflow: hidden;
 	box-sizing: border-box;
