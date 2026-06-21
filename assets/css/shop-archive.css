@@ -505,6 +505,7 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	box-shadow: none !important;
 }
 
+/* Grey card + white image plate (homepage showcase cards are all-white). */
 .htoeau-shop-card {
 	display: flex;
 	flex-direction: column;
@@ -512,7 +513,6 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	gap: 0;
 	height: 100%;
 	min-height: 0;
-	/* Match homepage .htoeau-product-showcase__card padding */
 	padding: 20px 10px 40px;
 	background: #f8f8f8;
 	border-radius: 10px;
@@ -528,8 +528,11 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	text-decoration: none;
 }
 
-/* Same as homepage .htoeau-product-showcase__card-image */
-.htoeau-shop-card__thumb {
+/*
+ * Homepage showcase image box sizing + white plate on grey card.
+ * (Plugin .htoeau-product-showcase__card-image rules duplicated so shop archive does not depend on widget CSS.)
+ */
+.htoeau-shop-card__thumb.htoeau-product-showcase__card-image {
 	width: 100%;
 	max-width: 391px;
 	aspect-ratio: 1 / 1;
@@ -538,10 +541,11 @@ body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product {
 	flex-shrink: 0;
 	min-height: 0;
 	margin: 0 auto;
+	background: #fff;
+	padding: 1.25rem 1rem 0.875rem;
 	box-sizing: border-box;
 }
 
-/* Same as homepage .htoeau-product-showcase__card-image img */
 body.htoeau-shop-archive .htoeau-shop-card__thumb img,
 body.htoeau-shop-archive .htoeau-shop-card__thumb .htoeau-shop-card__img,
 body.htoeau-shop-archive ul.products.htoeau-shop-grid li.product .htoeau-shop-card__thumb img {
