@@ -1,6 +1,6 @@
 /**
  * Checkout payment UI — ensure the selected gateway’s .payment_box is visible.
- * (Theme layout uses flex on .wc_payment_method; this mirrors Woo’s default toggle.)
+ * Promo apply: WC’s wc_checkout_coupons is not global; we call apply_coupon AJAX directly.
  */
 (function ($) {
 	'use strict';
@@ -21,7 +21,37 @@
 	$(document.body).on('updated_checkout payment_method_selected init_checkout', syncPaymentBoxes);
 	$(syncPaymentBoxes);
 
-	// Promo block lives inside form.checkout — must not use a nested <form> or Apply submits checkout (Mollie card validation).
+	function clearCouponError($block) {
+		$block.find('.coupon-error-notice').remove();
+		$block
+			.find('input[name="coupon_code"]')
+			.removeClass('has-error')
+			.removeAttr('aria-invalid')
+			.removeAttr('aria-describedby');
+	}
+
+	function showCouponError(html, $target) {
+		clearCouponError($target.closest('.checkout_coupon'));
+		var msg = $('<div>').html(html).text().trim();
+		if (!msg || !$target.length) {
+			return;
+		}
+
+		var $input = $target.find('input[name="coupon_code"]');
+		$input
+			.addClass('has-error')
+			.attr('aria-invalid', 'true')
+			.attr('aria-describedby', 'coupon-error-notice')
+			.trigger('focus');
+
+		$('<span>', {
+			class: 'coupon-error-notice',
+			id: 'coupon-error-notice',
+			role: 'alert',
+			text: msg,
+		}).appendTo($target);
+	}
+
 	function applyCheckoutCoupon(evt) {
 		if (evt) {
 			evt.preventDefault();
@@ -31,48 +61,102 @@
 			}
 		}
 
+		if (typeof wc_checkout_params === 'undefined') {
+			return false;
+		}
+
 		var $block = $(evt.currentTarget).closest('.checkout_coupon');
 		if (!$block.length) {
 			return false;
 		}
 
-		if (typeof wc_checkout_coupons !== 'undefined' && wc_checkout_coupons.submit) {
-			return wc_checkout_coupons.submit.call(wc_checkout_coupons, $.extend({}, evt, { currentTarget: $block[0] }));
+		var $row = $block.find('.htoeau-checkout-coupon__row');
+		var $input = $block.find('input[name="coupon_code"]');
+		var code = $.trim($input.val() || '');
+
+		clearCouponError($block);
+		$block.siblings('.woocommerce-error, .woocommerce-message').remove();
+		$block.find('.woocommerce-error, .woocommerce-message').remove();
+
+		if ($block.hasClass('processing')) {
+			return false;
 		}
+
+		$block.addClass('processing').block({
+			message: null,
+			overlayCSS: {
+				background: '#fff',
+				opacity: 0.6,
+			},
+		});
+
+		$.ajax({
+			type: 'POST',
+			url: wc_checkout_params.wc_ajax_url
+				.toString()
+				.replace('%%endpoint%%', 'apply_coupon'),
+			data: {
+				security: wc_checkout_params.apply_coupon_nonce,
+				coupon_code: code,
+				billing_email: $('form.checkout').find('input[name="billing_email"]').val() || '',
+			},
+			dataType: 'html',
+			success: function (response) {
+				$block.removeClass('processing').unblock();
+
+				if (!response) {
+					return;
+				}
+
+				var isError =
+					response.indexOf('woocommerce-error') !== -1 ||
+					response.indexOf('is-error') !== -1;
+
+				if (isError) {
+					showCouponError(response, $row);
+				} else {
+					$input.val('');
+					clearCouponError($block);
+					$row.before(response);
+				}
+
+				$(document.body).trigger('applied_coupon_in_checkout', [code]);
+				$(document.body).trigger('update_checkout', {
+					update_shipping_method: false,
+				});
+			},
+			error: function (jqXHR) {
+				$block.removeClass('processing').unblock();
+				if (wc_checkout_params.debug_mode && window.console) {
+					window.console.log(jqXHR.responseText);
+				}
+			},
+		});
 
 		return false;
 	}
 
-	function bindCheckoutCouponForm() {
-		var $block = $('.htoeau-checkout-coupon .checkout_coupon');
-		if (!$block.length) {
-			return;
+	// Promo sits inside form.checkout (no nested <form>). Delegation survives order_review AJAX refresh.
+	$(document.body).on(
+		'click.htoeau-coupon',
+		'.htoeau-checkout-coupon .htoeau-checkout-coupon__btn',
+		applyCheckoutCoupon
+	);
+
+	$(document.body).on(
+		'keydown.htoeau-coupon',
+		'.htoeau-checkout-coupon input[name="coupon_code"]',
+		function (evt) {
+			if (evt.key === 'Enter' || evt.keyCode === 13) {
+				applyCheckoutCoupon(evt);
+			}
 		}
+	);
 
-		$block.show();
-
-		$block
-			.find('.htoeau-checkout-coupon__btn')
-			.off('click.htoeau-coupon')
-			.on('click.htoeau-coupon', applyCheckoutCoupon);
-
-		$block
-			.find('#coupon_code, input[name="coupon_code"]')
-			.off('keydown.htoeau-coupon')
-			.on('keydown.htoeau-coupon', function (evt) {
-				if (evt.key === 'Enter' || evt.keyCode === 13) {
-					applyCheckoutCoupon(evt);
-				}
-			});
+	function keepPromoBlockVisible() {
+		$('.htoeau-checkout-coupon .checkout_coupon').show();
 	}
 
-	function scheduleCheckoutCouponBind() {
-		bindCheckoutCouponForm();
-		// Deferred wc-checkout can hide the form after init_checkout; run again on next tick.
-		window.setTimeout(bindCheckoutCouponForm, 0);
-		window.setTimeout(bindCheckoutCouponForm, 300);
-	}
-
-	$(document.body).on('init_checkout updated_checkout', scheduleCheckoutCouponBind);
-	$(scheduleCheckoutCouponBind);
+	$(document.body).on('init_checkout updated_checkout', keepPromoBlockVisible);
+	$(keepPromoBlockVisible);
 })(jQuery);
