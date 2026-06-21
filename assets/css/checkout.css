@@ -659,8 +659,8 @@ details[open].htoeau-checkout-coupon .htoeau-checkout-coupon__chevron {
 	background: var(--_surface);
 }
 
-/* WC checkout.js hides .checkout_coupon on init (often after our JS); keep promo usable */
-.htoeau-checkout-coupon form.checkout_coupon {
+/* WC checkout.js hides form.checkout_coupon on init; our promo uses a div inside form.checkout */
+.htoeau-checkout-coupon .checkout_coupon {
 	display: block !important;
 }
 

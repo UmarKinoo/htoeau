@@ -21,21 +21,49 @@
 	$(document.body).on('updated_checkout payment_method_selected init_checkout', syncPaymentBoxes);
 	$(syncPaymentBoxes);
 
-	// WC checkout.js (often deferred) hides .checkout_coupon on init and does not re-bind
-	// submit after order_review AJAX refresh — keep our sidebar promo visible + working.
+	// Promo block lives inside form.checkout — must not use a nested <form> or Apply submits checkout (Mollie card validation).
+	function applyCheckoutCoupon(evt) {
+		if (evt) {
+			evt.preventDefault();
+			evt.stopPropagation();
+			if (typeof evt.stopImmediatePropagation === 'function') {
+				evt.stopImmediatePropagation();
+			}
+		}
+
+		var $block = $(evt.currentTarget).closest('.checkout_coupon');
+		if (!$block.length) {
+			return false;
+		}
+
+		if (typeof wc_checkout_coupons !== 'undefined' && wc_checkout_coupons.submit) {
+			return wc_checkout_coupons.submit.call(wc_checkout_coupons, $.extend({}, evt, { currentTarget: $block[0] }));
+		}
+
+		return false;
+	}
+
 	function bindCheckoutCouponForm() {
-		var $form = $('.htoeau-checkout-coupon form.checkout_coupon');
-		if (!$form.length) {
+		var $block = $('.htoeau-checkout-coupon .checkout_coupon');
+		if (!$block.length) {
 			return;
 		}
 
-		$form.show();
+		$block.show();
 
-		$form.off('submit.htoeau-coupon').on('submit.htoeau-coupon', function (evt) {
-			if (typeof wc_checkout_coupons !== 'undefined' && wc_checkout_coupons.submit) {
-				return wc_checkout_coupons.submit.call(wc_checkout_coupons, evt);
-			}
-		});
+		$block
+			.find('.htoeau-checkout-coupon__btn')
+			.off('click.htoeau-coupon')
+			.on('click.htoeau-coupon', applyCheckoutCoupon);
+
+		$block
+			.find('#coupon_code, input[name="coupon_code"]')
+			.off('keydown.htoeau-coupon')
+			.on('keydown.htoeau-coupon', function (evt) {
+				if (evt.key === 'Enter' || evt.keyCode === 13) {
+					applyCheckoutCoupon(evt);
+				}
+			});
 	}
 
 	function scheduleCheckoutCouponBind() {

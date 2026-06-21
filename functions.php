@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HTOEAU_CHILD_VERSION', '1.8.10' );
+define( 'HTOEAU_CHILD_VERSION', '1.8.11' );
 define( 'HTOEAU_CHILD_DIR', get_stylesheet_directory() );
 define( 'HTOEAU_CHILD_URI', get_stylesheet_directory_uri() );
 
@@ -464,7 +464,8 @@ function htoeau_checkout_inline_coupon() {
 			<svg class="htoeau-checkout-coupon__chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
 		</summary>
 		<div class="htoeau-checkout-coupon__body">
-			<form class="checkout_coupon woocommerce-form-coupon" method="post">
+			<?php /* Not a <form>: promo sits inside form.checkout; nested forms make Apply submit checkout + Mollie validation. */ ?>
+			<div class="checkout_coupon woocommerce-form-coupon" role="group" aria-label="<?php esc_attr_e( 'Promo code', 'hello-elementor-child' ); ?>">
 				<div class="htoeau-checkout-coupon__row">
 					<input
 						type="text"
@@ -473,15 +474,16 @@ function htoeau_checkout_inline_coupon() {
 						id="coupon_code"
 						value=""
 						placeholder="<?php esc_attr_e( 'Promo code', 'hello-elementor-child' ); ?>"
+						autocomplete="off"
 					/>
 					<button
-						type="submit"
+						type="button"
 						class="htoeau-checkout-coupon__btn"
 						name="apply_coupon"
 						value="apply_coupon"
 					><?php esc_html_e( 'Apply', 'hello-elementor-child' ); ?></button>
 				</div>
-			</form>
+			</div>
 		</div>
 	</details>
 	<?php
